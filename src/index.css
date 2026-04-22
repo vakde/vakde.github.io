@@ -1,24 +1,48 @@
 :root {
+  --ink: #17181b;
+  --ink-soft: #494f55;
+  --slate: #6c7278;
+  --paper: #f4efe6;
+  --paper-deep: #e9ddca;
+  --paper-strong: #fffbf5;
+  --line: rgba(69, 61, 52, 0.14);
+  --line-strong: rgba(69, 61, 52, 0.22);
+  --sage: #31554a;
+  --sage-soft: rgba(49, 85, 74, 0.1);
+  --copper: #b56a3b;
+  --copper-soft: rgba(181, 106, 59, 0.12);
+  --danger: #b34e3d;
+  --danger-soft: rgba(179, 78, 61, 0.12);
+  --shadow-lg: 0 26px 60px rgba(44, 34, 20, 0.12);
+  --shadow-md: 0 18px 34px rgba(44, 34, 20, 0.08);
+  --radius-xl: 32px;
+  --radius-lg: 24px;
+  --radius-md: 18px;
+  --radius-sm: 14px;
   font-family:
+    'SUIT Variable',
     'Pretendard Variable',
-    'Pretendard',
     'Apple SD Gothic Neo',
     'Noto Sans KR',
     system-ui,
     sans-serif;
   line-height: 1.5;
   font-weight: 400;
-  color: #e2e8f0;
+  color: var(--ink);
   background:
-    radial-gradient(circle at top, rgba(45, 212, 191, 0.12), transparent 30%),
-    linear-gradient(180deg, #020617 0%, #08111f 40%, #020617 100%);
+    radial-gradient(circle at top left, rgba(181, 106, 59, 0.16), transparent 28%),
+    radial-gradient(circle at top right, rgba(49, 85, 74, 0.14), transparent 30%),
+    linear-gradient(180deg, #f8f3ea 0%, var(--paper) 36%, var(--paper-deep) 100%);
+  color-scheme: light;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-* {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 
@@ -30,6 +54,19 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
+  position: relative;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(69, 61, 52, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(69, 61, 52, 0.03) 1px, transparent 1px);
+  background-size: 36px 36px;
+  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.4), transparent 85%);
 }
 
 button,
@@ -43,8 +80,8 @@ button:focus-visible,
 input:focus-visible,
 textarea:focus-visible,
 select:focus-visible {
-  outline: 2px solid #67e8f9;
-  outline-offset: 2px;
+  outline: 2px solid rgba(49, 85, 74, 0.65);
+  outline-offset: 3px;
 }
 
 h1,
@@ -52,6 +89,10 @@ h2,
 h3,
 p {
   margin: 0;
+}
+
+::selection {
+  background: rgba(181, 106, 59, 0.18);
 }
 
 #root {
