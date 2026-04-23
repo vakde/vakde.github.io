@@ -74,6 +74,15 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "memo": "신한카드 명세 · 가족220* · 결제확정"
   },
   {
+    "id": "seed-payroll-company-loan-2026-04",
+    "date": "2026-04-21",
+    "source": "payroll",
+    "description": "회사대부금 급여공제",
+    "amount": 450000,
+    "category": "대출",
+    "memo": "월간 가계부 기본지출표 · 급여에서 공제되어 통장내역에는 보이지 않는 지출"
+  },
+  {
     "id": "seed-shinhan-card-9",
     "date": "2026-04-20",
     "source": "card",
@@ -1100,6 +1109,15 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "memo": "신한카드 명세 · 가족220* · 결제확정"
   },
   {
+    "id": "seed-payroll-company-loan-2026-03",
+    "date": "2026-03-21",
+    "source": "payroll",
+    "description": "회사대부금 급여공제",
+    "amount": 450000,
+    "category": "대출",
+    "memo": "월간 가계부 기본지출표 · 급여에서 공제되어 통장내역에는 보이지 않는 지출"
+  },
+  {
     "id": "seed-kakao-bank-803",
     "date": "2026-03-21",
     "source": "bank",
@@ -2106,6 +2124,15 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "amount": 397615,
     "category": "신한카드 결제대금",
     "memo": "카카오뱅크 거래내역 · 신한카드 결제대금(중복 제외)"
+  },
+  {
+    "id": "seed-payroll-company-loan-2026-02",
+    "date": "2026-02-21",
+    "source": "payroll",
+    "description": "회사대부금 급여공제",
+    "amount": 450000,
+    "category": "대출",
+    "memo": "월간 가계부 기본지출표 · 급여에서 공제되어 통장내역에는 보이지 않는 지출"
   },
   {
     "id": "seed-shinhan-card-195",
@@ -3296,6 +3323,15 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "memo": "신한카드 명세 · 가족220* · 결제확정"
   },
   {
+    "id": "seed-payroll-company-loan-2026-01",
+    "date": "2026-01-21",
+    "source": "payroll",
+    "description": "회사대부금 급여공제",
+    "amount": 450000,
+    "category": "대출",
+    "memo": "월간 가계부 기본지출표 · 급여에서 공제되어 통장내역에는 보이지 않는 지출"
+  },
+  {
     "id": "seed-kakao-bank-693",
     "date": "2026-01-21",
     "source": "settlement",
@@ -3483,6 +3519,15 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "amount": 96390,
     "category": "신한카드 결제대금",
     "memo": "카카오뱅크 거래내역 · 신한카드 결제대금(중복 제외)"
+  },
+  {
+    "id": "seed-payroll-company-loan-2025-12",
+    "date": "2025-12-21",
+    "source": "payroll",
+    "description": "회사대부금 급여공제",
+    "amount": 450000,
+    "category": "대출",
+    "memo": "월간 가계부 기본지출표 · 급여에서 공제되어 통장내역에는 보이지 않는 지출"
   },
   {
     "id": "seed-kakao-bank-658",
@@ -3753,6 +3798,15 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "amount": 3400,
     "category": "기타",
     "memo": "카카오뱅크 거래내역 · 일반이체"
+  },
+  {
+    "id": "seed-payroll-company-loan-2025-11",
+    "date": "2025-11-21",
+    "source": "payroll",
+    "description": "회사대부금 급여공제",
+    "amount": 450000,
+    "category": "대출",
+    "memo": "월간 가계부 기본지출표 · 급여에서 공제되어 통장내역에는 보이지 않는 지출"
   },
   {
     "id": "seed-kakao-bank-601",
@@ -4313,6 +4367,15 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "memo": "카카오뱅크 거래내역 · 체크카드결제"
   },
   {
+    "id": "seed-payroll-company-loan-2025-10",
+    "date": "2025-10-21",
+    "source": "payroll",
+    "description": "회사대부금 급여공제",
+    "amount": 450000,
+    "category": "대출",
+    "memo": "월간 가계부 기본지출표 · 급여에서 공제되어 통장내역에는 보이지 않는 지출"
+  },
+  {
     "id": "seed-kakao-bank-514",
     "date": "2025-10-21",
     "source": "bank",
@@ -4817,6 +4880,15 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "memo": "카카오뱅크 거래내역 · 신한카드 결제대금(중복 제외)"
   },
   {
+    "id": "seed-payroll-company-loan-2025-09",
+    "date": "2025-09-21",
+    "source": "payroll",
+    "description": "회사대부금 급여공제",
+    "amount": 450000,
+    "category": "대출",
+    "memo": "월간 가계부 기본지출표 · 급여에서 공제되어 통장내역에는 보이지 않는 지출"
+  },
+  {
     "id": "seed-kakao-bank-439",
     "date": "2025-09-21",
     "source": "bank",
@@ -5294,6 +5366,15 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "memo": "카카오뱅크 거래내역 · 신한카드 결제대금(중복 제외)"
   },
   {
+    "id": "seed-payroll-company-loan-2025-08",
+    "date": "2025-08-21",
+    "source": "payroll",
+    "description": "회사대부금 급여공제",
+    "amount": 450000,
+    "category": "대출",
+    "memo": "월간 가계부 기본지출표 · 급여에서 공제되어 통장내역에는 보이지 않는 지출"
+  },
+  {
     "id": "seed-kakao-bank-363",
     "date": "2025-08-20",
     "source": "bank",
@@ -5769,6 +5850,15 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "amount": 12000,
     "category": "보험/의료",
     "memo": "카카오뱅크 거래내역 · 체크카드결제"
+  },
+  {
+    "id": "seed-payroll-company-loan-2025-07",
+    "date": "2025-07-21",
+    "source": "payroll",
+    "description": "회사대부금 급여공제",
+    "amount": 450000,
+    "category": "대출",
+    "memo": "월간 가계부 기본지출표 · 급여에서 공제되어 통장내역에는 보이지 않는 지출"
   },
   {
     "id": "seed-kakao-bank-290",
@@ -6581,6 +6671,15 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "memo": "카카오뱅크 거래내역 · 신한카드 결제대금(중복 제외)"
   },
   {
+    "id": "seed-payroll-company-loan-2025-06",
+    "date": "2025-06-21",
+    "source": "payroll",
+    "description": "회사대부금 급여공제",
+    "amount": 450000,
+    "category": "대출",
+    "memo": "월간 가계부 기본지출표 · 급여에서 공제되어 통장내역에는 보이지 않는 지출"
+  },
+  {
     "id": "seed-kakao-bank-175",
     "date": "2025-06-19",
     "source": "bank",
@@ -7301,6 +7400,15 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "memo": "카카오뱅크 거래내역 · 일반이체"
   },
   {
+    "id": "seed-payroll-company-loan-2025-05",
+    "date": "2025-05-21",
+    "source": "payroll",
+    "description": "회사대부금 급여공제",
+    "amount": 450000,
+    "category": "대출",
+    "memo": "월간 가계부 기본지출표 · 급여에서 공제되어 통장내역에는 보이지 않는 지출"
+  },
+  {
     "id": "seed-kakao-bank-72",
     "date": "2025-05-21",
     "source": "bank",
@@ -7785,5 +7893,14 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "amount": 10500,
     "category": "카드결제(기타)",
     "memo": "카카오뱅크 거래내역 · 자동이체(기타)"
+  },
+  {
+    "id": "seed-payroll-company-loan-2025-04",
+    "date": "2025-04-21",
+    "source": "payroll",
+    "description": "회사대부금 급여공제",
+    "amount": 450000,
+    "category": "대출",
+    "memo": "월간 가계부 기본지출표 · 급여에서 공제되어 통장내역에는 보이지 않는 지출"
   }
 ]

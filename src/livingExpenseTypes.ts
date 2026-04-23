@@ -1,4 +1,4 @@
-export type LivingExpenseSource = 'card' | 'bank' | 'settlement'
+export type LivingExpenseSource = 'card' | 'bank' | 'settlement' | 'payroll'
 
 export type LivingExpenseTransaction = {
   id: string

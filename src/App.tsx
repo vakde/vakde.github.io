@@ -35,6 +35,7 @@ type MonthlyExpense = {
   cardTotal: number
   bankTotal: number
   settlementTotal: number
+  payrollTotal: number
   count: number
   dailyAverage: number
   categories: CategorySlice[]
@@ -295,6 +296,7 @@ function groupMonthlyExpenses(expenses: LivingExpenseTransaction[]) {
         cardTotal: spendingTransactions.filter((transaction) => transaction.source === 'card').reduce((sum, transaction) => sum + transaction.amount, 0),
         bankTotal: spendingTransactions.filter((transaction) => transaction.source === 'bank').reduce((sum, transaction) => sum + transaction.amount, 0),
         settlementTotal: settlements.reduce((sum, transaction) => sum + transaction.amount, 0),
+        payrollTotal: spendingTransactions.filter((transaction) => transaction.source === 'payroll').reduce((sum, transaction) => sum + transaction.amount, 0),
         count: spendingTransactions.length,
         dailyAverage: Math.round(total / getDaysInMonth(month)),
         categories,
@@ -540,6 +542,7 @@ function App() {
               <div className="headline-metrics">
                 <span><small>카드 사용</small><strong>{formatCurrency(activeMonthlyExpense?.cardTotal ?? 0)}</strong></span>
                 <span><small>통장 직접출금</small><strong>{formatCurrency(activeMonthlyExpense?.bankTotal ?? 0)}</strong></span>
+                <span><small>급여공제 지출</small><strong>{formatCurrency(activeMonthlyExpense?.payrollTotal ?? 0)}</strong></span>
                 <span><small>신한카드 결제대금</small><strong>{formatCurrency(activeMonthlyExpense?.settlementTotal ?? 0)}</strong></span>
                 <span><small>생활비 거래 수</small><strong>{activeMonthlyExpense?.count ?? 0}건</strong></span>
               </div>
@@ -604,7 +607,7 @@ function App() {
               {filteredTransactions.map((transaction) => (
                 <article key={transaction.id}>
                   <time>{formatDate(transaction.date)}</time>
-                  <div><strong>{transaction.description}</strong><small>{transaction.source === 'card' ? '카드명세' : '통장출금'} · {transaction.category}</small></div>
+                  <div><strong>{transaction.description}</strong><small>{transaction.source === 'card' ? '카드명세' : transaction.source === 'payroll' ? '급여공제' : '통장출금'} · {transaction.category}</small></div>
                   <b>{formatCurrency(transaction.amount)}</b>
                 </article>
               ))}
