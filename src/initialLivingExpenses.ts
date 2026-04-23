@@ -7,7 +7,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "card",
     "description": "(주)일력택시",
     "amount": 1650,
-    "category": "교통",
+    "category": "교통/차량",
     "memo": "신한카드 명세 · 가족220* · 결제확정"
   },
   {
@@ -43,7 +43,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "card",
     "description": "(주)일력택시",
     "amount": 1650,
-    "category": "교통",
+    "category": "교통/차량",
     "memo": "신한카드 명세 · 가족220* · 결제확정"
   },
   {
@@ -70,7 +70,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "card",
     "description": "SR",
     "amount": 55500,
-    "category": "교통",
+    "category": "교통/차량",
     "memo": "신한카드 명세 · 가족220* · 결제확정"
   },
   {
@@ -232,7 +232,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "card",
     "description": "(주)평택버스",
     "amount": 1650,
-    "category": "교통",
+    "category": "교통/차량",
     "memo": "신한카드 명세 · 가족220* · 결제확정"
   },
   {
@@ -241,7 +241,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "card",
     "description": "재단법인 평택시로컬푸드재단",
     "amount": 5000,
-    "category": "교통",
+    "category": "교통/차량",
     "memo": "신한카드 명세 · 본인739* · 결제확정"
   },
   {
@@ -295,7 +295,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "card",
     "description": "SR",
     "amount": 101000,
-    "category": "교통",
+    "category": "교통/차량",
     "memo": "신한카드 명세 · 가족220* · 결제확정"
   },
   {
@@ -439,7 +439,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "card",
     "description": "(주)일력택시",
     "amount": 1650,
-    "category": "교통",
+    "category": "교통/차량",
     "memo": "신한카드 명세 · 가족220* · 결제확정"
   },
   {
@@ -457,7 +457,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "card",
     "description": "(주)일력택시",
     "amount": 1650,
-    "category": "교통",
+    "category": "교통/차량",
     "memo": "신한카드 명세 · 가족220* · 결제확정"
   },
   {
@@ -574,7 +574,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "인형",
     "amount": 31000,
-    "category": "기타",
+    "category": "쇼핑/생활",
     "memo": "카카오뱅크 거래내역 · 일반이체"
   },
   {
@@ -655,7 +655,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "card",
     "description": "(주)평택버스",
     "amount": 1650,
-    "category": "교통",
+    "category": "교통/차량",
     "memo": "신한카드 명세 · 가족220* · 결제확정"
   },
   {
@@ -673,7 +673,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "card",
     "description": "(주)일력택시",
     "amount": 1650,
-    "category": "교통",
+    "category": "교통/차량",
     "memo": "신한카드 명세 · 가족220* · 결제확정"
   },
   {
@@ -695,15 +695,6 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "memo": "신한카드 명세 · 가족220* · 결제확정"
   },
   {
-    "id": "seed-kakao-bank-842",
-    "date": "2026-04-01",
-    "source": "bank",
-    "description": "대현 청약저축",
-    "amount": 100000,
-    "category": "기타",
-    "memo": "카카오뱅크 거래내역 · 타행자동이체"
-  },
-  {
     "id": "seed-kakao-bank-841",
     "date": "2026-04-01",
     "source": "bank",
@@ -718,7 +709,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "기타 - 은진이와 곗돈",
     "amount": 100000,
-    "category": "기타",
+    "category": "계/모임",
     "memo": "카카오뱅크 거래내역 · 타행자동이체"
   },
   {
@@ -758,21 +749,12 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "memo": "카카오뱅크 거래내역 · 타행자동이체"
   },
   {
-    "id": "seed-kakao-bank-835",
-    "date": "2026-04-01",
-    "source": "bank",
-    "description": "금투자 보관료",
-    "amount": 700,
-    "category": "기타",
-    "memo": "카카오뱅크 거래내역 · 일반이체"
-  },
-  {
     "id": "seed-kakao-bank-829",
     "date": "2026-04-01",
     "source": "bank",
     "description": "스마일카드",
     "amount": 195960,
-    "category": "기타",
+    "category": "카드결제(기타)",
     "memo": "카카오뱅크 거래내역 · 자동이체(기타)"
   },
   {
@@ -790,7 +772,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "card",
     "description": "에스엠하이플러스 (주)",
     "amount": 50000,
-    "category": "기타",
+    "category": "교통/차량",
     "memo": "신한카드 명세 · 본인739* · 결제확정"
   },
   {
@@ -799,7 +781,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "강상욱프로  장인조의금",
     "amount": 50000,
-    "category": "기타",
+    "category": "경조사/명절",
     "memo": "카카오뱅크 거래내역 · 일반이체"
   },
   {
@@ -844,7 +826,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "card",
     "description": "(주)태보에너지지점",
     "amount": 36776,
-    "category": "기타",
+    "category": "교통/차량",
     "memo": "신한카드 명세 · 본인739* · 결제확정"
   },
   {
@@ -853,7 +835,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "card",
     "description": "만수숯불갈비",
     "amount": 125000,
-    "category": "기타",
+    "category": "식비/장보기",
     "memo": "신한카드 명세 · 본인739* · 결제확정"
   },
   {
@@ -925,7 +907,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "연세우리아이소아청",
     "amount": 2900,
-    "category": "기타",
+    "category": "보험/의료",
     "memo": "카카오뱅크 거래내역 · 체크카드결제"
   },
   {
@@ -943,7 +925,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "card",
     "description": "(주)평택버스",
     "amount": 1650,
-    "category": "교통",
+    "category": "교통/차량",
     "memo": "신한카드 명세 · 본인739* · 결제확정"
   },
   {
@@ -952,17 +934,8 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "휠라코리아(주)",
     "amount": 46900,
-    "category": "기타",
+    "category": "쇼핑/생활",
     "memo": "카카오뱅크 거래내역 · 체크카드결제"
-  },
-  {
-    "id": "seed-kakao-bank-817",
-    "date": "2026-03-26",
-    "source": "bank",
-    "description": "삼성카드 · 대현통신",
-    "amount": 10500,
-    "category": "주거/통신",
-    "memo": "카카오뱅크 거래내역 · 자동이체(기타)"
   },
   {
     "id": "seed-kakao-bank-816",
@@ -1006,7 +979,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "card",
     "description": "주식회사 에스에스지닷컴",
     "amount": 34770,
-    "category": "기타",
+    "category": "식비/장보기",
     "memo": "신한카드 명세 · 가족220* · 결제확정"
   },
   {
@@ -1078,7 +1051,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "연세우리아이소아청",
     "amount": 2900,
-    "category": "기타",
+    "category": "보험/의료",
     "memo": "카카오뱅크 거래내역 · 체크카드결제"
   },
   {
@@ -1195,7 +1168,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "card",
     "description": "(주)평택버스",
     "amount": 1650,
-    "category": "교통",
+    "category": "교통/차량",
     "memo": "신한카드 명세 · 가족220* · 결제확정"
   },
   {
@@ -1267,7 +1240,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "card",
     "description": "토실디저트",
     "amount": 4800,
-    "category": "기타",
+    "category": "식비/장보기",
     "memo": "신한카드 명세 · 가족220* · 결제확정"
   },
   {
@@ -1276,7 +1249,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "card",
     "description": "토실디저트",
     "amount": 4800,
-    "category": "기타",
+    "category": "식비/장보기",
     "memo": "신한카드 명세 · 가족220* · 결제확정"
   },
   {
@@ -1339,7 +1312,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "삼성카드",
     "amount": 2168340,
-    "category": "기타",
+    "category": "카드결제(기타)",
     "memo": "카카오뱅크 거래내역 · 자동이체(기타)"
   },
   {
@@ -1375,7 +1348,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "card",
     "description": "도야짬뽕(평택고덕점)",
     "amount": 9500,
-    "category": "기타",
+    "category": "식비/장보기",
     "memo": "신한카드 명세 · 가족220* · 결제확정"
   },
   {
@@ -1474,7 +1447,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "card",
     "description": "코레일유통주식회사(부산역)",
     "amount": 8800,
-    "category": "교통",
+    "category": "교통/차량",
     "memo": "신한카드 명세 · 본인739* · 결제확정"
   },
   {
@@ -1483,7 +1456,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "card",
     "description": "나이스파크",
     "amount": 25200,
-    "category": "기타",
+    "category": "교통/차량",
     "memo": "신한카드 명세 · 본인739* · 결제확정"
   },
   {
@@ -1528,7 +1501,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "연세우리아이소아청",
     "amount": 2900,
-    "category": "기타",
+    "category": "보험/의료",
     "memo": "카카오뱅크 거래내역 · 체크카드결제"
   },
   {
@@ -1600,7 +1573,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "card",
     "description": "(주)평택버스",
     "amount": 1650,
-    "category": "교통",
+    "category": "교통/차량",
     "memo": "신한카드 명세 · 가족220* · 결제확정"
   },
   {
@@ -1609,7 +1582,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "card",
     "description": "(주)일력택시",
     "amount": 1650,
-    "category": "교통",
+    "category": "교통/차량",
     "memo": "신한카드 명세 · 가족220* · 결제확정"
   },
   {
@@ -1618,7 +1591,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "card",
     "description": "에스케이에너지",
     "amount": 32204,
-    "category": "기타",
+    "category": "교통/차량",
     "memo": "신한카드 명세 · 본인739* · 결제확정"
   },
   {
@@ -1726,7 +1699,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "card",
     "description": "㈜티웨이항공",
     "amount": 280000,
-    "category": "기타",
+    "category": "교통/차량",
     "memo": "신한카드 명세 · 본인739* · 결제확정"
   },
   {
@@ -1744,7 +1717,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "또봉이통닭평택고덕",
     "amount": 15500,
-    "category": "기타",
+    "category": "식비/장보기",
     "memo": "카카오뱅크 거래내역 · 체크카드결제"
   },
   {
@@ -1766,15 +1739,6 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "memo": "신한카드 명세 · 가족220* · 결제확정"
   },
   {
-    "id": "seed-kakao-bank-783",
-    "date": "2026-03-01",
-    "source": "bank",
-    "description": "대현 청약저축",
-    "amount": 100000,
-    "category": "기타",
-    "memo": "카카오뱅크 거래내역 · 타행자동이체"
-  },
-  {
     "id": "seed-kakao-bank-782",
     "date": "2026-03-01",
     "source": "bank",
@@ -1789,7 +1753,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "기타 - 은진이와 곗돈",
     "amount": 100000,
-    "category": "기타",
+    "category": "계/모임",
     "memo": "카카오뱅크 거래내역 · 타행자동이체"
   },
   {
@@ -1852,7 +1816,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "card",
     "description": "아쿠아플라넷 주식회사",
     "amount": 3500,
-    "category": "기타",
+    "category": "교육/육아",
     "memo": "신한카드 명세 · 본인739* · 결제확정"
   },
   {
@@ -1861,7 +1825,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "card",
     "description": "아쿠아플라넷 주식회사",
     "amount": 2000,
-    "category": "기타",
+    "category": "교육/육아",
     "memo": "신한카드 명세 · 본인739* · 결제확정"
   },
   {
@@ -1870,7 +1834,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "card",
     "description": "아쿠아플라넷 주식회사",
     "amount": 5000,
-    "category": "기타",
+    "category": "교육/육아",
     "memo": "신한카드 명세 · 본인739* · 결제확정"
   },
   {
@@ -1915,7 +1879,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "삼성카드",
     "amount": 10500,
-    "category": "기타",
+    "category": "카드결제(기타)",
     "memo": "카카오뱅크 거래내역 · 자동이체(기타)"
   },
   {
@@ -1960,7 +1924,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "card",
     "description": "CJ올리브영",
     "amount": 30000,
-    "category": "기타",
+    "category": "쇼핑/생활",
     "memo": "신한카드 명세 · 가족220* · 결제확정"
   },
   {
@@ -2005,7 +1969,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "연세우리아이소아청",
     "amount": 3500,
-    "category": "기타",
+    "category": "보험/의료",
     "memo": "카카오뱅크 거래내역 · 체크카드결제"
   },
   {
@@ -2023,7 +1987,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "card",
     "description": "어연점 기아오토큐",
     "amount": 142700,
-    "category": "기타",
+    "category": "교통/차량",
     "memo": "신한카드 명세 · 본인739* · 결제확정"
   },
   {
@@ -2059,7 +2023,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "card",
     "description": "SRT반환수수료",
     "amount": 1200,
-    "category": "교통",
+    "category": "교통/차량",
     "memo": "신한카드 명세 · 본인739* · 결제확정"
   },
   {
@@ -2068,7 +2032,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "card",
     "description": "SRT반환수수료",
     "amount": 1200,
-    "category": "교통",
+    "category": "교통/차량",
     "memo": "신한카드 명세 · 본인739* · 결제확정"
   },
   {
@@ -2077,7 +2041,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "card",
     "description": "SRT반환수수료",
     "amount": 400,
-    "category": "교통",
+    "category": "교통/차량",
     "memo": "신한카드 명세 · 본인739* · 결제확정"
   },
   {
@@ -2086,7 +2050,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "card",
     "description": "SRT반환수수료",
     "amount": 800,
-    "category": "교통",
+    "category": "교통/차량",
     "memo": "신한카드 명세 · 본인739* · 결제확정"
   },
   {
@@ -2104,7 +2068,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "card",
     "description": "SR",
     "amount": 100100,
-    "category": "교통",
+    "category": "교통/차량",
     "memo": "신한카드 명세 · 본인739* · 결제확정"
   },
   {
@@ -2122,7 +2086,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "card",
     "description": "주식회사 에스에스지닷컴",
     "amount": 41596,
-    "category": "기타",
+    "category": "식비/장보기",
     "memo": "신한카드 명세 · 가족220* · 결제확정"
   },
   {
@@ -2131,7 +2095,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "스마일카드",
     "amount": 399100,
-    "category": "기타",
+    "category": "카드결제(기타)",
     "memo": "카카오뱅크 거래내역 · 자동이체(기타)"
   },
   {
@@ -2176,7 +2140,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "연세우리아이소아청",
     "amount": 2900,
-    "category": "기타",
+    "category": "보험/의료",
     "memo": "카카오뱅크 거래내역 · 체크카드결제"
   },
   {
@@ -2194,7 +2158,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "card",
     "description": "베네파스타하우스 본점",
     "amount": 23000,
-    "category": "기타",
+    "category": "식비/장보기",
     "memo": "신한카드 명세 · 가족220* · 결제확정"
   },
   {
@@ -2203,7 +2167,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "card",
     "description": "베네파스타하우스 본점",
     "amount": 4000,
-    "category": "기타",
+    "category": "식비/장보기",
     "memo": "신한카드 명세 · 가족220* · 결제확정"
   },
   {
@@ -2221,7 +2185,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "설 세뱃돈",
     "amount": 80000,
-    "category": "기타",
+    "category": "경조사/명절",
     "memo": "카카오뱅크 거래내역 · 일반이체"
   },
   {
@@ -2230,7 +2194,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "card",
     "description": "(주)태보에너지지점",
     "amount": 47042,
-    "category": "기타",
+    "category": "교통/차량",
     "memo": "신한카드 명세 · 본인739* · 결제확정"
   },
   {
@@ -2275,7 +2239,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "card",
     "description": "우아한 보리밥",
     "amount": 26000,
-    "category": "기타",
+    "category": "식비/장보기",
     "memo": "신한카드 명세 · 본인739* · 결제확정"
   },
   {
@@ -2284,7 +2248,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "card",
     "description": "설빙 고덕신도시점",
     "amount": 16600,
-    "category": "기타",
+    "category": "식비/장보기",
     "memo": "신한카드 명세 · 본인739* · 결제확정"
   },
   {
@@ -2428,7 +2392,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "card",
     "description": "(주)일력택시",
     "amount": 1650,
-    "category": "교통",
+    "category": "교통/차량",
     "memo": "신한카드 명세 · 가족220* · 결제확정"
   },
   {
@@ -2446,7 +2410,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "card",
     "description": "(주)일력택시",
     "amount": 1650,
-    "category": "교통",
+    "category": "교통/차량",
     "memo": "신한카드 명세 · 가족220* · 결제확정"
   },
   {
@@ -2473,7 +2437,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "연세우리아이소아청",
     "amount": 3500,
-    "category": "기타",
+    "category": "보험/의료",
     "memo": "카카오뱅크 거래내역 · 체크카드결제"
   },
   {
@@ -2581,7 +2545,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "card",
     "description": "(주)일력택시",
     "amount": 1650,
-    "category": "교통",
+    "category": "교통/차량",
     "memo": "신한카드 명세 · 가족220* · 결제확정"
   },
   {
@@ -2671,7 +2635,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "연세우리아이소아청",
     "amount": 3500,
-    "category": "기타",
+    "category": "보험/의료",
     "memo": "카카오뱅크 거래내역 · 체크카드결제"
   },
   {
@@ -2680,7 +2644,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "card",
     "description": "SR",
     "amount": 100800,
-    "category": "교통",
+    "category": "교통/차량",
     "memo": "신한카드 명세 · 본인739* · 결제확정"
   },
   {
@@ -2734,7 +2698,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "card",
     "description": "명장텐베이커리배곧점",
     "amount": 24850,
-    "category": "기타",
+    "category": "식비/장보기",
     "memo": "신한카드 명세 · 본인739* · 결제확정"
   },
   {
@@ -2752,7 +2716,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "card",
     "description": "시화충전소",
     "amount": 44559,
-    "category": "기타",
+    "category": "교통/차량",
     "memo": "신한카드 명세 · 본인739* · 결제확정"
   },
   {
@@ -2788,7 +2752,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "연세우리아이소아청",
     "amount": 2900,
-    "category": "기타",
+    "category": "보험/의료",
     "memo": "카카오뱅크 거래내역 · 체크카드결제"
   },
   {
@@ -2806,7 +2770,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "card",
     "description": "(주)평택버스",
     "amount": 1650,
-    "category": "교통",
+    "category": "교통/차량",
     "memo": "신한카드 명세 · 가족220* · 결제확정"
   },
   {
@@ -2815,7 +2779,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "card",
     "description": "짬뽕관 평택고덕점",
     "amount": 12000,
-    "category": "기타",
+    "category": "식비/장보기",
     "memo": "신한카드 명세 · 가족220* · 결제확정"
   },
   {
@@ -2824,7 +2788,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "card",
     "description": "(주)평택버스",
     "amount": 1650,
-    "category": "교통",
+    "category": "교통/차량",
     "memo": "신한카드 명세 · 가족220* · 결제확정"
   },
   {
@@ -2896,7 +2860,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "연세우리아이소아청",
     "amount": 2900,
-    "category": "기타",
+    "category": "보험/의료",
     "memo": "카카오뱅크 거래내역 · 체크카드결제"
   },
   {
@@ -2905,7 +2869,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "card",
     "description": "(주)평택버스",
     "amount": 1650,
-    "category": "교통",
+    "category": "교통/차량",
     "memo": "신한카드 명세 · 가족220* · 결제확정"
   },
   {
@@ -2923,7 +2887,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "card",
     "description": "(주)평택버스",
     "amount": 1650,
-    "category": "교통",
+    "category": "교통/차량",
     "memo": "신한카드 명세 · 가족220* · 결제확정"
   },
   {
@@ -2950,7 +2914,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "card",
     "description": "(주)버킷플레이스",
     "amount": 12900,
-    "category": "기타",
+    "category": "쇼핑/생활",
     "memo": "신한카드 명세 · 가족220* · 결제확정"
   },
   {
@@ -2959,7 +2923,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "card",
     "description": "(주)버킷플레이스",
     "amount": 10500,
-    "category": "기타",
+    "category": "쇼핑/생활",
     "memo": "신한카드 명세 · 가족220* · 결제확정"
   },
   {
@@ -3044,15 +3008,6 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "memo": "신한카드 명세 · 본인739* · 결제확정"
   },
   {
-    "id": "seed-kakao-bank-725",
-    "date": "2026-02-01",
-    "source": "bank",
-    "description": "대현 청약저축",
-    "amount": 100000,
-    "category": "기타",
-    "memo": "카카오뱅크 거래내역 · 타행자동이체"
-  },
-  {
     "id": "seed-kakao-bank-724",
     "date": "2026-02-01",
     "source": "bank",
@@ -3085,7 +3040,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "기타 - 은진이와 곗돈",
     "amount": 100000,
-    "category": "기타",
+    "category": "계/모임",
     "memo": "카카오뱅크 거래내역 · 타행자동이체"
   },
   {
@@ -3130,7 +3085,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "card",
     "description": "케이엠파크",
     "amount": 2500,
-    "category": "기타",
+    "category": "교통/차량",
     "memo": "신한카드 명세 · 가족220* · 결제확정"
   },
   {
@@ -3152,21 +3107,12 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "memo": "카카오뱅크 거래내역 · 신한카드 결제대금(중복 제외)"
   },
   {
-    "id": "seed-kakao-bank-708",
-    "date": "2026-01-31",
-    "source": "bank",
-    "description": "삼성카드 · 유투브 구독 대현통신",
-    "amount": 73558,
-    "category": "주거/통신",
-    "memo": "카카오뱅크 거래내역 · 자동이체(기타)"
-  },
-  {
     "id": "seed-kakao-bank-707",
     "date": "2026-01-31",
     "source": "bank",
     "description": "스마일카드",
     "amount": 605250,
-    "category": "기타",
+    "category": "카드결제(기타)",
     "memo": "카카오뱅크 거래내역 · 자동이체(기타)"
   },
   {
@@ -3220,7 +3166,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "card",
     "description": "(주)일력택시",
     "amount": 1650,
-    "category": "교통",
+    "category": "교통/차량",
     "memo": "신한카드 명세 · 가족220* · 결제확정"
   },
   {
@@ -3238,7 +3184,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "card",
     "description": "(주)일력택시",
     "amount": 1650,
-    "category": "교통",
+    "category": "교통/차량",
     "memo": "신한카드 명세 · 가족220* · 결제확정"
   },
   {
@@ -3274,7 +3220,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "card",
     "description": "(주)평택버스",
     "amount": 1650,
-    "category": "교통",
+    "category": "교통/차량",
     "memo": "신한카드 명세 · 가족220* · 결제확정"
   },
   {
@@ -3283,7 +3229,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "card",
     "description": "(주)일력택시",
     "amount": 1650,
-    "category": "교통",
+    "category": "교통/차량",
     "memo": "신한카드 명세 · 가족220* · 결제확정"
   },
   {
@@ -3391,7 +3337,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "연세우리아이소아청",
     "amount": 5900,
-    "category": "기타",
+    "category": "보험/의료",
     "memo": "카카오뱅크 거래내역 · 체크카드결제"
   },
   {
@@ -3400,7 +3346,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "삼성카드",
     "amount": 15480,
-    "category": "기타",
+    "category": "카드결제(기타)",
     "memo": "카카오뱅크 거래내역 · 자동이체(기타)"
   },
   {
@@ -3409,7 +3355,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "스마일카드",
     "amount": 5000,
-    "category": "기타",
+    "category": "카드결제(기타)",
     "memo": "카카오뱅크 거래내역 · 자동이체(기타)"
   },
   {
@@ -3449,15 +3395,6 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "memo": "카카오뱅크 거래내역 · 자동이체(기타)"
   },
   {
-    "id": "seed-kakao-bank-680",
-    "date": "2026-01-01",
-    "source": "bank",
-    "description": "대현 청약저축",
-    "amount": 100000,
-    "category": "기타",
-    "memo": "카카오뱅크 거래내역 · 타행자동이체"
-  },
-  {
     "id": "seed-kakao-bank-679",
     "date": "2026-01-01",
     "source": "bank",
@@ -3490,7 +3427,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "기타 - 은진이와 곗돈",
     "amount": 100000,
-    "category": "기타",
+    "category": "계/모임",
     "memo": "카카오뱅크 거래내역 · 타행자동이체"
   },
   {
@@ -3661,17 +3598,8 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "주택대출원금",
     "amount": 186490,
-    "category": "기타",
+    "category": "대출",
     "memo": "카카오뱅크 거래내역 · 일반이체"
-  },
-  {
-    "id": "seed-kakao-bank-636",
-    "date": "2025-12-01",
-    "source": "bank",
-    "description": "대현 청약저축",
-    "amount": 100000,
-    "category": "기타",
-    "memo": "카카오뱅크 거래내역 · 타행자동이체"
   },
   {
     "id": "seed-kakao-bank-635",
@@ -3688,7 +3616,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "기타 - 은진이와 곗돈",
     "amount": 100000,
-    "category": "기타",
+    "category": "계/모임",
     "memo": "카카오뱅크 거래내역 · 타행자동이체"
   },
   {
@@ -3742,7 +3670,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "버스비",
     "amount": 3100,
-    "category": "교통",
+    "category": "교통/차량",
     "memo": "카카오뱅크 거래내역 · 일반이체"
   },
   {
@@ -3778,7 +3706,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "새봄 매트리스",
     "amount": 668510,
-    "category": "기타",
+    "category": "교육/육아",
     "memo": "카카오뱅크 거래내역 · 일반이체"
   },
   {
@@ -3805,7 +3733,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "손지혜프로 조의금",
     "amount": 50000,
-    "category": "기타",
+    "category": "경조사/명절",
     "memo": "카카오뱅크 거래내역 · 일반이체"
   },
   {
@@ -3827,21 +3755,12 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "memo": "카카오뱅크 거래내역 · 일반이체"
   },
   {
-    "id": "seed-kakao-bank-602",
-    "date": "2025-11-21",
-    "source": "bank",
-    "description": "삼성카드 · 대현통신",
-    "amount": 7500,
-    "category": "주거/통신",
-    "memo": "카카오뱅크 거래내역 · 자동이체(기타)"
-  },
-  {
     "id": "seed-kakao-bank-601",
     "date": "2025-11-21",
     "source": "bank",
     "description": "삼성카드 · 트레이더스",
     "amount": 117194,
-    "category": "기타",
+    "category": "식비/장보기",
     "memo": "카카오뱅크 거래내역 · 자동이체(기타)"
   },
   {
@@ -3922,7 +3841,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "연세우리아이소아청",
     "amount": 27000,
-    "category": "기타",
+    "category": "보험/의료",
     "memo": "카카오뱅크 거래내역 · 체크카드결제"
   },
   {
@@ -3940,7 +3859,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "연세우리아이소아청",
     "amount": 2900,
-    "category": "기타",
+    "category": "보험/의료",
     "memo": "카카오뱅크 거래내역 · 체크카드결제"
   },
   {
@@ -3949,7 +3868,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "인천엄마 생신",
     "amount": 300000,
-    "category": "기타",
+    "category": "경조사/명절",
     "memo": "카카오뱅크 거래내역 · 일반이체"
   },
   {
@@ -3967,7 +3886,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "연세우리아이소아청",
     "amount": 42000,
-    "category": "기타",
+    "category": "보험/의료",
     "memo": "카카오뱅크 거래내역 · 체크카드결제"
   },
   {
@@ -3976,7 +3895,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "연세우리아이소아청",
     "amount": 56700,
-    "category": "기타",
+    "category": "보험/의료",
     "memo": "카카오뱅크 거래내역 · 체크카드결제"
   },
   {
@@ -4003,7 +3922,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "후불교통대금",
     "amount": 6300,
-    "category": "교통",
+    "category": "교통/차량",
     "memo": "카카오뱅크 거래내역 · 자동이체(기타)"
   },
   {
@@ -4124,15 +4043,6 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "memo": "카카오뱅크 거래내역 · 체크카드결제"
   },
   {
-    "id": "seed-kakao-bank-558",
-    "date": "2025-11-01",
-    "source": "bank",
-    "description": "대현 청약저축",
-    "amount": 100000,
-    "category": "기타",
-    "memo": "카카오뱅크 거래내역 · 타행자동이체"
-  },
-  {
     "id": "seed-kakao-bank-557",
     "date": "2025-11-01",
     "source": "bank",
@@ -4147,7 +4057,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "기타 - 은진이와 곗돈",
     "amount": 100000,
-    "category": "기타",
+    "category": "계/모임",
     "memo": "카카오뱅크 거래내역 · 타행자동이체"
   },
   {
@@ -4219,7 +4129,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "연세우리아이소아청",
     "amount": 3400,
-    "category": "기타",
+    "category": "보험/의료",
     "memo": "카카오뱅크 거래내역 · 체크카드결제"
   },
   {
@@ -4300,7 +4210,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "연세우리아이소아청",
     "amount": 2900,
-    "category": "기타",
+    "category": "보험/의료",
     "memo": "카카오뱅크 거래내역 · 체크카드결제"
   },
   {
@@ -4309,7 +4219,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "삼성카드",
     "amount": 4500,
-    "category": "기타",
+    "category": "카드결제(기타)",
     "memo": "카카오뱅크 거래내역 · 자동이체(기타)"
   },
   {
@@ -4426,7 +4336,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "트레이더스 안성점",
     "amount": 78480,
-    "category": "기타",
+    "category": "식비/장보기",
     "memo": "카카오뱅크 거래내역 · 체크카드결제"
   },
   {
@@ -4453,7 +4363,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "평화LPG충전소",
     "amount": 33899,
-    "category": "기타",
+    "category": "교통/차량",
     "memo": "카카오뱅크 거래내역 · 체크카드결제"
   },
   {
@@ -4462,7 +4372,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "평화LPG충전소",
     "amount": 80000,
-    "category": "기타",
+    "category": "교통/차량",
     "memo": "카카오뱅크 거래내역 · 체크카드결제"
   },
   {
@@ -4507,7 +4417,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "연세우리아이소아청",
     "amount": 30000,
-    "category": "기타",
+    "category": "보험/의료",
     "memo": "카카오뱅크 거래내역 · 체크카드결제"
   },
   {
@@ -4516,7 +4426,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "코스트코",
     "amount": 128670,
-    "category": "기타",
+    "category": "식비/장보기",
     "memo": "카카오뱅크 거래내역 · 일반이체"
   },
   {
@@ -4633,7 +4543,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "연세우리아이소아청",
     "amount": 3400,
-    "category": "기타",
+    "category": "보험/의료",
     "memo": "카카오뱅크 거래내역 · 체크카드결제"
   },
   {
@@ -4651,7 +4561,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "나이스파크",
     "amount": 50400,
-    "category": "기타",
+    "category": "교통/차량",
     "memo": "카카오뱅크 거래내역 · 체크카드결제"
   },
   {
@@ -4660,7 +4570,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "코레일유통주식회사(",
     "amount": 27800,
-    "category": "교통",
+    "category": "교통/차량",
     "memo": "카카오뱅크 거래내역 · 체크카드결제"
   },
   {
@@ -4682,15 +4592,6 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "memo": "카카오뱅크 거래내역 · 체크카드결제"
   },
   {
-    "id": "seed-kakao-bank-478",
-    "date": "2025-10-01",
-    "source": "bank",
-    "description": "대현 청약저축",
-    "amount": 100000,
-    "category": "기타",
-    "memo": "카카오뱅크 거래내역 · 타행자동이체"
-  },
-  {
     "id": "seed-kakao-bank-477",
     "date": "2025-10-01",
     "source": "bank",
@@ -4705,7 +4606,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "기타 - 은진이와 곗돈",
     "amount": 100000,
-    "category": "기타",
+    "category": "계/모임",
     "memo": "카카오뱅크 거래내역 · 타행자동이체"
   },
   {
@@ -4786,7 +4687,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "아이봄 소아청소년과",
     "amount": 4800,
-    "category": "기타",
+    "category": "보험/의료",
     "memo": "카카오뱅크 거래내역 · 체크카드결제"
   },
   {
@@ -4804,7 +4705,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "삼성카드",
     "amount": 7500,
-    "category": "기타",
+    "category": "카드결제(기타)",
     "memo": "카카오뱅크 거래내역 · 자동이체(기타)"
   },
   {
@@ -4876,7 +4777,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "스마일카드 · 붕붕이",
     "amount": 231802,
-    "category": "기타",
+    "category": "카드결제(기타)",
     "memo": "카카오뱅크 거래내역 · 자동이체(기타)"
   },
   {
@@ -4885,7 +4786,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "스마일카드 · 코스트코",
     "amount": 379250,
-    "category": "기타",
+    "category": "식비/장보기",
     "memo": "카카오뱅크 거래내역 · 자동이체(기타)"
   },
   {
@@ -4930,7 +4831,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "노은경프로 축의금",
     "amount": 50000,
-    "category": "기타",
+    "category": "경조사/명절",
     "memo": "카카오뱅크 거래내역 · 일반이체"
   },
   {
@@ -5011,7 +4912,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "새봄 활동비",
     "amount": 120000,
-    "category": "기타",
+    "category": "교육/육아",
     "memo": "카카오뱅크 거래내역 · 일반이체"
   },
   {
@@ -5056,7 +4957,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "장경희 · 조의금",
     "amount": 50000,
-    "category": "기타",
+    "category": "경조사/명절",
     "memo": "카카오뱅크 거래내역 · 일반이체"
   },
   {
@@ -5132,15 +5033,6 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "memo": "카카오뱅크 거래내역 · 신한카드 결제대금(중복 제외)"
   },
   {
-    "id": "seed-kakao-bank-405",
-    "date": "2025-09-01",
-    "source": "bank",
-    "description": "대현 청약저축",
-    "amount": 100000,
-    "category": "기타",
-    "memo": "카카오뱅크 거래내역 · 타행자동이체"
-  },
-  {
     "id": "seed-kakao-bank-404",
     "date": "2025-09-01",
     "source": "bank",
@@ -5182,7 +5074,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "기타 - 은진이와 곗돈",
     "amount": 100000,
-    "category": "기타",
+    "category": "계/모임",
     "memo": "카카오뱅크 거래내역 · 타행자동이체"
   },
   {
@@ -5416,16 +5308,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "삼성카드",
     "amount": 190000,
-    "category": "기타",
-    "memo": "카카오뱅크 거래내역 · 자동이체(기타)"
-  },
-  {
-    "id": "seed-kakao-bank-359",
-    "date": "2025-08-18",
-    "source": "bank",
-    "description": "삼성카드 · 대현통신",
-    "amount": 10500,
-    "category": "주거/통신",
+    "category": "카드결제(기타)",
     "memo": "카카오뱅크 거래내역 · 자동이체(기타)"
   },
   {
@@ -5479,7 +5362,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "코레일유통주식회사(",
     "amount": 7800,
-    "category": "교통",
+    "category": "교통/차량",
     "memo": "카카오뱅크 거래내역 · 체크카드결제"
   },
   {
@@ -5506,7 +5389,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "카카오페이 · 김재춘프로 조의금",
     "amount": 50000,
-    "category": "생활서비스",
+    "category": "경조사/명절",
     "memo": "카카오뱅크 거래내역 · 자동이체(기타)"
   },
   {
@@ -5542,7 +5425,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "삼성카드 · 책 판돈 택배비",
     "amount": 2700,
-    "category": "기타",
+    "category": "카드결제(기타)",
     "memo": "카카오뱅크 거래내역 · 자동이체(기타)"
   },
   {
@@ -5645,15 +5528,6 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "memo": "카카오뱅크 거래내역 · 체크카드결제"
   },
   {
-    "id": "seed-kakao-bank-329",
-    "date": "2025-08-01",
-    "source": "bank",
-    "description": "대현 청약저축",
-    "amount": 100000,
-    "category": "기타",
-    "memo": "카카오뱅크 거래내역 · 타행자동이체"
-  },
-  {
     "id": "seed-kakao-bank-328",
     "date": "2025-08-01",
     "source": "bank",
@@ -5668,7 +5542,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "기타 - 은진이와 곗돈",
     "amount": 100000,
-    "category": "기타",
+    "category": "계/모임",
     "memo": "카카오뱅크 거래내역 · 타행자동이체"
   },
   {
@@ -5812,7 +5686,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "삼성카드",
     "amount": 7500,
-    "category": "기타",
+    "category": "카드결제(기타)",
     "memo": "카카오뱅크 거래내역 · 자동이체(기타)"
   },
   {
@@ -5821,7 +5695,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "삼성카드 · 7/4 교구장",
     "amount": 48730,
-    "category": "기타",
+    "category": "교육/육아",
     "memo": "카카오뱅크 거래내역 · 자동이체(기타)"
   },
   {
@@ -5875,7 +5749,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "연세우리아이소아청",
     "amount": 54700,
-    "category": "기타",
+    "category": "보험/의료",
     "memo": "카카오뱅크 거래내역 · 체크카드결제"
   },
   {
@@ -5893,7 +5767,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "연세우리아이소아청",
     "amount": 12000,
-    "category": "기타",
+    "category": "보험/의료",
     "memo": "카카오뱅크 거래내역 · 체크카드결제"
   },
   {
@@ -5911,7 +5785,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "연세우리아이소아청",
     "amount": 5800,
-    "category": "기타",
+    "category": "보험/의료",
     "memo": "카카오뱅크 거래내역 · 체크카드결제"
   },
   {
@@ -6019,7 +5893,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "연세우리아이소아청",
     "amount": 2900,
-    "category": "기타",
+    "category": "보험/의료",
     "memo": "카카오뱅크 거래내역 · 체크카드결제"
   },
   {
@@ -6055,7 +5929,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "토실디저트",
     "amount": 6500,
-    "category": "기타",
+    "category": "식비/장보기",
     "memo": "카카오뱅크 거래내역 · 체크카드결제"
   },
   {
@@ -6136,7 +6010,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "트레이더스 안성점",
     "amount": 85820,
-    "category": "기타",
+    "category": "식비/장보기",
     "memo": "카카오뱅크 거래내역 · 체크카드결제"
   },
   {
@@ -6190,7 +6064,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "아이파킹 주식회사 · 개운 주차장",
     "amount": 1000,
-    "category": "교통",
+    "category": "교통/차량",
     "memo": "카카오뱅크 거래내역 · 체크카드결제"
   },
   {
@@ -6271,7 +6145,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "연세우리아이소아청",
     "amount": 2900,
-    "category": "기타",
+    "category": "보험/의료",
     "memo": "카카오뱅크 거래내역 · 체크카드결제"
   },
   {
@@ -6361,7 +6235,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "연세우리아이소아청",
     "amount": 3400,
-    "category": "기타",
+    "category": "보험/의료",
     "memo": "카카오뱅크 거래내역 · 체크카드결제"
   },
   {
@@ -6428,15 +6302,6 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "memo": "카카오뱅크 거래내역 · 체크카드결제"
   },
   {
-    "id": "seed-kakao-bank-225",
-    "date": "2025-07-01",
-    "source": "bank",
-    "description": "대현 청약저축",
-    "amount": 100000,
-    "category": "기타",
-    "memo": "카카오뱅크 거래내역 · 타행자동이체"
-  },
-  {
     "id": "seed-kakao-bank-224",
     "date": "2025-07-01",
     "source": "bank",
@@ -6451,7 +6316,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "기타 - 은진이와 곗돈",
     "amount": 100000,
-    "category": "기타",
+    "category": "계/모임",
     "memo": "카카오뱅크 거래내역 · 타행자동이체"
   },
   {
@@ -6608,21 +6473,12 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "memo": "카카오뱅크 거래내역 · 신한카드 결제대금(중복 제외)"
   },
   {
-    "id": "seed-kakao-bank-195",
-    "date": "2025-06-26",
-    "source": "settlement",
-    "description": "신한카드 · 관리비",
-    "amount": 230660,
-    "category": "신한카드 결제대금",
-    "memo": "카카오뱅크 거래내역 · 신한카드 결제대금(중복 제외)"
-  },
-  {
     "id": "seed-kakao-bank-194",
     "date": "2025-06-26",
     "source": "bank",
     "description": "스마일카드 · 코스트코",
     "amount": 338400,
-    "category": "기타",
+    "category": "식비/장보기",
     "memo": "카카오뱅크 거래내역 · 자동이체(기타)"
   },
   {
@@ -6631,7 +6487,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "삼성카드 · sr수수료",
     "amount": 4400,
-    "category": "기타",
+    "category": "카드결제(기타)",
     "memo": "카카오뱅크 거래내역 · 자동이체(기타)"
   },
   {
@@ -6649,7 +6505,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "삼성카드",
     "amount": 335530,
-    "category": "기타",
+    "category": "카드결제(기타)",
     "memo": "카카오뱅크 거래내역 · 자동이체(기타)"
   },
   {
@@ -6696,15 +6552,6 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "amount": 39250,
     "category": "쇼핑/생활",
     "memo": "카카오뱅크 거래내역 · 체크카드결제"
-  },
-  {
-    "id": "seed-kakao-bank-182",
-    "date": "2025-06-23",
-    "source": "bank",
-    "description": "삼성카드 · 대현 통신",
-    "amount": 10500,
-    "category": "주거/통신",
-    "memo": "카카오뱅크 거래내역 · 자동이체(기타)"
   },
   {
     "id": "seed-kakao-bank-181",
@@ -6784,7 +6631,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "삼성카드",
     "amount": 137767,
-    "category": "기타",
+    "category": "카드결제(기타)",
     "memo": "카카오뱅크 거래내역 · 자동이체(기타)"
   },
   {
@@ -6887,24 +6734,6 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "memo": "카카오뱅크 거래내역 · 신한카드 결제대금(중복 제외)"
   },
   {
-    "id": "seed-kakao-bank-155",
-    "date": "2025-06-12",
-    "source": "settlement",
-    "description": "신한카드 · 보험",
-    "amount": 208560,
-    "category": "신한카드 결제대금",
-    "memo": "카카오뱅크 거래내역 · 신한카드 결제대금(중복 제외)"
-  },
-  {
-    "id": "seed-kakao-bank-154",
-    "date": "2025-06-12",
-    "source": "settlement",
-    "description": "신한카드 · 통신",
-    "amount": 64230,
-    "category": "신한카드 결제대금",
-    "memo": "카카오뱅크 거래내역 · 신한카드 결제대금(중복 제외)"
-  },
-  {
     "id": "seed-kakao-bank-153",
     "date": "2025-06-12",
     "source": "settlement",
@@ -6964,7 +6793,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "혜진친구들 답례",
     "amount": 90000,
-    "category": "기타",
+    "category": "경조사/명절",
     "memo": "카카오뱅크 거래내역 · 일반이체"
   },
   {
@@ -6973,7 +6802,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "은진 답례 아버님 생신",
     "amount": 350000,
-    "category": "기타",
+    "category": "경조사/명절",
     "memo": "카카오뱅크 거래내역 · 일반이체"
   },
   {
@@ -6991,7 +6820,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "새봄 돌 스냅",
     "amount": 320000,
-    "category": "기타",
+    "category": "교육/육아",
     "memo": "카카오뱅크 거래내역 · 일반이체"
   },
   {
@@ -7000,7 +6829,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "새봄돌떡 회사",
     "amount": 100000,
-    "category": "기타",
+    "category": "교육/육아",
     "memo": "카카오뱅크 거래내역 · 일반이체"
   },
   {
@@ -7018,7 +6847,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "코레일유통주식회사( · 물티슈",
     "amount": 3300,
-    "category": "교통",
+    "category": "교통/차량",
     "memo": "카카오뱅크 거래내역 · 체크카드결제"
   },
   {
@@ -7090,7 +6919,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "연세우리아이소아청",
     "amount": 700,
-    "category": "기타",
+    "category": "보험/의료",
     "memo": "카카오뱅크 거래내역 · 체크카드결제"
   },
   {
@@ -7135,7 +6964,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "연세우리아이소아청",
     "amount": 700,
-    "category": "기타",
+    "category": "보험/의료",
     "memo": "카카오뱅크 거래내역 · 체크카드결제"
   },
   {
@@ -7157,15 +6986,6 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "memo": "카카오뱅크 거래내역 · 체크카드결제"
   },
   {
-    "id": "seed-kakao-bank-123",
-    "date": "2025-06-01",
-    "source": "bank",
-    "description": "대현 청약저축",
-    "amount": 100000,
-    "category": "기타",
-    "memo": "카카오뱅크 거래내역 · 타행자동이체"
-  },
-  {
     "id": "seed-kakao-bank-122",
     "date": "2025-06-01",
     "source": "bank",
@@ -7180,7 +7000,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "기타 - 은진이와 곗돈",
     "amount": 100000,
-    "category": "기타",
+    "category": "계/모임",
     "memo": "카카오뱅크 거래내역 · 타행자동이체"
   },
   {
@@ -7283,21 +7103,12 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "memo": "카카오뱅크 거래내역 · 체크카드결제"
   },
   {
-    "id": "seed-kakao-bank-108",
-    "date": "2025-05-29",
-    "source": "bank",
-    "description": "삼성카드 · 대현통신",
-    "amount": 10500,
-    "category": "주거/통신",
-    "memo": "카카오뱅크 거래내역 · 자동이체(기타)"
-  },
-  {
     "id": "seed-kakao-bank-107",
     "date": "2025-05-29",
     "source": "bank",
     "description": "삼성카드 · ssg장보기",
     "amount": 157435,
-    "category": "기타",
+    "category": "카드결제(기타)",
     "memo": "카카오뱅크 거래내역 · 자동이체(기타)"
   },
   {
@@ -7315,15 +7126,6 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "settlement",
     "description": "신한카드 · 카페",
     "amount": 3300,
-    "category": "신한카드 결제대금",
-    "memo": "카카오뱅크 거래내역 · 신한카드 결제대금(중복 제외)"
-  },
-  {
-    "id": "seed-kakao-bank-103",
-    "date": "2025-05-29",
-    "source": "settlement",
-    "description": "신한카드 · 관리비",
-    "amount": 271150,
     "category": "신한카드 결제대금",
     "memo": "카카오뱅크 거래내역 · 신한카드 결제대금(중복 제외)"
   },
@@ -7369,7 +7171,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "(NL)WWW.ALIEXPRESS.COM     LUXEMBOURG · 새봄신발",
     "amount": 24457,
-    "category": "기타",
+    "category": "교육/육아",
     "memo": "카카오뱅크 거래내역 · 체크카드결제"
   },
   {
@@ -7396,7 +7198,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "함박미소치과",
     "amount": 22300,
-    "category": "기타",
+    "category": "보험/의료",
     "memo": "카카오뱅크 거래내역 · 체크카드결제"
   },
   {
@@ -7513,7 +7315,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "하이패스 충전 인천",
     "amount": 50000,
-    "category": "기타",
+    "category": "교통/차량",
     "memo": "카카오뱅크 거래내역 · 일반이체"
   },
   {
@@ -7616,29 +7418,11 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "memo": "카카오뱅크 거래내역 · 신한카드 결제대금(중복 제외)"
   },
   {
-    "id": "seed-kakao-bank-57",
-    "date": "2025-05-16",
-    "source": "settlement",
-    "description": "신한카드 · 보험",
-    "amount": 211160,
-    "category": "신한카드 결제대금",
-    "memo": "카카오뱅크 거래내역 · 신한카드 결제대금(중복 제외)"
-  },
-  {
     "id": "seed-kakao-bank-56",
     "date": "2025-05-16",
     "source": "settlement",
     "description": "신한카드 · 정수기",
     "amount": 43900,
-    "category": "신한카드 결제대금",
-    "memo": "카카오뱅크 거래내역 · 신한카드 결제대금(중복 제외)"
-  },
-  {
-    "id": "seed-kakao-bank-55",
-    "date": "2025-05-16",
-    "source": "settlement",
-    "description": "신한카드 · 통신",
-    "amount": 64800,
     "category": "신한카드 결제대금",
     "memo": "카카오뱅크 거래내역 · 신한카드 결제대금(중복 제외)"
   },
@@ -7765,7 +7549,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "연세우리아이소아청",
     "amount": 700,
-    "category": "기타",
+    "category": "보험/의료",
     "memo": "카카오뱅크 거래내역 · 체크카드결제"
   },
   {
@@ -7776,15 +7560,6 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "amount": 25680,
     "category": "기타",
     "memo": "카카오뱅크 거래내역 · 공과금납부"
-  },
-  {
-    "id": "seed-kakao-bank-37",
-    "date": "2025-05-01",
-    "source": "bank",
-    "description": "대현 청약저축",
-    "amount": 100000,
-    "category": "기타",
-    "memo": "카카오뱅크 거래내역 · 타행자동이체"
   },
   {
     "id": "seed-kakao-bank-36",
@@ -7801,7 +7576,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "기타 - 은진이와 곗돈",
     "amount": 100000,
-    "category": "기타",
+    "category": "계/모임",
     "memo": "카카오뱅크 거래내역 · 타행자동이체"
   },
   {
@@ -7891,7 +7666,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "삼성카드",
     "amount": 72440,
-    "category": "기타",
+    "category": "카드결제(기타)",
     "memo": "카카오뱅크 거래내역 · 자동이체(기타)"
   },
   {
@@ -7976,15 +7751,6 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "memo": "카카오뱅크 거래내역 · 신한카드 결제대금(중복 제외)"
   },
   {
-    "id": "seed-kakao-bank-7",
-    "date": "2025-04-26",
-    "source": "settlement",
-    "description": "신한카드 · 관리비",
-    "amount": 293960,
-    "category": "신한카드 결제대금",
-    "memo": "카카오뱅크 거래내역 · 신한카드 결제대금(중복 제외)"
-  },
-  {
     "id": "seed-kakao-bank-11",
     "date": "2025-04-26",
     "source": "bank",
@@ -8017,7 +7783,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "삼성카드",
     "amount": 10500,
-    "category": "기타",
+    "category": "카드결제(기타)",
     "memo": "카카오뱅크 거래내역 · 자동이체(기타)"
   }
 ]
