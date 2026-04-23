@@ -435,7 +435,7 @@ function App() {
   function handleExpenseImport(event: ChangeEvent<HTMLInputElement>) {
     const files = Array.from(event.target.files ?? [])
     if (files.length === 0) return
-    Promise.all(files.map((file) => file.arrayBuffer().then((buffer) => parseWorkbookRows(XLSX.read(buffer, { type: 'array', cellDates: true }), file.name))))
+    Promise.all(files.map((file) => file.arrayBuffer().then((buffer) => parseWorkbookRows(XLSX.read(buffer, { type: 'array', cellDates: true, password: '850702' }), file.name))))
       .then((groups) => {
         const imported = groups.flat().map(normalizeExpense)
         if (imported.length === 0) {
@@ -452,7 +452,7 @@ function App() {
         setViewMode('expenses')
       })
       .catch((error: Error) => {
-        const passwordHint = error.message.includes('password') ? '\n암호가 걸린 엑셀은 암호를 해제해서 다시 저장한 뒤 업로드해주세요.' : ''
+        const passwordHint = error.message.includes('password') ? '\n카카오뱅크 엑셀 암호는 850702로 고정 반영해두었습니다. 브라우저에서 계속 실패하면 카카오뱅크 파일을 한 번 열어서 암호 없는 .xlsx로 다시 저장한 뒤 업로드해주세요.' : ''
         window.alert(`엑셀 파일을 읽지 못했습니다.${passwordHint}`)
       })
       .finally(() => { event.target.value = '' })
