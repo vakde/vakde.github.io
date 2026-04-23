@@ -45,7 +45,8 @@ type MonthlyExpense = {
 }
 
 const STORAGE_KEY = 'myfml-portfolio-v1'
-const EXPENSE_STORAGE_KEY = 'myfml-living-expenses-v3'
+const EXPENSE_STORAGE_KEY = 'myfml-living-expenses-v4'
+const MONTHLY_LIVING_BUDGET = 4_250_000
 
 const ASSET_CATEGORIES: AssetCategory[] = ['cash', 'deposit', 'stock', 'crypto', 'real-estate', 'retirement']
 const LIABILITY_CATEGORIES: AssetCategory[] = ['loan', 'card']
@@ -126,8 +127,9 @@ function pickValue(row: Record<string, unknown>, candidates: string[]) {
 
 function categorizeExpense(description: string) {
   const text = description.replace(/\s+/g, ' ')
+  if (/주택담보대출|주택대출|아파트\s*대출|대출금/.test(text)) return '주택담보대출'
   if (/용돈|모친|부모님|혜진\s*용돈|혜진용돈|대현\s*용돈|대현용돈|박대현|이혜진/.test(text)) return '가족/용돈'
-  if (/조의금|축의금|경조|생신|어버이날|세뱃돈|명절|답례/.test(text)) return '경조사/명절'
+  if (/조의금|축의금|경조|생신|어버이날|세뱃돈|명절|답례/.test(text)) return '연간/비정기'
   if (/은진|곗돈|계모임|\s계\s|\s계$/.test(text)) return '계/모임'
   if (/택시|버스|평택버스|SR|SRT|코레일|철도|지하철|주유|충전소|에너지|하이플러스|하이패스|기아오토큐|오토큐|나이스파크|케이엠파크|파킹|주차|교통|티웨이|항공/.test(text)) return '교통/차량'
   if (/마트|슈퍼|FRESH|프레시|이마트|컬리|쿠팡|마켓|식품|정육|축산|코스트코|트레이더스|SSG|에스에스지|배달|우아한형제|롯데리아|카페|커피|스타벅스|맥도날드|파리바게뜨|뚜레쥬르|베이커리|디저트|설빙|갈비|통닭|짬뽕|보리밥|파스타|식당|푸드|치킨|피자|족발|분식|한식|일식|중식|편의점|CU|씨유|GS25|세븐|만두|홈플러스|김프로축산|제이앤비/.test(text)) return '식비/장보기'
@@ -144,6 +146,10 @@ function categorizeExpense(description: string) {
 
 function isLikelyCardSettlement(description: string) {
   return /신한카드|신한\s*체크|신한\s*신용|카드대금|결제대금|카드결제|카드출금|카드 자동|카드자동|카드이용대금/.test(description)
+}
+
+function isMortgageTransfer(description: string, amount = 0, date = '') {
+  return /박대현/.test(description) && amount >= 500000 && amount <= 900000 && date.slice(8, 10) === '01' && !/용돈|모친|부모님/.test(description)
 }
 
 function isExcludedBankWithdrawal(description: string, transactionKind = '', amount = 0, date = '') {
@@ -164,6 +170,10 @@ function isExcludedBankWithdrawal(description: string, transactionKind = '', amo
 
 function normalizeExpense(transaction: LivingExpenseTransaction): LivingExpenseTransaction {
   if (transaction.source === 'settlement') return { ...transaction, category: '신한카드 결제대금' }
+  if (isMortgageTransfer(transaction.description, transaction.amount, transaction.date)) {
+    const description = transaction.description.includes('주택담보대출') ? transaction.description : `${transaction.description} · 주택담보대출`
+    return { ...transaction, description, category: '주택담보대출' }
+  }
   return { ...transaction, category: categorizeExpense(transaction.description) }
 }
 
@@ -219,6 +229,11 @@ function parseWorkbookRows(workbook: XLSX.WorkBook, fileName: string) {
 
       if (!bankDate || !description || withdrawalAmount <= 0 || depositAmount > 0) return
       if (isExcludedBankWithdrawal(description, transactionKind, withdrawalAmount, normalizedBankDate)) return
+
+      if (isMortgageTransfer(description, withdrawalAmount, normalizedBankDate)) {
+        parsed.push({ id: `upload-${importedAt}-${sheetName}-${rowIndex}`, date: normalizedBankDate, source: 'bank', description: `${description} · 주택담보대출`, amount: withdrawalAmount, category: '주택담보대출', memo: `${fileName} · 매월 1일 고정 대출 이체` })
+        return
+      }
 
       if (isLikelyCardSettlement(description)) {
         parsed.push({ id: `upload-${importedAt}-${sheetName}-${rowIndex}`, date: normalizedBankDate, source: 'settlement', description, amount: withdrawalAmount, category: '신한카드 결제대금', memo: `${fileName} · 통장 신한카드 결제대금(중복 제외)` })
@@ -392,11 +407,17 @@ function App() {
   const previousMonthlyExpense = monthlyExpenses[monthlyExpenses.findIndex((month) => month.month === activeMonth) + 1]
   const monthDelta = activeMonthlyExpense && previousMonthlyExpense ? activeMonthlyExpense.total - previousMonthlyExpense.total : 0
   const monthDeltaRate = activeMonthlyExpense && previousMonthlyExpense && previousMonthlyExpense.total > 0 ? Math.round((monthDelta / previousMonthlyExpense.total) * 100) : 0
+  const activeBudgetGap = (activeMonthlyExpense?.total ?? 0) - MONTHLY_LIVING_BUDGET
+  const activeBudgetUsedRate = Math.round(((activeMonthlyExpense?.total ?? 0) / MONTHLY_LIVING_BUDGET) * 100)
+  const activeFixedTotal = (activeMonthlyExpense?.transactions ?? [])
+    .filter((transaction) => ['주택담보대출', '대출', '주거/통신', '보험/의료', '구독/문화', '계/모임'].includes(transaction.category) || transaction.source === 'payroll')
+    .reduce((sum, transaction) => sum + transaction.amount, 0)
+  const activeFlexibleTotal = Math.max((activeMonthlyExpense?.total ?? 0) - activeFixedTotal, 0)
 
-  const filteredTransactions = useMemo(() => {
-    const transactions = activeMonthlyExpense?.transactions ?? []
-    return selectedCategory === '전체' ? transactions : transactions.filter((transaction) => transaction.category === selectedCategory)
-  }, [activeMonthlyExpense, selectedCategory])
+  const activeTransactions = activeMonthlyExpense?.transactions ?? []
+  const filteredTransactions = selectedCategory === '전체'
+    ? activeTransactions
+    : activeTransactions.filter((transaction) => transaction.category === selectedCategory)
 
   const expenseSummary = useMemo(() => {
     const total = monthlyExpenses.reduce((sum, month) => sum + month.total, 0)
@@ -540,6 +561,10 @@ function App() {
               <h2>{activeMonth} 생활비는 {formatCurrency(activeMonthlyExpense?.total ?? 0)}</h2>
               <p>{topCategory ? `${topCategory.category}가 ${formatCurrency(topCategory.amount)}로 전체의 ${topCategory.share}%를 차지합니다.` : '분석할 생활비 데이터가 없습니다.'} {previousMonthlyExpense ? `전월 대비 ${monthDelta >= 0 ? '증가' : '감소'}액은 ${formatCurrency(Math.abs(monthDelta))} (${Math.abs(monthDeltaRate)}%)입니다.` : '전월 비교 데이터는 다음 달이 쌓이면 표시됩니다.'}</p>
               <div className="headline-metrics">
+                <span><small>예산 사용률</small><strong>{activeBudgetUsedRate}%</strong></span>
+                <span><small>{activeBudgetGap >= 0 ? '예산 초과' : '예산 잔액'}</small><strong>{formatCurrency(Math.abs(activeBudgetGap))}</strong></span>
+                <span><small>고정지출</small><strong>{formatCurrency(activeFixedTotal)}</strong></span>
+                <span><small>변동/비정기</small><strong>{formatCurrency(activeFlexibleTotal)}</strong></span>
                 <span><small>카드 사용</small><strong>{formatCurrency(activeMonthlyExpense?.cardTotal ?? 0)}</strong></span>
                 <span><small>통장 직접출금</small><strong>{formatCurrency(activeMonthlyExpense?.bankTotal ?? 0)}</strong></span>
                 <span><small>급여공제 지출</small><strong>{formatCurrency(activeMonthlyExpense?.payrollTotal ?? 0)}</strong></span>

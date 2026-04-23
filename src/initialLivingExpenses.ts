@@ -743,10 +743,10 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "id": "seed-kakao-bank-837",
     "date": "2026-04-01",
     "source": "bank",
-    "description": "박대현",
+    "description": "박대현 · 주택담보대출",
     "amount": 758000,
-    "category": "가족/용돈",
-    "memo": "카카오뱅크 거래내역 · 타행자동이체"
+    "category": "주택담보대출",
+    "memo": "카카오뱅크 거래내역 · 매월 1일 고정 대출 이체"
   },
   {
     "id": "seed-kakao-bank-836",
@@ -790,7 +790,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "강상욱프로  장인조의금",
     "amount": 50000,
-    "category": "경조사/명절",
+    "category": "연간/비정기",
     "memo": "카카오뱅크 거래내역 · 일반이체"
   },
   {
@@ -1796,10 +1796,10 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "id": "seed-kakao-bank-778",
     "date": "2026-03-01",
     "source": "bank",
-    "description": "박대현",
+    "description": "박대현 · 주택담보대출",
     "amount": 758000,
-    "category": "가족/용돈",
-    "memo": "카카오뱅크 거래내역 · 타행자동이체"
+    "category": "주택담보대출",
+    "memo": "카카오뱅크 거래내역 · 매월 1일 고정 대출 이체"
   },
   {
     "id": "seed-kakao-bank-777",
@@ -2212,7 +2212,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "설 세뱃돈",
     "amount": 80000,
-    "category": "경조사/명절",
+    "category": "연간/비정기",
     "memo": "카카오뱅크 거래내역 · 일반이체"
   },
   {
@@ -3074,10 +3074,10 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "id": "seed-kakao-bank-720",
     "date": "2026-02-01",
     "source": "bank",
-    "description": "박대현",
+    "description": "박대현 · 주택담보대출",
     "amount": 758000,
-    "category": "가족/용돈",
-    "memo": "카카오뱅크 거래내역 · 타행자동이체"
+    "category": "주택담보대출",
+    "memo": "카카오뱅크 거래내역 · 매월 1일 고정 대출 이체"
   },
   {
     "id": "seed-kakao-bank-719",
@@ -3470,10 +3470,10 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "id": "seed-kakao-bank-675",
     "date": "2026-01-01",
     "source": "bank",
-    "description": "박대현",
+    "description": "박대현 · 주택담보대출",
     "amount": 758000,
-    "category": "가족/용돈",
-    "memo": "카카오뱅크 거래내역 · 타행자동이체"
+    "category": "주택담보대출",
+    "memo": "카카오뱅크 거래내역 · 매월 1일 고정 대출 이체"
   },
   {
     "id": "seed-kakao-bank-674",
@@ -3686,10 +3686,10 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "id": "seed-kakao-bank-631",
     "date": "2025-12-01",
     "source": "bank",
-    "description": "박대현",
+    "description": "박대현 · 주택담보대출",
     "amount": 570000,
-    "category": "가족/용돈",
-    "memo": "카카오뱅크 거래내역 · 타행자동이체"
+    "category": "주택담보대출",
+    "memo": "카카오뱅크 거래내역 · 매월 1일 고정 대출 이체"
   },
   {
     "id": "seed-kakao-bank-630",
@@ -3778,7 +3778,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "손지혜프로 조의금",
     "amount": 50000,
-    "category": "경조사/명절",
+    "category": "연간/비정기",
     "memo": "카카오뱅크 거래내역 · 일반이체"
   },
   {
@@ -3922,7 +3922,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "인천엄마 생신",
     "amount": 300000,
-    "category": "경조사/명절",
+    "category": "연간/비정기",
     "memo": "카카오뱅크 거래내역 · 일반이체"
   },
   {
@@ -4136,10 +4136,10 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "id": "seed-kakao-bank-553",
     "date": "2025-11-01",
     "source": "bank",
-    "description": "박대현",
+    "description": "박대현 · 주택담보대출",
     "amount": 570000,
-    "category": "가족/용돈",
-    "memo": "카카오뱅크 거래내역 · 타행자동이체"
+    "category": "주택담보대출",
+    "memo": "카카오뱅크 거래내역 · 매월 1일 고정 대출 이체"
   },
   {
     "id": "seed-kakao-bank-552",
@@ -4694,10 +4694,10 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "id": "seed-kakao-bank-473",
     "date": "2025-10-01",
     "source": "bank",
-    "description": "박대현",
+    "description": "박대현 · 주택담보대출",
     "amount": 570000,
-    "category": "가족/용돈",
-    "memo": "카카오뱅크 거래내역 · 타행자동이체"
+    "category": "주택담보대출",
+    "memo": "카카오뱅크 거래내역 · 매월 1일 고정 대출 이체"
   },
   {
     "id": "seed-kakao-bank-472",
@@ -4903,7 +4903,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "노은경프로 축의금",
     "amount": 50000,
-    "category": "경조사/명절",
+    "category": "연간/비정기",
     "memo": "카카오뱅크 거래내역 · 일반이체"
   },
   {
@@ -5029,7 +5029,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "장경희 · 조의금",
     "amount": 50000,
-    "category": "경조사/명절",
+    "category": "연간/비정기",
     "memo": "카카오뱅크 거래내역 · 일반이체"
   },
   {
@@ -5153,10 +5153,10 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "id": "seed-kakao-bank-399",
     "date": "2025-09-01",
     "source": "bank",
-    "description": "박대현",
+    "description": "박대현 · 주택담보대출",
     "amount": 560000,
-    "category": "가족/용돈",
-    "memo": "카카오뱅크 거래내역 · 타행자동이체"
+    "category": "주택담보대출",
+    "memo": "카카오뱅크 거래내역 · 매월 1일 고정 대출 이체"
   },
   {
     "id": "seed-kakao-bank-398",
@@ -5470,7 +5470,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "카카오페이 · 김재춘프로 조의금",
     "amount": 50000,
-    "category": "경조사/명절",
+    "category": "연간/비정기",
     "memo": "카카오뱅크 거래내역 · 자동이체(기타)"
   },
   {
@@ -5657,10 +5657,10 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "id": "seed-kakao-bank-323",
     "date": "2025-08-01",
     "source": "bank",
-    "description": "박대현",
+    "description": "박대현 · 주택담보대출",
     "amount": 560000,
-    "category": "가족/용돈",
-    "memo": "카카오뱅크 거래내역 · 타행자동이체"
+    "category": "주택담보대출",
+    "memo": "카카오뱅크 거래내역 · 매월 1일 고정 대출 이체"
   },
   {
     "id": "seed-kakao-bank-322",
@@ -6440,10 +6440,10 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "id": "seed-kakao-bank-219",
     "date": "2025-07-01",
     "source": "bank",
-    "description": "박대현",
+    "description": "박대현 · 주택담보대출",
     "amount": 560000,
-    "category": "가족/용돈",
-    "memo": "카카오뱅크 거래내역 · 타행자동이체"
+    "category": "주택담보대출",
+    "memo": "카카오뱅크 거래내역 · 매월 1일 고정 대출 이체"
   },
   {
     "id": "seed-kakao-bank-218",
@@ -6892,7 +6892,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "혜진친구들 답례",
     "amount": 90000,
-    "category": "경조사/명절",
+    "category": "연간/비정기",
     "memo": "카카오뱅크 거래내역 · 일반이체"
   },
   {
@@ -6901,7 +6901,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "은진 답례 아버님 생신",
     "amount": 350000,
-    "category": "경조사/명절",
+    "category": "연간/비정기",
     "memo": "카카오뱅크 거래내역 · 일반이체"
   },
   {
@@ -7133,10 +7133,10 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "id": "seed-kakao-bank-117",
     "date": "2025-06-01",
     "source": "bank",
-    "description": "박대현",
+    "description": "박대현 · 주택담보대출",
     "amount": 560000,
-    "category": "가족/용돈",
-    "memo": "카카오뱅크 거래내역 · 타행자동이체"
+    "category": "주택담보대출",
+    "memo": "카카오뱅크 거래내역 · 매월 1일 고정 대출 이체"
   },
   {
     "id": "seed-kakao-bank-116",
@@ -7594,7 +7594,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "카카오페이 · 인천엄마 어버이날 용돈",
     "amount": 300000,
-    "category": "가족/용돈",
+    "category": "연간/비정기",
     "memo": "카카오뱅크 거래내역 · 자동이체(기타)"
   },
   {
@@ -7718,10 +7718,10 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "id": "seed-kakao-bank-31",
     "date": "2025-05-01",
     "source": "bank",
-    "description": "박대현",
+    "description": "박대현 · 주택담보대출",
     "amount": 560000,
-    "category": "가족/용돈",
-    "memo": "카카오뱅크 거래내역 · 타행자동이체"
+    "category": "주택담보대출",
+    "memo": "카카오뱅크 거래내역 · 매월 1일 고정 대출 이체"
   },
   {
     "id": "seed-kakao-bank-30",
