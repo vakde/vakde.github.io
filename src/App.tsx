@@ -127,9 +127,10 @@ function categorizeExpense(description: string) {
   const text = description.replace(/\s+/g, ' ')
   if (/택시|버스|평택버스|SR|SRT|코레일|철도|지하철|주유|파킹|주차|교통/.test(text)) return '교통'
   if (/마트|슈퍼|FRESH|프레시|이마트|컬리|쿠팡|마켓|식품|정육|배달|우아한형제|롯데리아|카페|커피|스타벅스|맥도날드|파리바게뜨|뚜레쥬르|버거|식당|푸드|치킨|피자|족발|분식|한식|일식|중식|편의점|CU|씨유|GS25|세븐|만두/.test(text)) return '식비/장보기'
-  if (/병원|약국|의원|의료|헬스|건강|보험|화재|현대해상|메리츠/.test(text)) return '보험/의료'
-  if (/네이버페이|온라인|쇼핑|몰|스토어|아마존|G마켓|지마켓|11번가|무신사|이랜드|이케아|다이소/.test(text)) return '쇼핑/생활'
-  if (/관리비|전기|가스|수도|통신|모바일|SKT|KT|LG U|아파트|월세|임대료|쿠쿠홈시스/.test(text)) return '주거/통신'
+  if (/용돈|모친|부모님|혜진\s*용돈|혜진용돈|대현\s*용돈|대현용돈|박대현|이혜진/.test(text)) return '가족/용돈'
+  if (/병원|약국|의원|의료|헬스|건강|보험|화재|현대해상|메리츠|감염관리/.test(text)) return '보험/의료'
+  if (/네이버페이|온라인|쇼핑|몰|스토어|아마존|AMAZON|G마켓|지마켓|11번가|무신사|이랜드|이케아|다이소|옷|가위|물티슈/.test(text)) return '쇼핑/생활'
+
   if (/GAMSGO|구글|APPLE|넷플릭스|유튜브|멜론|구독|게임|문화|영화|서점|멤버십/.test(text)) return '구독/문화'
   if (/학원|교육|도서|문구|학교|어린이|키즈|토이/.test(text)) return '교육/육아'
   if (/헤어|미용|세탁|수선|쏘잉|로컬푸드|카카오|뽀득|컬리페이|비브로스/.test(text)) return '생활서비스'
@@ -140,13 +141,18 @@ function isLikelyCardSettlement(description: string) {
   return /신한카드|신한\s*체크|신한\s*신용|카드대금|결제대금|카드결제|카드출금|카드 자동|카드자동|카드이용대금/.test(description)
 }
 
-function isExcludedBankWithdrawal(description: string, transactionKind = '') {
+function isExcludedBankWithdrawal(description: string, transactionKind = '', amount = 0, date = '') {
   if (/세이프박스/.test(description) || /세이프박스/.test(transactionKind)) return true
 
   const isOwnAccountTransfer = /계좌간자동이체|내\s*계좌|본인계좌|계좌간/.test(transactionKind)
   const isFixedCostFunding = /관리비|통신&구독|통신|구독|구독료|보험/.test(description)
+  if (isOwnAccountTransfer && isFixedCostFunding) return true
 
-  return isOwnAccountTransfer && isFixedCostFunding
+  const day = date.slice(8, 10)
+  const isNamedAllowance = /용돈|모친|부모님/.test(description)
+  const isLargeIrregularParkTransfer = /박대현/.test(description) && amount >= 500000 && day !== '01' && !isNamedAllowance
+
+  return isLargeIrregularParkTransfer
 }
 
 function normalizeExpense(transaction: LivingExpenseTransaction): LivingExpenseTransaction {
@@ -202,15 +208,17 @@ function parseWorkbookRows(workbook: XLSX.WorkBook, fileName: string) {
 
       const transactionKind = String(pickValue(row, ['거래구분', '거래종류']) ?? '')
 
+      const normalizedBankDate = normalizeDate(bankDate)
+
       if (!bankDate || !description || withdrawalAmount <= 0 || depositAmount > 0) return
-      if (isExcludedBankWithdrawal(description, transactionKind)) return
+      if (isExcludedBankWithdrawal(description, transactionKind, withdrawalAmount, normalizedBankDate)) return
 
       if (isLikelyCardSettlement(description)) {
-        parsed.push({ id: `upload-${importedAt}-${sheetName}-${rowIndex}`, date: normalizeDate(bankDate), source: 'settlement', description, amount: withdrawalAmount, category: '신한카드 결제대금', memo: `${fileName} · 통장 신한카드 결제대금(중복 제외)` })
+        parsed.push({ id: `upload-${importedAt}-${sheetName}-${rowIndex}`, date: normalizedBankDate, source: 'settlement', description, amount: withdrawalAmount, category: '신한카드 결제대금', memo: `${fileName} · 통장 신한카드 결제대금(중복 제외)` })
         return
       }
 
-      parsed.push({ id: `upload-${importedAt}-${sheetName}-${rowIndex}`, date: normalizeDate(bankDate), source: 'bank', description, amount: withdrawalAmount, category: categorizeExpense(description), memo: `${fileName} · 통장 직접출금` })
+      parsed.push({ id: `upload-${importedAt}-${sheetName}-${rowIndex}`, date: normalizedBankDate, source: 'bank', description, amount: withdrawalAmount, category: categorizeExpense(description), memo: `${fileName} · 통장 직접출금` })
     })
   })
 

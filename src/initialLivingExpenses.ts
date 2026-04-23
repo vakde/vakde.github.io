@@ -187,7 +187,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "(유)제이앤비(파리바",
     "amount": 3900,
-    "category": "기타",
+    "category": "식비/장보기",
     "memo": "카카오뱅크 거래내역 · 체크카드결제"
   },
   {
@@ -394,7 +394,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "박대현",
     "amount": 10000,
-    "category": "기타",
+    "category": "가족/용돈",
     "memo": "카카오뱅크 거래내역 · 일반이체"
   },
   {
@@ -745,7 +745,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "박대현",
     "amount": 758000,
-    "category": "기타",
+    "category": "가족/용돈",
     "memo": "카카오뱅크 거래내역 · 타행자동이체"
   },
   {
@@ -1127,15 +1127,6 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "memo": "신한카드 명세 · 가족220* · 결제확정"
   },
   {
-    "id": "seed-kakao-bank-806",
-    "date": "2026-03-21",
-    "source": "bank",
-    "description": "박대현",
-    "amount": 5000000,
-    "category": "기타",
-    "memo": "카카오뱅크 거래내역 · 일반이체"
-  },
-  {
     "id": "seed-kakao-bank-803",
     "date": "2026-03-21",
     "source": "bank",
@@ -1458,15 +1449,6 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "amount": 6580,
     "category": "식비/장보기",
     "memo": "신한카드 명세 · 가족220* · 결제확정"
-  },
-  {
-    "id": "seed-kakao-bank-789",
-    "date": "2026-03-10",
-    "source": "bank",
-    "description": "박대현",
-    "amount": 621610,
-    "category": "기타",
-    "memo": "카카오뱅크 거래내역 · 일반이체"
   },
   {
     "id": "seed-shinhan-card-137",
@@ -1834,7 +1816,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "박대현",
     "amount": 758000,
-    "category": "기타",
+    "category": "가족/용돈",
     "memo": "카카오뱅크 거래내역 · 타행자동이체"
   },
   {
@@ -2005,7 +1987,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "(유)제이앤비(파리바",
     "amount": 9400,
-    "category": "기타",
+    "category": "식비/장보기",
     "memo": "카카오뱅크 거래내역 · 체크카드결제"
   },
   {
@@ -2473,7 +2455,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "(유)제이앤비(파리바",
     "amount": 3900,
-    "category": "기타",
+    "category": "식비/장보기",
     "memo": "카카오뱅크 거래내역 · 체크카드결제"
   },
   {
@@ -2887,7 +2869,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "(유)제이앤비(파리바",
     "amount": 3900,
-    "category": "기타",
+    "category": "식비/장보기",
     "memo": "카카오뱅크 거래내역 · 체크카드결제"
   },
   {
@@ -3112,7 +3094,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "박대현",
     "amount": 758000,
-    "category": "기타",
+    "category": "가족/용돈",
     "memo": "카카오뱅크 거래내역 · 타행자동이체"
   },
   {
@@ -3517,7 +3499,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "박대현",
     "amount": 758000,
-    "category": "기타",
+    "category": "가족/용돈",
     "memo": "카카오뱅크 거래내역 · 타행자동이체"
   },
   {
@@ -3733,7 +3715,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "박대현",
     "amount": 570000,
-    "category": "기타",
+    "category": "가족/용돈",
     "memo": "카카오뱅크 거래내역 · 타행자동이체"
   },
   {
@@ -3949,7 +3931,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "(유)제이앤비(파리바",
     "amount": 3600,
-    "category": "기타",
+    "category": "식비/장보기",
     "memo": "카카오뱅크 거래내역 · 체크카드결제"
   },
   {
@@ -4192,7 +4174,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "박대현",
     "amount": 570000,
-    "category": "기타",
+    "category": "가족/용돈",
     "memo": "카카오뱅크 거래내역 · 타행자동이체"
   },
   {
@@ -4300,7 +4282,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "(유)제이앤비(파리바",
     "amount": 3000,
-    "category": "기타",
+    "category": "식비/장보기",
     "memo": "카카오뱅크 거래내역 · 체크카드결제"
   },
   {
@@ -4750,7 +4732,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "박대현",
     "amount": 570000,
-    "category": "기타",
+    "category": "가족/용돈",
     "memo": "카카오뱅크 거래내역 · 타행자동이체"
   },
   {
@@ -5033,15 +5015,6 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "memo": "카카오뱅크 거래내역 · 일반이체"
   },
   {
-    "id": "seed-kakao-bank-425",
-    "date": "2025-09-11",
-    "source": "bank",
-    "description": "박대현",
-    "amount": 5000000,
-    "category": "기타",
-    "memo": "카카오뱅크 거래내역 · 일반이체"
-  },
-  {
     "id": "seed-kakao-bank-423",
     "date": "2025-09-11",
     "source": "bank",
@@ -5218,7 +5191,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "박대현",
     "amount": 560000,
-    "category": "기타",
+    "category": "가족/용돈",
     "memo": "카카오뱅크 거래내역 · 타행자동이체"
   },
   {
@@ -5272,7 +5245,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "박대현",
     "amount": 10000,
-    "category": "기타",
+    "category": "가족/용돈",
     "memo": "카카오뱅크 거래내역 · 일반이체"
   },
   {
@@ -5731,7 +5704,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "박대현",
     "amount": 560000,
-    "category": "기타",
+    "category": "가족/용돈",
     "memo": "카카오뱅크 거래내역 · 타행자동이체"
   },
   {
@@ -6028,7 +6001,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "(유)제이앤비(파리바",
     "amount": 5600,
-    "category": "기타",
+    "category": "식비/장보기",
     "memo": "카카오뱅크 거래내역 · 체크카드결제"
   },
   {
@@ -6514,7 +6487,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "박대현",
     "amount": 560000,
-    "category": "기타",
+    "category": "가족/용돈",
     "memo": "카카오뱅크 거래내역 · 타행자동이체"
   },
   {
@@ -7243,7 +7216,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "박대현",
     "amount": 560000,
-    "category": "기타",
+    "category": "가족/용돈",
     "memo": "카카오뱅크 거래내역 · 타행자동이체"
   },
   {
@@ -7526,15 +7499,6 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "memo": "카카오뱅크 거래내역 · 일반이체"
   },
   {
-    "id": "seed-kakao-bank-75",
-    "date": "2025-05-22",
-    "source": "bank",
-    "description": "박대현",
-    "amount": 5000000,
-    "category": "기타",
-    "memo": "카카오뱅크 거래내역 · 일반이체"
-  },
-  {
     "id": "seed-kakao-bank-72",
     "date": "2025-05-21",
     "source": "bank",
@@ -7576,7 +7540,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "경찰청_박대현 · 과태료",
     "amount": 56000,
-    "category": "기타",
+    "category": "가족/용돈",
     "memo": "카카오뱅크 거래내역 · 일반이체"
   },
   {
@@ -7873,7 +7837,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "박대현",
     "amount": 560000,
-    "category": "기타",
+    "category": "가족/용돈",
     "memo": "카카오뱅크 거래내역 · 타행자동이체"
   },
   {
