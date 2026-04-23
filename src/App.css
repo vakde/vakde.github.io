@@ -233,7 +233,8 @@
 
 .metric-grid,
 .workspace-grid,
-.board-grid {
+.board-grid,
+.expense-grid {
   display: grid;
   gap: 18px;
 }
@@ -479,6 +480,7 @@
   display: block;
   height: 100%;
   border-radius: inherit;
+  background: var(--copper);
   animation: sweep 760ms ease both;
 }
 
@@ -583,6 +585,123 @@
   background: rgba(255, 255, 255, 0.54);
 }
 
+.expense-toolbar {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.panel-hint.wide {
+  max-width: 72ch;
+}
+
+.toolbar-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.expense-grid {
+  grid-template-columns: minmax(280px, 0.38fr) minmax(0, 1fr);
+  align-items: start;
+}
+
+.month-list,
+.expense-categories,
+.transaction-table {
+  display: grid;
+  gap: 12px;
+}
+
+.month-button,
+.transaction-row {
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.month-button {
+  display: grid;
+  gap: 8px;
+  width: 100%;
+  padding: 16px;
+  color: var(--ink);
+  cursor: pointer;
+  text-align: left;
+  font: inherit;
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease,
+    background 180ms ease;
+}
+
+.month-button:hover,
+.month-button.active {
+  transform: translateY(-1px);
+  border-color: rgba(49, 85, 74, 0.34);
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.9), rgba(221, 231, 225, 0.7)),
+    radial-gradient(circle at top left, rgba(49, 85, 74, 0.12), transparent 42%);
+}
+
+.month-button span,
+.transaction-row small {
+  color: var(--slate);
+  font-size: 13px;
+}
+
+.month-button strong {
+  font-size: 1.25rem;
+  letter-spacing: -0.03em;
+}
+
+.month-button small {
+  color: var(--ink-soft);
+}
+
+.expense-detail-panel {
+  min-height: 520px;
+}
+
+.expense-categories {
+  margin-bottom: 20px;
+}
+
+.transaction-table {
+  max-height: 640px;
+  overflow: auto;
+  padding-right: 4px;
+}
+
+.transaction-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 14px 16px;
+}
+
+.transaction-row div {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+
+.transaction-row strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.transaction-row span {
+  flex: 0 0 auto;
+  font-weight: 800;
+  color: var(--danger);
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
 @keyframes rise {
   from {
     opacity: 0;
@@ -624,6 +743,7 @@
   .composer-layout,
   .metric-grid,
   .board-grid,
+  .expense-grid,
   .mini-grid {
     grid-template-columns: 1fr;
   }
@@ -650,11 +770,13 @@
   }
 
   .panel-header,
-  .entry-form {
+  .entry-form,
+  .expense-toolbar {
     grid-template-columns: 1fr;
   }
 
-  .panel-header {
+  .panel-header,
+  .expense-toolbar {
     display: grid;
   }
 
@@ -662,7 +784,8 @@
     grid-column: auto;
   }
 
-  .hero-actions {
+  .hero-actions,
+  .toolbar-actions {
     flex-direction: column;
     align-items: stretch;
   }
