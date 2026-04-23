@@ -34,15 +34,17 @@ type MonthlyExpense = {
   total: number
   cardTotal: number
   bankTotal: number
+  settlementTotal: number
   count: number
   dailyAverage: number
   categories: CategorySlice[]
   merchants: { name: string; amount: number; count: number }[]
   transactions: LivingExpenseTransaction[]
+  settlements: LivingExpenseTransaction[]
 }
 
 const STORAGE_KEY = 'myfml-portfolio-v1'
-const EXPENSE_STORAGE_KEY = 'myfml-living-expenses-v2'
+const EXPENSE_STORAGE_KEY = 'myfml-living-expenses-v3'
 
 const ASSET_CATEGORIES: AssetCategory[] = ['cash', 'deposit', 'stock', 'crypto', 'real-estate', 'retirement']
 const LIABILITY_CATEGORIES: AssetCategory[] = ['loan', 'card']
@@ -135,11 +137,29 @@ function categorizeExpense(description: string) {
 }
 
 function isLikelyCardSettlement(description: string) {
-  return /카드|신한|현대|삼성|국민|롯데|우리|하나|체크|결제대금|카드대금|자동납부/.test(description)
+  return /신한카드|신한\s*체크|신한\s*신용|카드대금|결제대금|카드결제|카드출금|카드 자동|카드자동|카드이용대금/.test(description)
 }
 
 function normalizeExpense(transaction: LivingExpenseTransaction): LivingExpenseTransaction {
+  if (transaction.source === 'settlement') return { ...transaction, category: '신한카드 결제대금' }
   return { ...transaction, category: categorizeExpense(transaction.description) }
+}
+
+function rowsWithDetectedHeaders(sheet: XLSX.WorkSheet) {
+  const matrix = XLSX.utils.sheet_to_json<unknown[]>(sheet, { header: 1, raw: false, defval: '' })
+  const headerIndex = matrix.findIndex((row) => {
+    const joined = row.map((cell) => String(cell)).join('|')
+    const looksCard = /거래일|이용일/.test(joined) && /가맹점|사용처|이용가맹점/.test(joined)
+    const looksBank = /거래일|거래일시|일자/.test(joined) && /출금|지급|찾으신금액|거래금액/.test(joined)
+    return looksCard || looksBank
+  })
+
+  if (headerIndex < 0) {
+    return XLSX.utils.sheet_to_json<Record<string, unknown>>(sheet, { raw: false, defval: '' })
+  }
+
+  const headers = matrix[headerIndex].map((cell, index) => String(cell || `__EMPTY_${index}`).trim())
+  return matrix.slice(headerIndex + 1).map((row) => Object.fromEntries(headers.map((header, index) => [header, row[index] ?? ''])))
 }
 
 function parseWorkbookRows(workbook: XLSX.WorkBook, fileName: string) {
@@ -147,7 +167,7 @@ function parseWorkbookRows(workbook: XLSX.WorkBook, fileName: string) {
   const parsed: LivingExpenseTransaction[] = []
 
   workbook.SheetNames.forEach((sheetName) => {
-    const rows = XLSX.utils.sheet_to_json<Record<string, unknown>>(workbook.Sheets[sheetName], { raw: false, defval: '' })
+    const rows = rowsWithDetectedHeaders(workbook.Sheets[sheetName])
 
     rows.forEach((row, rowIndex) => {
       const cardDate = pickValue(row, ['거래일', '이용일'])
@@ -157,22 +177,28 @@ function parseWorkbookRows(workbook: XLSX.WorkBook, fileName: string) {
 
       if (merchant && cardAmount && !cancelStatus.includes('취소')) {
         const description = String(merchant).trim()
-        parsed.push({ id: `upload-${importedAt}-${sheetName}-${rowIndex}`, date: normalizeDate(cardDate), source: 'card', description, amount: numberFromCell(cardAmount), category: categorizeExpense(description), memo: `${fileName} · 카드내역` })
+        parsed.push({ id: `upload-${importedAt}-${sheetName}-${rowIndex}`, date: normalizeDate(cardDate), source: 'card', description, amount: numberFromCell(cardAmount), category: categorizeExpense(description), memo: `${fileName} · 신한카드 명세` })
         return
       }
 
       const bankDate = pickValue(row, ['거래일시', '거래일', '일자'])
-      const bankDescription = pickValue(row, ['내용', '적요', '거래내용', '받는분', '보낸분'])
-      const withdrawal = pickValue(row, ['출금', '지급', '찾으신금액'])
-      const deposit = pickValue(row, ['입금', '맡기신금액'])
+      const bankDescription = pickValue(row, ['내용', '적요', '거래내용', '받는분', '보낸분', '거래처'])
+      const withdrawal = pickValue(row, ['출금액', '출금', '지급', '찾으신금액', '출금금액'])
+      const deposit = pickValue(row, ['입금액', '입금', '맡기신금액', '입금금액'])
       const genericAmount = pickValue(row, ['거래금액', '금액'])
+      const typeText = String(pickValue(row, ['구분', '거래구분', '입출금']) ?? '')
       const description = String(bankDescription ?? '').trim()
-      const withdrawalAmount = numberFromCell(withdrawal ?? genericAmount)
-      const depositAmount = numberFromCell(deposit)
+      const withdrawalAmount = numberFromCell(withdrawal ?? (typeText.includes('출금') ? genericAmount : undefined))
+      const depositAmount = numberFromCell(deposit ?? (typeText.includes('입금') ? genericAmount : undefined))
 
-      if (bankDate && description && withdrawalAmount > 0 && depositAmount === 0 && !isLikelyCardSettlement(description)) {
-        parsed.push({ id: `upload-${importedAt}-${sheetName}-${rowIndex}`, date: normalizeDate(bankDate), source: 'bank', description, amount: withdrawalAmount, category: categorizeExpense(description), memo: `${fileName} · 통장출금` })
+      if (!bankDate || !description || withdrawalAmount <= 0 || depositAmount > 0) return
+
+      if (isLikelyCardSettlement(description)) {
+        parsed.push({ id: `upload-${importedAt}-${sheetName}-${rowIndex}`, date: normalizeDate(bankDate), source: 'settlement', description, amount: withdrawalAmount, category: '신한카드 결제대금', memo: `${fileName} · 통장 신한카드 결제대금(중복 제외)` })
+        return
       }
+
+      parsed.push({ id: `upload-${importedAt}-${sheetName}-${rowIndex}`, date: normalizeDate(bankDate), source: 'bank', description, amount: withdrawalAmount, category: categorizeExpense(description), memo: `${fileName} · 통장 직접출금` })
     })
   })
 
@@ -215,8 +241,10 @@ function groupMonthlyExpenses(expenses: LivingExpenseTransaction[]) {
 
   return [...map.entries()]
     .map(([month, transactions]) => {
-      const total = transactions.reduce((sum, transaction) => sum + transaction.amount, 0)
-      const categories = [...transactions.reduce((categoryMap, transaction) => {
+      const spendingTransactions = transactions.filter((transaction) => transaction.source !== 'settlement')
+      const settlements = transactions.filter((transaction) => transaction.source === 'settlement')
+      const total = spendingTransactions.reduce((sum, transaction) => sum + transaction.amount, 0)
+      const categories = [...spendingTransactions.reduce((categoryMap, transaction) => {
         const current = categoryMap.get(transaction.category) ?? { amount: 0, count: 0 }
         categoryMap.set(transaction.category, { amount: current.amount + transaction.amount, count: current.count + 1 })
         return categoryMap
@@ -225,7 +253,7 @@ function groupMonthlyExpenses(expenses: LivingExpenseTransaction[]) {
         .sort((a, b) => b.amount - a.amount)
         .map((item, index) => ({ ...item, color: EXPENSE_COLORS[index % EXPENSE_COLORS.length] }))
 
-      const merchants = [...transactions.reduce((merchantMap, transaction) => {
+      const merchants = [...spendingTransactions.reduce((merchantMap, transaction) => {
         const key = transaction.description
         const current = merchantMap.get(key) ?? { amount: 0, count: 0 }
         merchantMap.set(key, { amount: current.amount + transaction.amount, count: current.count + 1 })
@@ -238,13 +266,15 @@ function groupMonthlyExpenses(expenses: LivingExpenseTransaction[]) {
       return {
         month,
         total,
-        cardTotal: transactions.filter((transaction) => transaction.source === 'card').reduce((sum, transaction) => sum + transaction.amount, 0),
-        bankTotal: transactions.filter((transaction) => transaction.source === 'bank').reduce((sum, transaction) => sum + transaction.amount, 0),
-        count: transactions.length,
+        cardTotal: spendingTransactions.filter((transaction) => transaction.source === 'card').reduce((sum, transaction) => sum + transaction.amount, 0),
+        bankTotal: spendingTransactions.filter((transaction) => transaction.source === 'bank').reduce((sum, transaction) => sum + transaction.amount, 0),
+        settlementTotal: settlements.reduce((sum, transaction) => sum + transaction.amount, 0),
+        count: spendingTransactions.length,
         dailyAverage: Math.round(total / getDaysInMonth(month)),
         categories,
         merchants,
-        transactions: [...transactions].sort((a, b) => b.date.localeCompare(a.date)),
+        transactions: [...spendingTransactions].sort((a, b) => b.date.localeCompare(a.date)),
+        settlements: [...settlements].sort((a, b) => b.date.localeCompare(a.date)),
       }
     })
     .sort((a, b) => b.month.localeCompare(a.month))
@@ -341,11 +371,11 @@ function App() {
   }, [activeMonthlyExpense, selectedCategory])
 
   const expenseSummary = useMemo(() => {
-    const total = expenses.reduce((sum, expense) => sum + expense.amount, 0)
+    const total = monthlyExpenses.reduce((sum, month) => sum + month.total, 0)
     const monthlyAverage = monthlyExpenses.length === 0 ? 0 : Math.round(total / monthlyExpenses.length)
     const peakMonth = [...monthlyExpenses].sort((a, b) => b.total - a.total)[0]
     return { total, monthlyAverage, peakMonth, currentMonth: monthlyExpenses[0], biggestCategory: monthlyExpenses[0]?.categories[0] }
-  }, [expenses, monthlyExpenses])
+  }, [monthlyExpenses])
 
   const portfolioSummary = useMemo(() => {
     const totalAssets = assets.reduce((sum, entry) => sum + entry.amount, 0)
@@ -412,6 +442,10 @@ function App() {
           window.alert('가져올 생활비 내역을 찾지 못했습니다. 카드/통장 엑셀의 헤더 행을 확인해주세요.')
           return
         }
+        const cardCount = imported.filter((transaction) => transaction.source === 'card').length
+        const bankCount = imported.filter((transaction) => transaction.source === 'bank').length
+        const settlementCount = imported.filter((transaction) => transaction.source === 'settlement').length
+        window.alert(`생활비 파일 반영 완료\n신한카드 ${cardCount}건 · 통장 직접출금 ${bankCount}건 · 신한카드 결제대금 ${settlementCount}건`)
         setExpenses(imported)
         setSelectedMonth('')
         setSelectedCategory('전체')
@@ -478,9 +512,10 @@ function App() {
               <h2>{activeMonth} 생활비는 {formatCurrency(activeMonthlyExpense?.total ?? 0)}</h2>
               <p>{topCategory ? `${topCategory.category}가 ${formatCurrency(topCategory.amount)}로 전체의 ${topCategory.share}%를 차지합니다.` : '분석할 생활비 데이터가 없습니다.'} {previousMonthlyExpense ? `전월 대비 ${monthDelta >= 0 ? '증가' : '감소'}액은 ${formatCurrency(Math.abs(monthDelta))} (${Math.abs(monthDeltaRate)}%)입니다.` : '전월 비교 데이터는 다음 달이 쌓이면 표시됩니다.'}</p>
               <div className="headline-metrics">
-                <span><small>카드</small><strong>{formatCurrency(activeMonthlyExpense?.cardTotal ?? 0)}</strong></span>
+                <span><small>카드 사용</small><strong>{formatCurrency(activeMonthlyExpense?.cardTotal ?? 0)}</strong></span>
                 <span><small>통장 직접출금</small><strong>{formatCurrency(activeMonthlyExpense?.bankTotal ?? 0)}</strong></span>
-                <span><small>거래 수</small><strong>{activeMonthlyExpense?.count ?? 0}건</strong></span>
+                <span><small>신한카드 결제대금</small><strong>{formatCurrency(activeMonthlyExpense?.settlementTotal ?? 0)}</strong></span>
+                <span><small>생활비 거래 수</small><strong>{activeMonthlyExpense?.count ?? 0}건</strong></span>
               </div>
             </article>
           </section>
@@ -533,6 +568,12 @@ function App() {
               <button type="button" className={selectedCategory === '전체' ? 'active' : ''} onClick={() => setSelectedCategory('전체')}>전체</button>
               {activeMonthlyExpense?.categories.map((category) => <button type="button" key={category.category} className={selectedCategory === category.category ? 'active' : ''} onClick={() => setSelectedCategory(category.category)}>{category.category}</button>)}
             </div>
+            {(activeMonthlyExpense?.settlements.length ?? 0) > 0 && (
+              <div className="settlement-note">
+                <strong>통장 신한카드 결제대금 {formatCurrency(activeMonthlyExpense?.settlementTotal ?? 0)}</strong>
+                <span>카드명세와 중복되는 출금이라 생활비 총액에는 다시 더하지 않고, 통장 정산 확인용으로만 표시합니다.</span>
+              </div>
+            )}
             <div className="transaction-list">
               {filteredTransactions.map((transaction) => (
                 <article key={transaction.id}>

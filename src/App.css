@@ -149,7 +149,7 @@ button { cursor: pointer; }
 .report-headline { display: grid; align-content: space-between; gap: 24px; min-height: 310px; padding: clamp(28px, 4.4vw, 48px); }
 .report-headline h2 { max-width: 820px; margin: 0; font-size: clamp(2.1rem, 4.8vw, 5.2rem); line-height: 0.98; letter-spacing: -0.075em; }
 .report-headline > p:not(.eyebrow) { max-width: 920px; margin: 0; color: var(--ink-soft); font-size: 1.06rem; line-height: 1.72; }
-.headline-metrics { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.headline-metrics { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
 .headline-metrics span { display: grid; gap: 8px; padding: 16px; border: 1px solid var(--line); border-radius: 18px; background: rgba(255, 255, 255, 0.44); }
 .headline-metrics small { color: var(--slate); font-weight: 800; }
 .headline-metrics strong { font-size: 1.15rem; }
@@ -192,6 +192,9 @@ button { cursor: pointer; }
 .filter-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
 .filter-row button { border: 1px solid var(--line); border-radius: 999px; background: rgba(255, 255, 255, 0.48); color: var(--ink-soft); padding: 9px 12px; font-size: 13px; font-weight: 800; }
 .filter-row button.active { background: var(--ink); color: #fff; border-color: var(--ink); }
+.settlement-note { display: grid; gap: 6px; margin-bottom: 16px; padding: 14px 16px; border: 1px solid rgba(181, 106, 59, 0.24); border-radius: 18px; background: rgba(240, 225, 212, 0.54); }
+.settlement-note strong { color: var(--copper); }
+.settlement-note span { color: var(--ink-soft); line-height: 1.55; }
 .transaction-list { display: grid; max-height: 720px; overflow: auto; padding-right: 4px; }
 .transaction-list article { display: grid; grid-template-columns: 78px minmax(0, 1fr) auto; align-items: center; gap: 14px; padding: 14px 6px; border-top: 1px solid var(--line); }
 .transaction-list time { color: var(--slate); font-size: 13px; font-weight: 900; }
