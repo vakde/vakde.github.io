@@ -140,6 +140,15 @@ function isLikelyCardSettlement(description: string) {
   return /신한카드|신한\s*체크|신한\s*신용|카드대금|결제대금|카드결제|카드출금|카드 자동|카드자동|카드이용대금/.test(description)
 }
 
+function isExcludedBankWithdrawal(description: string, transactionKind = '') {
+  if (/세이프박스/.test(description) || /세이프박스/.test(transactionKind)) return true
+
+  const isOwnAccountTransfer = /계좌간자동이체|내\s*계좌|본인계좌|계좌간/.test(transactionKind)
+  const isFixedCostFunding = /관리비|통신&구독|통신|구독|구독료|보험/.test(description)
+
+  return isOwnAccountTransfer && isFixedCostFunding
+}
+
 function normalizeExpense(transaction: LivingExpenseTransaction): LivingExpenseTransaction {
   if (transaction.source === 'settlement') return { ...transaction, category: '신한카드 결제대금' }
   return { ...transaction, category: categorizeExpense(transaction.description) }
@@ -191,7 +200,10 @@ function parseWorkbookRows(workbook: XLSX.WorkBook, fileName: string) {
       const withdrawalAmount = numberFromCell(withdrawal ?? (typeText.includes('출금') ? genericAmount : undefined))
       const depositAmount = numberFromCell(deposit ?? (typeText.includes('입금') ? genericAmount : undefined))
 
+      const transactionKind = String(pickValue(row, ['거래구분', '거래종류']) ?? '')
+
       if (!bankDate || !description || withdrawalAmount <= 0 || depositAmount > 0) return
+      if (isExcludedBankWithdrawal(description, transactionKind)) return
 
       if (isLikelyCardSettlement(description)) {
         parsed.push({ id: `upload-${importedAt}-${sheetName}-${rowIndex}`, date: normalizeDate(bankDate), source: 'settlement', description, amount: withdrawalAmount, category: '신한카드 결제대금', memo: `${fileName} · 통장 신한카드 결제대금(중복 제외)` })
@@ -445,7 +457,7 @@ function App() {
         const cardCount = imported.filter((transaction) => transaction.source === 'card').length
         const bankCount = imported.filter((transaction) => transaction.source === 'bank').length
         const settlementCount = imported.filter((transaction) => transaction.source === 'settlement').length
-        window.alert(`생활비 파일 반영 완료\n신한카드 ${cardCount}건 · 통장 직접출금 ${bankCount}건 · 신한카드 결제대금 ${settlementCount}건`)
+        window.alert(`생활비 파일 반영 완료\n신한카드 ${cardCount}건 · 통장 직접출금 ${bankCount}건 · 신한카드 결제대금 ${settlementCount}건\n제외 규칙: 세이프박스, 내 계좌 고정비 이체(관리비/구독료/통신비/보험)`) 
         setExpenses(imported)
         setSelectedMonth('')
         setSelectedCategory('전체')

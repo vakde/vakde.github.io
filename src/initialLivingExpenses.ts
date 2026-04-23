@@ -74,15 +74,6 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "memo": "신한카드 명세 · 가족220* · 결제확정"
   },
   {
-    "id": "seed-kakao-bank-858",
-    "date": "2026-04-21",
-    "source": "bank",
-    "description": "세이프박스",
-    "amount": 4930906,
-    "category": "생활서비스",
-    "memo": "카카오뱅크 거래내역 · 세이프박스"
-  },
-  {
     "id": "seed-shinhan-card-9",
     "date": "2026-04-20",
     "source": "card",
@@ -718,7 +709,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "대현 모친 용돈",
     "amount": 300000,
-    "category": "기타",
+    "category": "가족/용돈",
     "memo": "카카오뱅크 거래내역 · 타행자동이체"
   },
   {
@@ -736,7 +727,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "혜진 용돈",
     "amount": 200000,
-    "category": "기타",
+    "category": "가족/용돈",
     "memo": "카카오뱅크 거래내역 · 타행자동이체"
   },
   {
@@ -763,7 +754,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "대현 용돈",
     "amount": 200000,
-    "category": "기타",
+    "category": "가족/용돈",
     "memo": "카카오뱅크 거래내역 · 타행자동이체"
   },
   {
@@ -774,42 +765,6 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "amount": 700,
     "category": "기타",
     "memo": "카카오뱅크 거래내역 · 일반이체"
-  },
-  {
-    "id": "seed-kakao-bank-834",
-    "date": "2026-04-01",
-    "source": "bank",
-    "description": "보험",
-    "amount": 340000,
-    "category": "보험/의료",
-    "memo": "카카오뱅크 거래내역 · 계좌간자동이체"
-  },
-  {
-    "id": "seed-kakao-bank-833",
-    "date": "2026-04-01",
-    "source": "bank",
-    "description": "통신&구독",
-    "amount": 118040,
-    "category": "주거/통신",
-    "memo": "카카오뱅크 거래내역 · 계좌간자동이체"
-  },
-  {
-    "id": "seed-kakao-bank-832",
-    "date": "2026-04-01",
-    "source": "bank",
-    "description": "관리비",
-    "amount": 300000,
-    "category": "주거/통신",
-    "memo": "카카오뱅크 거래내역 · 계좌간자동이체"
-  },
-  {
-    "id": "seed-kakao-bank-830",
-    "date": "2026-04-01",
-    "source": "bank",
-    "description": "세이프박스",
-    "amount": 631166,
-    "category": "생활서비스",
-    "memo": "카카오뱅크 거래내역 · 세이프박스"
   },
   {
     "id": "seed-kakao-bank-829",
@@ -1186,7 +1141,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "이혜진",
     "amount": 200000,
-    "category": "기타",
+    "category": "가족/용돈",
     "memo": "카카오뱅크 거래내역 · 일반이체"
   },
   {
@@ -1215,24 +1170,6 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "amount": 40000,
     "category": "쇼핑/생활",
     "memo": "신한카드 명세 · 가족220* · 결제확정"
-  },
-  {
-    "id": "seed-kakao-bank-800",
-    "date": "2026-03-20",
-    "source": "bank",
-    "description": "세이프박스",
-    "amount": 4130830,
-    "category": "생활서비스",
-    "memo": "카카오뱅크 거래내역 · 세이프박스"
-  },
-  {
-    "id": "seed-kakao-bank-799",
-    "date": "2026-03-20",
-    "source": "bank",
-    "description": "세이프박스",
-    "amount": 5158736,
-    "category": "생활서비스",
-    "memo": "카카오뱅크 거래내역 · 세이프박스"
   },
   {
     "id": "seed-kakao-bank-796",
@@ -1413,15 +1350,6 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "amount": 2168340,
     "category": "기타",
     "memo": "카카오뱅크 거래내역 · 자동이체(기타)"
-  },
-  {
-    "id": "seed-kakao-bank-792",
-    "date": "2026-03-13",
-    "source": "bank",
-    "description": "세이프박스",
-    "amount": 831660,
-    "category": "생활서비스",
-    "memo": "카카오뱅크 거래내역 · 세이프박스"
   },
   {
     "id": "seed-shinhan-card-122",
@@ -1870,7 +1798,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "대현 모친 용돈",
     "amount": 300000,
-    "category": "기타",
+    "category": "가족/용돈",
     "memo": "카카오뱅크 거래내역 · 타행자동이체"
   },
   {
@@ -1888,7 +1816,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "혜진 용돈",
     "amount": 200000,
-    "category": "기타",
+    "category": "가족/용돈",
     "memo": "카카오뱅크 거래내역 · 타행자동이체"
   },
   {
@@ -1915,35 +1843,8 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "대현 용돈",
     "amount": 200000,
-    "category": "기타",
+    "category": "가족/용돈",
     "memo": "카카오뱅크 거래내역 · 타행자동이체"
-  },
-  {
-    "id": "seed-kakao-bank-776",
-    "date": "2026-03-01",
-    "source": "bank",
-    "description": "관리비",
-    "amount": 300000,
-    "category": "주거/통신",
-    "memo": "카카오뱅크 거래내역 · 계좌간자동이체"
-  },
-  {
-    "id": "seed-kakao-bank-775",
-    "date": "2026-03-01",
-    "source": "bank",
-    "description": "통신&구독",
-    "amount": 118040,
-    "category": "주거/통신",
-    "memo": "카카오뱅크 거래내역 · 계좌간자동이체"
-  },
-  {
-    "id": "seed-kakao-bank-774",
-    "date": "2026-03-01",
-    "source": "bank",
-    "description": "보험",
-    "amount": 329000,
-    "category": "보험/의료",
-    "memo": "카카오뱅크 거래내역 · 계좌간자동이체"
   },
   {
     "id": "seed-shinhan-card-174",
@@ -2243,15 +2144,6 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "memo": "신한카드 명세 · 가족220* · 결제확정"
   },
   {
-    "id": "seed-kakao-bank-763",
-    "date": "2026-02-22",
-    "source": "bank",
-    "description": "세이프박스",
-    "amount": 4936567,
-    "category": "생활서비스",
-    "memo": "카카오뱅크 거래내역 · 세이프박스"
-  },
-  {
     "id": "seed-kakao-bank-762",
     "date": "2026-02-22",
     "source": "bank",
@@ -2392,7 +2284,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "부모님 설 용돈",
     "amount": 600000,
-    "category": "기타",
+    "category": "가족/용돈",
     "memo": "카카오뱅크 거래내역 · 일반이체"
   },
   {
@@ -3094,7 +2986,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "이혜진",
     "amount": 20000,
-    "category": "기타",
+    "category": "가족/용돈",
     "memo": "카카오뱅크 거래내역 · 일반이체"
   },
   {
@@ -3184,7 +3076,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "대현 모친 용돈",
     "amount": 300000,
-    "category": "기타",
+    "category": "가족/용돈",
     "memo": "카카오뱅크 거래내역 · 타행자동이체"
   },
   {
@@ -3202,7 +3094,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "혜진 용돈",
     "amount": 200000,
-    "category": "기타",
+    "category": "가족/용돈",
     "memo": "카카오뱅크 거래내역 · 타행자동이체"
   },
   {
@@ -3229,35 +3121,8 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "대현 용돈",
     "amount": 200000,
-    "category": "기타",
+    "category": "가족/용돈",
     "memo": "카카오뱅크 거래내역 · 타행자동이체"
-  },
-  {
-    "id": "seed-kakao-bank-718",
-    "date": "2026-02-01",
-    "source": "bank",
-    "description": "관리비",
-    "amount": 300000,
-    "category": "주거/통신",
-    "memo": "카카오뱅크 거래내역 · 계좌간자동이체"
-  },
-  {
-    "id": "seed-kakao-bank-717",
-    "date": "2026-02-01",
-    "source": "bank",
-    "description": "통신&구독",
-    "amount": 118040,
-    "category": "주거/통신",
-    "memo": "카카오뱅크 거래내역 · 계좌간자동이체"
-  },
-  {
-    "id": "seed-kakao-bank-716",
-    "date": "2026-02-01",
-    "source": "bank",
-    "description": "보험",
-    "amount": 329000,
-    "category": "보험/의료",
-    "memo": "카카오뱅크 거래내역 · 계좌간자동이체"
   },
   {
     "id": "seed-shinhan-card-279",
@@ -3285,15 +3150,6 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "amount": 2500,
     "category": "기타",
     "memo": "신한카드 명세 · 가족220* · 결제확정"
-  },
-  {
-    "id": "seed-kakao-bank-713",
-    "date": "2026-01-31",
-    "source": "bank",
-    "description": "세이프박스",
-    "amount": 100364,
-    "category": "생활서비스",
-    "memo": "카카오뱅크 거래내역 · 세이프박스"
   },
   {
     "id": "seed-kakao-bank-712",
@@ -3364,7 +3220,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "박대현 · 대현용돈",
     "amount": 1000000,
-    "category": "기타",
+    "category": "가족/용돈",
     "memo": "카카오뱅크 거래내역 · 일반이체"
   },
   {
@@ -3373,17 +3229,8 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "이혜진 · 혜진용돈",
     "amount": 1000000,
-    "category": "기타",
+    "category": "가족/용돈",
     "memo": "카카오뱅크 거래내역 · 일반이체"
-  },
-  {
-    "id": "seed-kakao-bank-702",
-    "date": "2026-01-30",
-    "source": "bank",
-    "description": "세이프박스",
-    "amount": 5209470,
-    "category": "생활서비스",
-    "memo": "카카오뱅크 거래내역 · 세이프박스"
   },
   {
     "id": "seed-shinhan-card-285",
@@ -3521,24 +3368,6 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "memo": "신한카드 명세 · 가족220* · 결제확정"
   },
   {
-    "id": "seed-kakao-bank-697",
-    "date": "2026-01-23",
-    "source": "bank",
-    "description": "세이프박스",
-    "amount": 100000,
-    "category": "생활서비스",
-    "memo": "카카오뱅크 거래내역 · 세이프박스"
-  },
-  {
-    "id": "seed-kakao-bank-695",
-    "date": "2026-01-21",
-    "source": "bank",
-    "description": "세이프박스",
-    "amount": 5013586,
-    "category": "생활서비스",
-    "memo": "카카오뱅크 거래내역 · 세이프박스"
-  },
-  {
     "id": "seed-kakao-bank-693",
     "date": "2026-01-21",
     "source": "settlement",
@@ -3652,7 +3481,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "대현 모친 용돈",
     "amount": 300000,
-    "category": "기타",
+    "category": "가족/용돈",
     "memo": "카카오뱅크 거래내역 · 타행자동이체"
   },
   {
@@ -3670,7 +3499,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "혜진 용돈",
     "amount": 200000,
-    "category": "기타",
+    "category": "가족/용돈",
     "memo": "카카오뱅크 거래내역 · 타행자동이체"
   },
   {
@@ -3697,35 +3526,8 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "대현 용돈",
     "amount": 200000,
-    "category": "기타",
+    "category": "가족/용돈",
     "memo": "카카오뱅크 거래내역 · 타행자동이체"
-  },
-  {
-    "id": "seed-kakao-bank-673",
-    "date": "2026-01-01",
-    "source": "bank",
-    "description": "보험",
-    "amount": 359742,
-    "category": "보험/의료",
-    "memo": "카카오뱅크 거래내역 · 계좌간자동이체"
-  },
-  {
-    "id": "seed-kakao-bank-672",
-    "date": "2026-01-01",
-    "source": "bank",
-    "description": "통신&구독",
-    "amount": 125090,
-    "category": "주거/통신",
-    "memo": "카카오뱅크 거래내역 · 계좌간자동이체"
-  },
-  {
-    "id": "seed-kakao-bank-671",
-    "date": "2026-01-01",
-    "source": "bank",
-    "description": "관리비",
-    "amount": 300000,
-    "category": "주거/통신",
-    "memo": "카카오뱅크 거래내역 · 계좌간자동이체"
   },
   {
     "id": "seed-kakao-bank-669",
@@ -3755,24 +3557,6 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "memo": "카카오뱅크 거래내역 · 일반이체"
   },
   {
-    "id": "seed-kakao-bank-663",
-    "date": "2025-12-24",
-    "source": "bank",
-    "description": "세이프박스",
-    "amount": 100000,
-    "category": "생활서비스",
-    "memo": "카카오뱅크 거래내역 · 세이프박스"
-  },
-  {
-    "id": "seed-kakao-bank-661",
-    "date": "2025-12-24",
-    "source": "bank",
-    "description": "세이프박스",
-    "amount": 1370560,
-    "category": "생활서비스",
-    "memo": "카카오뱅크 거래내역 · 세이프박스"
-  },
-  {
     "id": "seed-kakao-bank-659",
     "date": "2025-12-22",
     "source": "settlement",
@@ -3791,21 +3575,12 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "memo": "카카오뱅크 거래내역 · 자동이체(기타)"
   },
   {
-    "id": "seed-kakao-bank-657",
-    "date": "2025-12-19",
-    "source": "bank",
-    "description": "세이프박스",
-    "amount": 5037854,
-    "category": "생활서비스",
-    "memo": "카카오뱅크 거래내역 · 세이프박스"
-  },
-  {
     "id": "seed-kakao-bank-653",
     "date": "2025-12-15",
     "source": "bank",
     "description": "본부장님 모친상",
     "amount": 50000,
-    "category": "기타",
+    "category": "가족/용돈",
     "memo": "카카오뱅크 거래내역 · 일반이체"
   },
   {
@@ -3922,7 +3697,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "대현 모친 용돈",
     "amount": 300000,
-    "category": "기타",
+    "category": "가족/용돈",
     "memo": "카카오뱅크 거래내역 · 타행자동이체"
   },
   {
@@ -3940,7 +3715,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "혜진 용돈",
     "amount": 200000,
-    "category": "기타",
+    "category": "가족/용돈",
     "memo": "카카오뱅크 거래내역 · 타행자동이체"
   },
   {
@@ -3967,7 +3742,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "대현 용돈",
     "amount": 200000,
-    "category": "기타",
+    "category": "가족/용돈",
     "memo": "카카오뱅크 거래내역 · 타행자동이체"
   },
   {
@@ -3978,42 +3753,6 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "amount": 3000,
     "category": "보험/의료",
     "memo": "카카오뱅크 거래내역 · 체크카드결제"
-  },
-  {
-    "id": "seed-kakao-bank-628",
-    "date": "2025-12-01",
-    "source": "bank",
-    "description": "관리비",
-    "amount": 300000,
-    "category": "주거/통신",
-    "memo": "카카오뱅크 거래내역 · 계좌간자동이체"
-  },
-  {
-    "id": "seed-kakao-bank-627",
-    "date": "2025-12-01",
-    "source": "bank",
-    "description": "보험",
-    "amount": 359742,
-    "category": "보험/의료",
-    "memo": "카카오뱅크 거래내역 · 계좌간자동이체"
-  },
-  {
-    "id": "seed-kakao-bank-626",
-    "date": "2025-12-01",
-    "source": "bank",
-    "description": "통신&구독",
-    "amount": 125090,
-    "category": "주거/통신",
-    "memo": "카카오뱅크 거래내역 · 계좌간자동이체"
-  },
-  {
-    "id": "seed-kakao-bank-624",
-    "date": "2025-11-30",
-    "source": "bank",
-    "description": "세이프박스",
-    "amount": 65207,
-    "category": "생활서비스",
-    "memo": "카카오뱅크 거래내역 · 세이프박스"
   },
   {
     "id": "seed-kakao-bank-623",
@@ -4050,15 +3789,6 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "amount": 52060,
     "category": "신한카드 결제대금",
     "memo": "카카오뱅크 거래내역 · 신한카드 결제대금(중복 제외)"
-  },
-  {
-    "id": "seed-kakao-bank-615",
-    "date": "2025-11-29",
-    "source": "bank",
-    "description": "세이프박스",
-    "amount": 204360,
-    "category": "생활서비스",
-    "memo": "카카오뱅크 거래내역 · 세이프박스"
   },
   {
     "id": "seed-kakao-bank-614",
@@ -4113,15 +3843,6 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "amount": 3400,
     "category": "기타",
     "memo": "카카오뱅크 거래내역 · 일반이체"
-  },
-  {
-    "id": "seed-kakao-bank-605",
-    "date": "2025-11-21",
-    "source": "bank",
-    "description": "세이프박스",
-    "amount": 5035206,
-    "category": "생활서비스",
-    "memo": "카카오뱅크 거래내역 · 세이프박스"
   },
   {
     "id": "seed-kakao-bank-602",
@@ -4381,7 +4102,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "이혜진",
     "amount": 132036,
-    "category": "기타",
+    "category": "가족/용돈",
     "memo": "카카오뱅크 거래내역 · 일반이체"
   },
   {
@@ -4435,7 +4156,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "대현 모친 용돈",
     "amount": 300000,
-    "category": "기타",
+    "category": "가족/용돈",
     "memo": "카카오뱅크 거래내역 · 타행자동이체"
   },
   {
@@ -4453,7 +4174,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "혜진 용돈",
     "amount": 200000,
-    "category": "기타",
+    "category": "가족/용돈",
     "memo": "카카오뱅크 거래내역 · 타행자동이체"
   },
   {
@@ -4480,7 +4201,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "대현 용돈",
     "amount": 200000,
-    "category": "기타",
+    "category": "가족/용돈",
     "memo": "카카오뱅크 거래내역 · 타행자동이체"
   },
   {
@@ -4491,33 +4212,6 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "amount": 37760,
     "category": "식비/장보기",
     "memo": "카카오뱅크 거래내역 · 체크카드결제"
-  },
-  {
-    "id": "seed-kakao-bank-550",
-    "date": "2025-11-01",
-    "source": "bank",
-    "description": "관리비",
-    "amount": 300000,
-    "category": "주거/통신",
-    "memo": "카카오뱅크 거래내역 · 계좌간자동이체"
-  },
-  {
-    "id": "seed-kakao-bank-549",
-    "date": "2025-11-01",
-    "source": "bank",
-    "description": "보험",
-    "amount": 359742,
-    "category": "보험/의료",
-    "memo": "카카오뱅크 거래내역 · 계좌간자동이체"
-  },
-  {
-    "id": "seed-kakao-bank-548",
-    "date": "2025-11-01",
-    "source": "bank",
-    "description": "통신&구독",
-    "amount": 125090,
-    "category": "주거/통신",
-    "memo": "카카오뱅크 거래내역 · 계좌간자동이체"
   },
   {
     "id": "seed-kakao-bank-547",
@@ -4700,15 +4394,6 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "memo": "카카오뱅크 거래내역 · 체크카드결제"
   },
   {
-    "id": "seed-kakao-bank-520",
-    "date": "2025-10-24",
-    "source": "bank",
-    "description": "세이프박스",
-    "amount": 100000,
-    "category": "생활서비스",
-    "memo": "카카오뱅크 거래내역 · 세이프박스"
-  },
-  {
     "id": "seed-kakao-bank-518",
     "date": "2025-10-23",
     "source": "bank",
@@ -4743,15 +4428,6 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "amount": 100000,
     "category": "기타",
     "memo": "카카오뱅크 거래내역 · 일반이체"
-  },
-  {
-    "id": "seed-kakao-bank-513",
-    "date": "2025-10-21",
-    "source": "bank",
-    "description": "세이프박스",
-    "amount": 6536510,
-    "category": "생활서비스",
-    "memo": "카카오뱅크 거래내역 · 세이프박스"
   },
   {
     "id": "seed-kakao-bank-511",
@@ -5038,7 +4714,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "대현 모친 용돈",
     "amount": 300000,
-    "category": "기타",
+    "category": "가족/용돈",
     "memo": "카카오뱅크 거래내역 · 타행자동이체"
   },
   {
@@ -5065,7 +4741,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "혜진 용돈",
     "amount": 200000,
-    "category": "기타",
+    "category": "가족/용돈",
     "memo": "카카오뱅크 거래내역 · 타행자동이체"
   },
   {
@@ -5083,35 +4759,8 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "대현 용돈",
     "amount": 200000,
-    "category": "기타",
+    "category": "가족/용돈",
     "memo": "카카오뱅크 거래내역 · 타행자동이체"
-  },
-  {
-    "id": "seed-kakao-bank-471",
-    "date": "2025-10-01",
-    "source": "bank",
-    "description": "보험",
-    "amount": 359742,
-    "category": "보험/의료",
-    "memo": "카카오뱅크 거래내역 · 계좌간자동이체"
-  },
-  {
-    "id": "seed-kakao-bank-470",
-    "date": "2025-10-01",
-    "source": "bank",
-    "description": "통신&구독",
-    "amount": 125090,
-    "category": "주거/통신",
-    "memo": "카카오뱅크 거래내역 · 계좌간자동이체"
-  },
-  {
-    "id": "seed-kakao-bank-469",
-    "date": "2025-10-01",
-    "source": "bank",
-    "description": "관리비",
-    "amount": 300000,
-    "category": "주거/통신",
-    "memo": "카카오뱅크 거래내역 · 계좌간자동이체"
   },
   {
     "id": "seed-kakao-bank-467",
@@ -5231,15 +4880,6 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "memo": "카카오뱅크 거래내역 · 체크카드결제"
   },
   {
-    "id": "seed-kakao-bank-448",
-    "date": "2025-09-25",
-    "source": "bank",
-    "description": "세이프박스",
-    "amount": 100000,
-    "category": "생활서비스",
-    "memo": "카카오뱅크 거래내역 · 세이프박스"
-  },
-  {
     "id": "seed-kakao-bank-447",
     "date": "2025-09-25",
     "source": "settlement",
@@ -5339,15 +4979,6 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "memo": "카카오뱅크 거래내역 · 체크카드결제"
   },
   {
-    "id": "seed-kakao-bank-434",
-    "date": "2025-09-19",
-    "source": "bank",
-    "description": "세이프박스",
-    "amount": 3806595,
-    "category": "생활서비스",
-    "memo": "카카오뱅크 거래내역 · 세이프박스"
-  },
-  {
     "id": "seed-kakao-bank-431",
     "date": "2025-09-15",
     "source": "settlement",
@@ -5418,15 +5049,6 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "amount": 2980,
     "category": "식비/장보기",
     "memo": "카카오뱅크 거래내역 · 체크카드결제"
-  },
-  {
-    "id": "seed-kakao-bank-422",
-    "date": "2025-09-11",
-    "source": "bank",
-    "description": "세이프박스",
-    "amount": 4745700,
-    "category": "생활서비스",
-    "memo": "카카오뱅크 거래내역 · 세이프박스"
   },
   {
     "id": "seed-kakao-bank-420",
@@ -5551,7 +5173,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "대현 모친 용돈",
     "amount": 300000,
-    "category": "기타",
+    "category": "가족/용돈",
     "memo": "카카오뱅크 거래내역 · 타행자동이체"
   },
   {
@@ -5560,7 +5182,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "혜진 용돈",
     "amount": 200000,
-    "category": "기타",
+    "category": "가족/용돈",
     "memo": "카카오뱅크 거래내역 · 타행자동이체"
   },
   {
@@ -5605,7 +5227,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "대현 용돈",
     "amount": 200000,
-    "category": "기타",
+    "category": "가족/용돈",
     "memo": "카카오뱅크 거래내역 · 타행자동이체"
   },
   {
@@ -5616,33 +5238,6 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "amount": 14000,
     "category": "기타",
     "memo": "카카오뱅크 거래내역 · 일반이체"
-  },
-  {
-    "id": "seed-kakao-bank-396",
-    "date": "2025-09-01",
-    "source": "bank",
-    "description": "보험",
-    "amount": 359742,
-    "category": "보험/의료",
-    "memo": "카카오뱅크 거래내역 · 계좌간자동이체"
-  },
-  {
-    "id": "seed-kakao-bank-395",
-    "date": "2025-09-01",
-    "source": "bank",
-    "description": "통신&구독",
-    "amount": 125090,
-    "category": "주거/통신",
-    "memo": "카카오뱅크 거래내역 · 계좌간자동이체"
-  },
-  {
-    "id": "seed-kakao-bank-394",
-    "date": "2025-09-01",
-    "source": "bank",
-    "description": "관리비",
-    "amount": 300000,
-    "category": "주거/통신",
-    "memo": "카카오뱅크 거래내역 · 계좌간자동이체"
   },
   {
     "id": "seed-kakao-bank-393",
@@ -5762,15 +5357,6 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "memo": "카카오뱅크 거래내역 · 신한카드 결제대금(중복 제외)"
   },
   {
-    "id": "seed-kakao-bank-377",
-    "date": "2025-08-25",
-    "source": "bank",
-    "description": "세이프박스",
-    "amount": 100000,
-    "category": "생활서비스",
-    "memo": "카카오뱅크 거래내역 · 세이프박스"
-  },
-  {
     "id": "seed-kakao-bank-375",
     "date": "2025-08-25",
     "source": "settlement",
@@ -5841,15 +5427,6 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "amount": 648800,
     "category": "신한카드 결제대금",
     "memo": "카카오뱅크 거래내역 · 신한카드 결제대금(중복 제외)"
-  },
-  {
-    "id": "seed-kakao-bank-365",
-    "date": "2025-08-21",
-    "source": "bank",
-    "description": "세이프박스",
-    "amount": 4657377,
-    "category": "생활서비스",
-    "memo": "카카오뱅크 거래내역 · 세이프박스"
   },
   {
     "id": "seed-kakao-bank-363",
@@ -6109,7 +5686,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "대현 모친 용돈",
     "amount": 300000,
-    "category": "기타",
+    "category": "가족/용돈",
     "memo": "카카오뱅크 거래내역 · 타행자동이체"
   },
   {
@@ -6145,7 +5722,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "혜진 용돈",
     "amount": 200000,
-    "category": "기타",
+    "category": "가족/용돈",
     "memo": "카카오뱅크 거래내역 · 타행자동이체"
   },
   {
@@ -6163,35 +5740,8 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "대현 용돈",
     "amount": 200000,
-    "category": "기타",
+    "category": "가족/용돈",
     "memo": "카카오뱅크 거래내역 · 타행자동이체"
-  },
-  {
-    "id": "seed-kakao-bank-321",
-    "date": "2025-08-01",
-    "source": "bank",
-    "description": "보험",
-    "amount": 359742,
-    "category": "보험/의료",
-    "memo": "카카오뱅크 거래내역 · 계좌간자동이체"
-  },
-  {
-    "id": "seed-kakao-bank-320",
-    "date": "2025-08-01",
-    "source": "bank",
-    "description": "관리비",
-    "amount": 300000,
-    "category": "주거/통신",
-    "memo": "카카오뱅크 거래내역 · 계좌간자동이체"
-  },
-  {
-    "id": "seed-kakao-bank-319",
-    "date": "2025-08-01",
-    "source": "bank",
-    "description": "통신&구독",
-    "amount": 125090,
-    "category": "주거/통신",
-    "memo": "카카오뱅크 거래내역 · 계좌간자동이체"
   },
   {
     "id": "seed-kakao-bank-317",
@@ -6417,15 +5967,6 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "amount": 15800,
     "category": "신한카드 결제대금",
     "memo": "카카오뱅크 거래내역 · 신한카드 결제대금(중복 제외)"
-  },
-  {
-    "id": "seed-kakao-bank-285",
-    "date": "2025-07-21",
-    "source": "bank",
-    "description": "세이프박스",
-    "amount": 4444316,
-    "category": "생활서비스",
-    "memo": "카카오뱅크 거래내역 · 세이프박스"
   },
   {
     "id": "seed-kakao-bank-283",
@@ -6770,15 +6311,6 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "memo": "카카오뱅크 거래내역 · 체크카드결제"
   },
   {
-    "id": "seed-kakao-bank-243",
-    "date": "2025-07-08",
-    "source": "bank",
-    "description": "세이프박스",
-    "amount": 1616330,
-    "category": "생활서비스",
-    "memo": "카카오뱅크 거래내역 · 세이프박스"
-  },
-  {
     "id": "seed-kakao-bank-241",
     "date": "2025-07-07",
     "source": "bank",
@@ -6937,7 +6469,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "대현 모친 용돈",
     "amount": 300000,
-    "category": "기타",
+    "category": "가족/용돈",
     "memo": "카카오뱅크 거래내역 · 타행자동이체"
   },
   {
@@ -6973,7 +6505,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "혜진 용돈",
     "amount": 200000,
-    "category": "기타",
+    "category": "가족/용돈",
     "memo": "카카오뱅크 거래내역 · 타행자동이체"
   },
   {
@@ -6991,35 +6523,8 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "대현 용돈",
     "amount": 200000,
-    "category": "기타",
+    "category": "가족/용돈",
     "memo": "카카오뱅크 거래내역 · 타행자동이체"
-  },
-  {
-    "id": "seed-kakao-bank-217",
-    "date": "2025-07-01",
-    "source": "bank",
-    "description": "보험",
-    "amount": 359742,
-    "category": "보험/의료",
-    "memo": "카카오뱅크 거래내역 · 계좌간자동이체"
-  },
-  {
-    "id": "seed-kakao-bank-216",
-    "date": "2025-07-01",
-    "source": "bank",
-    "description": "관리비",
-    "amount": 300000,
-    "category": "주거/통신",
-    "memo": "카카오뱅크 거래내역 · 계좌간자동이체"
-  },
-  {
-    "id": "seed-kakao-bank-215",
-    "date": "2025-07-01",
-    "source": "bank",
-    "description": "통신&구독",
-    "amount": 125090,
-    "category": "주거/통신",
-    "memo": "카카오뱅크 거래내역 · 계좌간자동이체"
   },
   {
     "id": "seed-kakao-bank-214",
@@ -7029,15 +6534,6 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "amount": 27668,
     "category": "기타",
     "memo": "카카오뱅크 거래내역 · 체크카드결제"
-  },
-  {
-    "id": "seed-kakao-bank-212",
-    "date": "2025-06-30",
-    "source": "bank",
-    "description": "세이프박스",
-    "amount": 9986,
-    "category": "생활서비스",
-    "memo": "카카오뱅크 거래내역 · 세이프박스"
   },
   {
     "id": "seed-kakao-bank-211",
@@ -7263,15 +6759,6 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "amount": 56410,
     "category": "신한카드 결제대금",
     "memo": "카카오뱅크 거래내역 · 신한카드 결제대금(중복 제외)"
-  },
-  {
-    "id": "seed-kakao-bank-177",
-    "date": "2025-06-20",
-    "source": "bank",
-    "description": "세이프박스",
-    "amount": 4642586,
-    "category": "생활서비스",
-    "memo": "카카오뱅크 거래내역 · 세이프박스"
   },
   {
     "id": "seed-kakao-bank-175",
@@ -7711,7 +7198,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "대현 모친 용돈",
     "amount": 300000,
-    "category": "기타",
+    "category": "가족/용돈",
     "memo": "카카오뱅크 거래내역 · 타행자동이체"
   },
   {
@@ -7738,7 +7225,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "혜진 용돈",
     "amount": 200000,
-    "category": "기타",
+    "category": "가족/용돈",
     "memo": "카카오뱅크 거래내역 · 타행자동이체"
   },
   {
@@ -7765,7 +7252,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "대현 용돈",
     "amount": 200000,
-    "category": "기타",
+    "category": "가족/용돈",
     "memo": "카카오뱅크 거래내역 · 타행자동이체"
   },
   {
@@ -8021,15 +7508,6 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "memo": "카카오뱅크 거래내역 · 신한카드 결제대금(중복 제외)"
   },
   {
-    "id": "seed-kakao-bank-81",
-    "date": "2025-05-24",
-    "source": "bank",
-    "description": "세이프박스",
-    "amount": 1100000,
-    "category": "생활서비스",
-    "memo": "카카오뱅크 거래내역 · 세이프박스"
-  },
-  {
     "id": "seed-kakao-bank-79",
     "date": "2025-05-23",
     "source": "bank",
@@ -8044,7 +7522,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "이혜진 · 돌 사진 촬영 예약금",
     "amount": 100000,
-    "category": "기타",
+    "category": "가족/용돈",
     "memo": "카카오뱅크 거래내역 · 일반이체"
   },
   {
@@ -8073,15 +7551,6 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "amount": 50000,
     "category": "기타",
     "memo": "카카오뱅크 거래내역 · 일반이체"
-  },
-  {
-    "id": "seed-kakao-bank-70",
-    "date": "2025-05-21",
-    "source": "bank",
-    "description": "세이프박스",
-    "amount": 4637731,
-    "category": "생활서비스",
-    "memo": "카카오뱅크 거래내역 · 세이프박스"
   },
   {
     "id": "seed-kakao-bank-68",
@@ -8269,7 +7738,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "카카오페이 · 인천엄마 어버이날 용돈",
     "amount": 300000,
-    "category": "생활서비스",
+    "category": "가족/용돈",
     "memo": "카카오뱅크 거래내역 · 자동이체(기타)"
   },
   {
@@ -8359,7 +7828,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "대현 모친 용돈",
     "amount": 300000,
-    "category": "기타",
+    "category": "가족/용돈",
     "memo": "카카오뱅크 거래내역 · 타행자동이체"
   },
   {
@@ -8377,7 +7846,7 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "혜진 용돈",
     "amount": 200000,
-    "category": "기타",
+    "category": "가족/용돈",
     "memo": "카카오뱅크 거래내역 · 타행자동이체"
   },
   {
@@ -8413,17 +7882,8 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "source": "bank",
     "description": "대현 용돈",
     "amount": 200000,
-    "category": "기타",
+    "category": "가족/용돈",
     "memo": "카카오뱅크 거래내역 · 타행자동이체"
-  },
-  {
-    "id": "seed-kakao-bank-28",
-    "date": "2025-05-01",
-    "source": "bank",
-    "description": "세이프박스",
-    "amount": 892391,
-    "category": "생활서비스",
-    "memo": "카카오뱅크 거래내역 · 세이프박스"
   },
   {
     "id": "seed-kakao-bank-27",
@@ -8595,14 +8055,5 @@ export const INITIAL_LIVING_EXPENSES: LivingExpenseTransaction[] = [
     "amount": 10500,
     "category": "기타",
     "memo": "카카오뱅크 거래내역 · 자동이체(기타)"
-  },
-  {
-    "id": "seed-kakao-bank-1",
-    "date": "2025-04-23",
-    "source": "bank",
-    "description": "세이프박스",
-    "amount": 261219,
-    "category": "생활서비스",
-    "memo": "카카오뱅크 거래내역 · 세이프박스"
   }
 ]
