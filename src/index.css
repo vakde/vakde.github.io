@@ -1,24 +1,18 @@
 :root {
-  --ink: #17181b;
-  --ink-soft: #494f55;
-  --slate: #6c7278;
-  --paper: #f4efe6;
-  --paper-deep: #e9ddca;
-  --paper-strong: #fffbf5;
-  --line: rgba(69, 61, 52, 0.14);
-  --line-strong: rgba(69, 61, 52, 0.22);
-  --sage: #31554a;
-  --sage-soft: rgba(49, 85, 74, 0.1);
-  --copper: #b56a3b;
-  --copper-soft: rgba(181, 106, 59, 0.12);
-  --danger: #b34e3d;
-  --danger-soft: rgba(179, 78, 61, 0.12);
-  --shadow-lg: 0 26px 60px rgba(44, 34, 20, 0.12);
-  --shadow-md: 0 18px 34px rgba(44, 34, 20, 0.08);
-  --radius-xl: 32px;
-  --radius-lg: 24px;
-  --radius-md: 18px;
-  --radius-sm: 14px;
+  --ink: #16201c;
+  --ink-soft: #495953;
+  --slate: #718078;
+  --paper: #eef3ef;
+  --paper-deep: #dfe8e1;
+  --paper-strong: #fbfcf8;
+  --line: rgba(34, 51, 45, 0.13);
+  --line-strong: rgba(34, 51, 45, 0.24);
+  --forest: #2f6f57;
+  --blue: #1d4f67;
+  --accent: #9b6b2f;
+  --risk: #b45845;
+  --shadow-lg: 0 26px 60px rgba(25, 40, 34, 0.14);
+  --shadow-md: 0 18px 34px rgba(25, 40, 34, 0.09);
   font-family:
     'SUIT Variable',
     'Pretendard Variable',
@@ -30,9 +24,7 @@
   font-weight: 400;
   color: var(--ink);
   background:
-    radial-gradient(circle at top left, rgba(181, 106, 59, 0.16), transparent 28%),
-    radial-gradient(circle at top right, rgba(49, 85, 74, 0.14), transparent 30%),
-    linear-gradient(180deg, #f8f3ea 0%, var(--paper) 36%, var(--paper-deep) 100%);
+    linear-gradient(180deg, #f8faf7 0%, var(--paper) 48%, var(--paper-deep) 100%);
   color-scheme: light;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -63,8 +55,8 @@ body::before {
   inset: 0;
   pointer-events: none;
   background-image:
-    linear-gradient(rgba(69, 61, 52, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(69, 61, 52, 0.03) 1px, transparent 1px);
+    linear-gradient(rgba(34, 51, 45, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(34, 51, 45, 0.04) 1px, transparent 1px);
   background-size: 36px 36px;
   mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.4), transparent 85%);
 }
@@ -92,7 +84,7 @@ p {
 }
 
 ::selection {
-  background: rgba(181, 106, 59, 0.18);
+  background: rgba(47, 111, 87, 0.18);
 }
 
 #root {
