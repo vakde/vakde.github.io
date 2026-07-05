@@ -2377,18 +2377,51 @@ function App() {
   function selectMumeVersion(versionId: MumeVersion['id']) {
     const nextVersion = MUME_VERSIONS.find((version) => version.id === versionId) ?? MUME_VERSIONS[1]
 
-    setState((prevState) => applySettingsPatch(prevState, {
-      mumeVersionId: nextVersion.id,
-      divisionDate: nextVersion.defaultDivision,
-      targetProfit: nextVersion.defaultTargetProfit,
-      mumeBuyingUnit: prevState.seed / nextVersion.defaultDivision,
-      mumeQuarterMode: false,
-      mumeQuarterModeCount: 0,
-      mumeReverseMode: false,
-      mumeReverseStarPrice: 0,
-      mumeCycleId: createTransactionId(),
-      tValue: 0,
-    }))
+    setState((prevState) =>
+      applySettingsPatch(prevState, {
+        mumeVersionId: nextVersion.id,
+        divisionDate: nextVersion.defaultDivision,
+        targetProfit:
+          nextVersion.id === 'v4'
+            ? getV4TargetProfit(getStock(prevState.selectedStockId))
+            : nextVersion.defaultTargetProfit,
+        mumeBuyingUnit: prevState.seed / nextVersion.defaultDivision,
+        mumeQuarterMode: false,
+        mumeQuarterModeCount: 0,
+        mumeReverseMode: false,
+        mumeReverseStarPrice: 0,
+        mumeCycleId: createTransactionId(),
+        tValue: 0,
+      }),
+    )
+  }
+
+  function updateMumeSeed(seed: number) {
+    setState((prevState) => {
+      const divisionDate = Math.max(1, positive(prevState.divisionDate) || 1)
+
+      return applySettingsPatch(prevState, {
+        seed,
+        mumeBuyingUnit:
+          prevState.mumeVersionId === 'v3'
+            ? seed / divisionDate
+            : prevState.mumeBuyingUnit,
+      })
+    })
+  }
+
+  function updateMumeDivisionDate(divisionDate: number) {
+    setState((prevState) => {
+      const nextDivisionDate = Math.max(1, divisionDate)
+
+      return applySettingsPatch(prevState, {
+        divisionDate: nextDivisionDate,
+        mumeBuyingUnit:
+          prevState.mumeVersionId === 'v3'
+            ? prevState.seed / nextDivisionDate
+            : prevState.mumeBuyingUnit,
+      })
+    })
   }
 
   function selectVrVersion(versionId: VrVersion['id']) {
@@ -3117,7 +3150,7 @@ function App() {
                     min="0"
                     type="number"
                     value={state.seed}
-                    onChange={(event) => updateState('seed', Number(event.target.value))}
+                    onChange={(event) => updateMumeSeed(Number(event.target.value))}
                   />
                 </label>
                 <label className="field">
@@ -3127,41 +3160,51 @@ function App() {
                     min="1"
                     type="number"
                     value={state.divisionDate}
-                    onChange={(event) => updateState('divisionDate', Number(event.target.value))}
+                    onChange={(event) => updateMumeDivisionDate(Number(event.target.value))}
                   />
                 </label>
                 <label className="field">
                   <span>목표 수익률 %</span>
                   <input
+                    readOnly={state.mumeVersionId === 'v4'}
+                    className={state.mumeVersionId === 'v4' ? 'is-readonly' : ''}
                     inputMode="decimal"
                     min="0"
                     step="0.1"
                     type="number"
-                    value={state.targetProfit}
+                    value={
+                      state.mumeVersionId === 'v4'
+                        ? getV4TargetProfit(selectedStock)
+                        : state.targetProfit
+                    }
                     onChange={(event) => updateState('targetProfit', Number(event.target.value))}
                   />
                 </label>
-                <label className="field">
-                  <span>T값</span>
-                  <input
-                    inputMode="decimal"
-                    min="0"
-                    step="0.1"
-                    type="number"
-                    value={state.tValue}
-                    onChange={(event) => updateState('tValue', Number(event.target.value))}
-                  />
-                </label>
-                <label className="field">
-                  <span>1회차</span>
-                  <input
-                    inputMode="numeric"
-                    min="0"
-                    type="number"
-                    value={state.mumeBuyingUnit}
-                    onChange={(event) => updateState('mumeBuyingUnit', Number(event.target.value))}
-                  />
-                </label>
+                {state.mumeVersionId === 'v4' ? (
+                  <label className="field">
+                    <span>T값</span>
+                    <input
+                      inputMode="decimal"
+                      min="0"
+                      step="0.1"
+                      type="number"
+                      value={state.tValue}
+                      onChange={(event) => updateState('tValue', Number(event.target.value))}
+                    />
+                  </label>
+                ) : null}
+                {state.mumeVersionId === 'v3' ? (
+                  <label className="field">
+                    <span>1회차</span>
+                    <input
+                      inputMode="numeric"
+                      min="0"
+                      type="number"
+                      value={state.mumeBuyingUnit}
+                      onChange={(event) => updateState('mumeBuyingUnit', Number(event.target.value))}
+                    />
+                  </label>
+                ) : null}
                 <label className="field">
                   <span>수수료율 %</span>
                   <input

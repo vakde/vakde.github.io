@@ -129,6 +129,11 @@
   resize: vertical;
 }
 
+.field input.is-readonly {
+  background: #f0f2f5;
+  color: #4e5665;
+}
+
 .field input:focus,
 .field select:focus,
 .field textarea:focus {
