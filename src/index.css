@@ -1,30 +1,27 @@
 :root {
-  --ink: #16201c;
-  --ink-soft: #495953;
-  --slate: #718078;
-  --paper: #eef3ef;
-  --paper-deep: #dfe8e1;
-  --paper-strong: #fbfcf8;
-  --line: rgba(34, 51, 45, 0.13);
-  --line-strong: rgba(34, 51, 45, 0.24);
-  --forest: #2f6f57;
-  --blue: #1d4f67;
-  --accent: #9b6b2f;
-  --risk: #b45845;
-  --shadow-lg: 0 26px 60px rgba(25, 40, 34, 0.14);
-  --shadow-md: 0 18px 34px rgba(25, 40, 34, 0.09);
+  --bg: #ffffff;
+  --surface-1: #ffffff;
+  --surface-2: #f6f7f9;
+  --surface-3: #eef1ff;
+  --fg-1: #0a0a0b;
+  --fg-2: #6b7186;
+  --fg-3: #9ba1b2;
+  --border: #e6e8ef;
+  --border-strong: #d4d7e0;
+  --accent: #3d5afe;
+  --accent-hover: #304be0;
+  --accent-soft: #eef1ff;
+  --dark: #0f1220;
+  --up: #e5372e;
+  --down: #1e6fe8;
   font-family:
-    'SUIT Variable',
-    'Pretendard Variable',
+    Inter,
     'Apple SD Gothic Neo',
     'Noto Sans KR',
     system-ui,
     sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-  color: var(--ink);
-  background:
-    linear-gradient(180deg, #f8faf7 0%, var(--paper) 48%, var(--paper-deep) 100%);
+  color: var(--fg-1);
+  background: var(--bg);
   color-scheme: light;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -43,22 +40,10 @@ html {
 }
 
 body {
-  margin: 0;
   min-width: 320px;
   min-height: 100vh;
-  position: relative;
-}
-
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  background-image:
-    linear-gradient(rgba(34, 51, 45, 0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(34, 51, 45, 0.04) 1px, transparent 1px);
-  background-size: 36px 36px;
-  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.4), transparent 85%);
+  margin: 0;
+  background: var(--bg);
 }
 
 button,
@@ -69,11 +54,18 @@ select {
 }
 
 button:focus-visible,
-input:focus-visible,
-textarea:focus-visible,
-select:focus-visible {
-  outline: 2px solid rgba(49, 85, 74, 0.65);
-  outline-offset: 3px;
+a:focus-visible {
+  outline: 3px solid rgba(61, 90, 254, 0.35);
+  outline-offset: 4px;
+}
+
+button {
+  -webkit-tap-highlight-color: transparent;
+}
+
+img {
+  display: block;
+  max-width: 100%;
 }
 
 h1,
@@ -84,7 +76,8 @@ p {
 }
 
 ::selection {
-  background: rgba(47, 111, 87, 0.18);
+  background: rgba(61, 90, 254, 0.13);
+  color: var(--accent);
 }
 
 #root {
