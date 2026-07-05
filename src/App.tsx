@@ -896,7 +896,7 @@ function detectStockFromText(text: string): Stock | null {
 }
 
 function normalizeTicker(value: string): string {
-  const ticker = value.trim().replace(/^A(?=\d+$)/, '')
+  const ticker = value.trim().replace(/^A(?=\d)/i, '')
 
   return ticker.replace(/\s+/g, ' ')
 }
@@ -957,7 +957,9 @@ function parseBrokerSpecific(text: string): BrokerParsedTrade | null {
   if (/\[DB금융투자]|\[DB증권]/.test(text)) {
     return makeBrokerTrade(
       text,
-      extractText(text, /종목명\s*:\s*.*\(([^)]+)\)/) ?? extractText(text, /종목명\s*:\s*([^\n]+)/),
+      extractText(text, /종목명\s*:\s*.*\(([^)]+)\)/) ??
+        extractText(text, /종목(?:코드|번호)\s*[:：]?\s*([A-Z0-9]+)/i) ??
+        extractText(text, /종목명\s*:\s*([^\n]+)/),
       extractText(text, /체결수량\s*:\s*([0-9,]+)/),
       extractText(text, /체결단가\s*:\s*([0-9,.]+)/),
     )
@@ -1002,7 +1004,7 @@ function parseBrokerSpecific(text: string): BrokerParsedTrade | null {
   }
 
   if (text.includes('[삼성증권]')) {
-    let ticker = extractText(text, /종목코드\s*:\s*([A-Z0-9]+)/i)
+    let ticker = extractText(text, /종목(?:코드|번호)\s*[:：]?\s*([A-Z0-9]+)/i)
     let quantity = extractText(text, /체결수량\s*:\s*([0-9,]+)/)
     let price = extractText(text, /체결가격\s*:\s*([0-9,.]+)/)
 
@@ -1047,7 +1049,7 @@ function parseBrokerSpecific(text: string): BrokerParsedTrade | null {
   if (text.includes('[신한투자증권]')) {
     return makeBrokerTrade(
       text,
-      extractText(text, /종목코드\s*:\s*([A-Z0-9]+)/i),
+      extractText(text, /종목(?:코드|번호)\s*[:：]?\s*([A-Z0-9]+)/i),
       extractText(text, /체결수량\s*:\s*([0-9,]+)/),
       extractText(text, /체결단가\s*:\s*\$?([0-9,.]+)/),
     )
@@ -1056,7 +1058,7 @@ function parseBrokerSpecific(text: string): BrokerParsedTrade | null {
   if (text.includes('[NH투자') || text.includes('NH투자증권')) {
     let ticker =
       extractText(text, /\(([A-Z]+)\s+US\)/) ??
-      extractText(text, /종목코드\s*:\s*([0-9A-Z]+)/i)
+      extractText(text, /종목(?:코드|번호)\s*[:：]?\s*([0-9A-Z]+)/i)
     let quantity = extractText(text, /체결수량\s*:\s*([0-9,]+)/)
     let price = extractText(text, /체결(?:가격|단가)\s*:\s*([0-9,.]+)/)
 
@@ -1168,7 +1170,7 @@ function parseBrokerSpecific(text: string): BrokerParsedTrade | null {
 
   return makeBrokerTrade(
     text,
-    extractText(text, /종목코드\s*:\s*([A-Z0-9]+)/i),
+    extractText(text, /종목(?:코드|번호)\s*[:：]?\s*([A-Z0-9]+)/i),
     extractText(text, /체결수량\s*:\s*([0-9,]+)/),
     extractText(text, /체결단가\s*:\s*([0-9,.]+)/),
     { currency: 'KRW' },
@@ -1208,7 +1210,7 @@ function parseBrokerMessage(text: string): Partial<DraftTransaction> & { stockId
   const feeText =
     extractText(normalized, /(?:수수료|제비용|commission)\s*[:：]?\s*(?:KRW|USD|[$₩])?\s*([0-9,.]+)/i)
   const parsedTicker =
-    extractText(normalized, /종목코드\s*[:：]?\s*([A-Z0-9]+)/i) ??
+    extractText(normalized, /종목(?:코드|번호)\s*[:：]?\s*([A-Z0-9]+)/i) ??
     extractText(normalized, /종목명\s*[:：]?\s*.*\(([^)]+)\)/) ??
     extractText(normalized, /\(([A-Z0-9]{4,8})\)/i)
 
@@ -2441,14 +2443,25 @@ function App() {
       return
     }
 
-    const parsed = parseBrokerMessage(text)
+    applyParsedBrokerTrade(parseBrokerMessage(text))
+  }
 
+  function applyParsedBrokerTrade(parsed: Partial<DraftTransaction> & { stockId?: string }) {
     if (!parsed.price || !parsed.quantity) {
       setTradeWarning('문자에서 체결가와 수량을 찾지 못했습니다.')
       return
     }
 
     if (parsed.stockId) {
+      const parsedStock = getStock(parsed.stockId)
+
+      if (parsedStock.id !== state.selectedStockId) {
+        setTradeWarning(
+          `문자 종목은 ${parsedStock.name}입니다. 현재 종목(${selectedStock.name})과 달라 반영하지 않았습니다.`,
+        )
+        return
+      }
+
       selectStock(parsed.stockId)
     }
 
@@ -2481,26 +2494,7 @@ function App() {
       setParserText(text)
 
       const parsed = parseBrokerMessage(text)
-
-      if (!parsed.price || !parsed.quantity) {
-        setTradeWarning('문자에서 체결가와 수량을 찾지 못했습니다.')
-        return
-      }
-
-      if (parsed.stockId) {
-        selectStock(parsed.stockId)
-      }
-
-      setDraft((prevDraft) => ({
-        ...prevDraft,
-        type: parsed.type ?? prevDraft.type,
-        date: parsed.date ?? prevDraft.date,
-        price: positive(parsed.price ?? 0) || prevDraft.price,
-        quantity: positive(parsed.quantity ?? 0) || prevDraft.quantity,
-        fee: positive(parsed.fee ?? 0),
-        memo: parsed.memo ?? '문자 파싱',
-      }))
-      setTradeWarning('')
+      applyParsedBrokerTrade(parsed)
     } catch {
       setTradeWarning('클립보드 권한이 필요합니다.')
     }
