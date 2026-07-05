@@ -3050,7 +3050,7 @@ function App() {
       const cyclePosition = getPosition(prevState, prevState.selectedStockId, 'vr')
       const cycleGuide = buildVrGuide(prevState, cyclePosition, getVrVersion(prevState.vrVersionId))
       const operationEndDate = getOperationEndDate(prevState, prevState.selectedStockId, 'vr')
-      const nextStartDate = getMondayAfterIso(operationEndDate)
+      const nextStartDate = getNextMondayIso()
       const hasVrActivity =
         cyclePosition.holdingQty > 0 ||
         cyclePosition.totalBuy > 0 ||
