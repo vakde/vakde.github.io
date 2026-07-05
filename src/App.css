@@ -736,14 +736,6 @@
   min-width: 0;
 }
 
-.order-line p {
-  grid-column: 1 / -1;
-  color: #697081;
-  font-size: 0.78rem;
-  font-weight: 740;
-  line-height: 1.45;
-}
-
 .featured-order {
   grid-template-columns: repeat(4, minmax(0, 1fr));
   margin-top: 14px;
@@ -769,7 +761,6 @@
   font-weight: 950;
 }
 
-.vr-status p,
 .empty-state,
 .pool-meter small,
 .warning-text {

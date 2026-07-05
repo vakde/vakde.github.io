@@ -3472,7 +3472,6 @@ function App() {
               <div className="vr-status">
                 <span>{selectedVrVersion.label}</span>
                 <strong>{vrGuide.status}</strong>
-                <p>{vrGuide.note}</p>
               </div>
 
               <div className="metric-grid vr-metrics">
@@ -4199,7 +4198,6 @@ function OrderList({
               <span>수량</span>
               <strong>{formatNumber(order.quantity, 0)}주</strong>
             </div>
-            <p>{order.note}</p>
           </div>
         ))
       ) : (
