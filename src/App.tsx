@@ -481,6 +481,20 @@ function getPosition(
   )
 }
 
+function createDraftForState(
+  state: AppState,
+  baseDraft: DraftTransaction = DEFAULT_DRAFT,
+): DraftTransaction {
+  const stock = getStock(state.selectedStockId)
+  const position = getPosition(state, state.selectedStockId, state.strategyMode)
+
+  return {
+    ...baseDraft,
+    date: getStrategyTradeDate(state, baseDraft.date || getTodayIso()),
+    price: positive(position.currentPrice) || stock.referencePrice,
+  }
+}
+
 function hasPositionData(position: Position): boolean {
   return (
     positive(position.holdingQty) > 0 ||
@@ -2197,8 +2211,16 @@ function buildCompletedReportSummary(reports: CompletedReport[]): CompletedRepor
 }
 
 function App() {
-  const [state, setState] = useState<AppState>(readStoredState)
-  const [draft, setDraft] = useState(DEFAULT_DRAFT)
+  const [initialAppState] = useState(() => {
+    const state = readStoredState()
+
+    return {
+      state,
+      draft: createDraftForState(state),
+    }
+  })
+  const [state, setState] = useState<AppState>(initialAppState.state)
+  const [draft, setDraft] = useState<DraftTransaction>(initialAppState.draft)
   const [parserText, setParserText] = useState('')
   const [poolAdjustment, setPoolAdjustment] = useState('')
   const [tradeWarning, setTradeWarning] = useState('')
@@ -2330,6 +2352,13 @@ function App() {
     }))
   }
 
+  function selectStrategyMode(strategyMode: StrategyMode) {
+    const nextState = applySettingsPatch(state, { strategyMode })
+
+    setState(nextState)
+    setDraft((prevDraft) => createDraftForState(nextState, prevDraft))
+  }
+
   function updatePosition<K extends keyof Position>(field: K, value: Position[K]) {
     setState((prevState) => {
       const currentPosition = getPosition(prevState, prevState.selectedStockId, prevState.strategyMode)
@@ -2409,25 +2438,17 @@ function App() {
 
   function selectStock(stockId: string) {
     const nextStock = getStock(stockId)
-    const nextSettings = getSettingsForStock(state, nextStock.id)
-
-    setState((prevState) => {
-      const currentSavedState = syncCurrentStockSettings(prevState)
-      const savedNextSettings =
-        currentSavedState.stockSettings[nextStock.id] ?? getDefaultStockSettings()
-
-      return syncCurrentStockSettings({
-        ...currentSavedState,
-        ...savedNextSettings,
-        selectedStockId: nextStock.id,
-      })
+    const currentSavedState = syncCurrentStockSettings(state)
+    const savedNextSettings =
+      currentSavedState.stockSettings[nextStock.id] ?? getDefaultStockSettings()
+    const nextState = syncCurrentStockSettings({
+      ...currentSavedState,
+      ...savedNextSettings,
+      selectedStockId: nextStock.id,
     })
-    setDraft((prevDraft) => ({
-      ...prevDraft,
-      price:
-        getPosition(state, nextStock.id, nextSettings.strategyMode).currentPrice ||
-        nextStock.referencePrice,
-    }))
+
+    setState(nextState)
+    setDraft((prevDraft) => createDraftForState(nextState, prevDraft))
   }
 
   function selectMumeVersion(versionId: MumeVersion['id']) {
@@ -2939,8 +2960,10 @@ function App() {
     }
 
     window.localStorage.removeItem(STORAGE_KEY)
-    setState(syncCurrentStockSettings(DEFAULT_STATE))
-    setDraft(DEFAULT_DRAFT)
+    const nextState = syncCurrentStockSettings(DEFAULT_STATE)
+
+    setState(nextState)
+    setDraft(createDraftForState(nextState))
     setParserText('')
     setPoolAdjustment('')
     setTradeWarning('')
@@ -3104,7 +3127,7 @@ function App() {
           aria-selected={state.strategyMode === 'vr'}
           className={state.strategyMode === 'vr' ? 'strategy-card is-active' : 'strategy-card'}
           type="button"
-          onClick={() => updateState('strategyMode', 'vr')}
+          onClick={() => selectStrategyMode('vr')}
         >
           <span>VR</span>
           <strong>{vrGuide.status}</strong>
@@ -3117,7 +3140,7 @@ function App() {
           aria-selected={state.strategyMode === 'mume'}
           className={state.strategyMode === 'mume' ? 'strategy-card is-active' : 'strategy-card'}
           type="button"
-          onClick={() => updateState('strategyMode', 'mume')}
+          onClick={() => selectStrategyMode('mume')}
         >
           <span>무한매수법</span>
           <strong>{mumeGuide.phase}</strong>
@@ -3763,14 +3786,14 @@ function App() {
               <button
                 className={state.strategyMode === 'vr' ? 'is-active' : ''}
                 type="button"
-                onClick={() => updateState('strategyMode', 'vr')}
+                onClick={() => selectStrategyMode('vr')}
               >
                 VR
               </button>
               <button
                 className={state.strategyMode === 'mume' ? 'is-active' : ''}
                 type="button"
-                onClick={() => updateState('strategyMode', 'mume')}
+                onClick={() => selectStrategyMode('mume')}
               >
                 무한매수
               </button>
