@@ -113,6 +113,7 @@ type StockSettings = {
 }
 
 type AppState = {
+  storageVersion: number
   selectedStockId: string
   alias: string
   tags: string
@@ -243,6 +244,7 @@ type BrokerParsedTrade = {
 }
 
 const STORAGE_KEY = 'vakde-gate-state-v3'
+const CURRENT_STORAGE_VERSION = 11
 
 const STOCKS: Stock[] = [
   {
@@ -323,6 +325,7 @@ const DEFAULT_POSITIONS = STOCKS.reduce<Record<string, Position>>((positions, st
 }, {})
 
 const DEFAULT_STATE: AppState = {
+  storageVersion: CURRENT_STORAGE_VERSION,
   selectedStockId: STOCKS[0].id,
   alias: '',
   tags: '',
@@ -371,6 +374,8 @@ const DEFAULT_DRAFT = {
 } satisfies DraftTransaction
 
 function normalizeStoredState(stored: Partial<AppState>): AppState {
+  const needsLegacyStrategyDefault =
+    positive(stored.storageVersion ?? 0) < CURRENT_STORAGE_VERSION
   const storedVersionId: VrVersion['id'] =
     VR_VERSIONS.some((version) => version.id === stored.vrVersionId)
       ? (stored.vrVersionId as VrVersion['id'])
@@ -395,6 +400,7 @@ function normalizeStoredState(stored: Partial<AppState>): AppState {
   const normalized: AppState = {
     ...DEFAULT_STATE,
     ...stored,
+    storageVersion: CURRENT_STORAGE_VERSION,
     selectedStockId: storedStockId ?? DEFAULT_STATE.selectedStockId,
     alias: normalizeTextValue(stored.alias),
     tags: normalizeTextValue(stored.tags),
@@ -429,13 +435,13 @@ function normalizeStoredState(stored: Partial<AppState>): AppState {
     stockSettings: normalizedStockSettings,
   }
 
+  const nextStrategyMode = needsLegacyStrategyDefault
+    ? resolveVisibleStrategyMode(normalized, normalized.selectedStockId, normalized.strategyMode)
+    : normalized.strategyMode
+
   return syncCurrentStockSettings({
     ...normalized,
-    strategyMode: resolveVisibleStrategyMode(
-      normalized,
-      normalized.selectedStockId,
-      normalized.strategyMode,
-    ),
+    strategyMode: nextStrategyMode,
   })
 }
 
@@ -2402,29 +2408,22 @@ function App() {
   function selectStock(stockId: string) {
     const nextStock = getStock(stockId)
     const nextSettings = getSettingsForStock(state, nextStock.id)
-    const nextStrategyMode = resolveVisibleStrategyMode(state, nextStock.id, nextSettings.strategyMode)
 
     setState((prevState) => {
       const currentSavedState = syncCurrentStockSettings(prevState)
       const savedNextSettings =
         currentSavedState.stockSettings[nextStock.id] ?? getDefaultStockSettings()
-      const visibleStrategyMode = resolveVisibleStrategyMode(
-        currentSavedState,
-        nextStock.id,
-        savedNextSettings.strategyMode,
-      )
 
       return syncCurrentStockSettings({
         ...currentSavedState,
         ...savedNextSettings,
-        strategyMode: visibleStrategyMode,
         selectedStockId: nextStock.id,
       })
     })
     setDraft((prevDraft) => ({
       ...prevDraft,
       price:
-        getPosition(state, nextStock.id, nextStrategyMode).currentPrice ||
+        getPosition(state, nextStock.id, nextSettings.strategyMode).currentPrice ||
         nextStock.referencePrice,
     }))
   }
@@ -3542,12 +3541,12 @@ function App() {
                   <strong>{formatMoney(state.vrPool)}</strong>
                 </div>
                 <div>
-                  <span>보유 수량</span>
-                  <strong>{formatNumber(state.vrStartQty, 2)}주</strong>
+                  <span>현재 수량</span>
+                  <strong>{formatNumber(selectedVrPosition.holdingQty, 2)}주</strong>
                 </div>
                 <div>
-                  <span>평균 단가</span>
-                  <strong>{formatMoney(state.vrStartAvgPrice)}</strong>
+                  <span>현재 평단</span>
+                  <strong>{formatMoney(selectedVrPosition.avgPrice)}</strong>
                 </div>
                 <div>
                   <span>하단</span>
