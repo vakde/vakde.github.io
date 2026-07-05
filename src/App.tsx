@@ -244,7 +244,8 @@ type BrokerParsedTrade = {
 }
 
 const STORAGE_KEY = 'vakde-gate-state-v3'
-const CURRENT_STORAGE_VERSION = 11
+const CURRENT_STORAGE_VERSION = 12
+const FIRE_GATE_VR_BAND_PERCENT = 15
 
 const STOCKS: Stock[] = [
   {
@@ -344,13 +345,13 @@ const DEFAULT_STATE: AppState = {
   tValue: 0,
   commissionRate: 0.015,
   vrStartMode: 'new',
-  vrCurrentV: 10000000,
+  vrCurrentV: 0,
   vrStartAvgPrice: 0,
   vrStartQty: 0,
   vrStartPool: 3000000,
   vrPool: 3000000,
   vrPoolLimit: 50,
-  vrBandPercent: 10,
+  vrBandPercent: FIRE_GATE_VR_BAND_PERCENT,
   vrGradient: 10,
   vrRegularAmount: 1000000,
   vrOrderUnit: 1,
@@ -374,8 +375,10 @@ const DEFAULT_DRAFT = {
 } satisfies DraftTransaction
 
 function normalizeStoredState(stored: Partial<AppState>): AppState {
+  const storedVersion = positive(stored.storageVersion ?? 0)
   const needsLegacyStrategyDefault =
-    positive(stored.storageVersion ?? 0) < CURRENT_STORAGE_VERSION
+    storedVersion < CURRENT_STORAGE_VERSION
+  const needsVrBandDefaultUpgrade = storedVersion < CURRENT_STORAGE_VERSION
   const storedVersionId: VrVersion['id'] =
     VR_VERSIONS.some((version) => version.id === stored.vrVersionId)
       ? (stored.vrVersionId as VrVersion['id'])
@@ -394,8 +397,16 @@ function normalizeStoredState(stored: Partial<AppState>): AppState {
     rawVrStartDate === normalizedVrStartDate && stored.vrEndDate
       ? stored.vrEndDate
       : getCycleEndDate(normalizedVrStartDate)
-  const normalizedStockSettings = normalizeStockSettings(stored.stockSettings)
+  const normalizedStockSettings = normalizeStockSettings(stored.stockSettings, storedVersion)
   const storedTransactions = Array.isArray(stored.transactions) ? stored.transactions : []
+  const normalizedVrStartMode = normalizeVrStartMode(stored.vrStartMode, stored.vrStartQty)
+  const normalizedVrStartAvgPrice = stored.vrStartAvgPrice ?? DEFAULT_STATE.vrStartAvgPrice
+  const normalizedVrStartQty = stored.vrStartQty ?? DEFAULT_STATE.vrStartQty
+  const storedVrBandPercent = stored.vrBandPercent ?? DEFAULT_STATE.vrBandPercent
+  const normalizedVrBandPercent =
+    needsVrBandDefaultUpgrade && Number(storedVrBandPercent) === 10
+      ? DEFAULT_STATE.vrBandPercent
+      : storedVrBandPercent
 
   const normalized: AppState = {
     ...DEFAULT_STATE,
@@ -409,11 +420,17 @@ function normalizeStoredState(stored: Partial<AppState>): AppState {
       : DEFAULT_STATE.strategyMode,
     mumeVersionId: storedMumeVersionId,
     vrVersionId: storedVersionId,
-    vrStartAvgPrice: stored.vrStartAvgPrice ?? DEFAULT_STATE.vrStartAvgPrice,
-    vrStartQty: stored.vrStartQty ?? DEFAULT_STATE.vrStartQty,
+    vrStartMode: normalizedVrStartMode,
+    vrCurrentV:
+      normalizedVrStartMode === 'new'
+        ? getAutoVrStartValue(normalizedVrStartAvgPrice, normalizedVrStartQty)
+        : stored.vrCurrentV ?? DEFAULT_STATE.vrCurrentV,
+    vrStartAvgPrice: normalizedVrStartAvgPrice,
+    vrStartQty: normalizedVrStartQty,
     vrStartPool: stored.vrStartPool ?? stored.vrPool ?? DEFAULT_STATE.vrStartPool,
     vrGradient: stored.vrGradient ?? DEFAULT_STATE.vrGradient,
     vrOrderUnit: stored.vrOrderUnit ?? DEFAULT_STATE.vrOrderUnit,
+    vrBandPercent: normalizedVrBandPercent,
     vrRegularAmount:
       stored.vrRegularAmount ??
       (stored as Partial<AppState> & { vrContribution?: number }).vrContribution ??
@@ -426,7 +443,6 @@ function normalizeStoredState(stored: Partial<AppState>): AppState {
     mumeReverseMode: stored.mumeReverseMode ?? DEFAULT_STATE.mumeReverseMode,
     mumeReverseStarPrice: stored.mumeReverseStarPrice ?? DEFAULT_STATE.mumeReverseStarPrice,
     mumeCycleId: stored.mumeCycleId ?? DEFAULT_STATE.mumeCycleId,
-    vrStartMode: normalizeVrStartMode(stored.vrStartMode, stored.vrStartQty),
     vrStartDate: normalizedVrStartDate,
     vrEndDate: normalizedVrEndDate,
     positions: normalizePositions(stored.positions, storedTransactions, normalizedStockSettings),
@@ -572,13 +588,13 @@ function getDefaultStockSettings(): StockSettings {
     tValue: 0,
     commissionRate: 0.015,
     vrStartMode: 'new',
-    vrCurrentV: 10000000,
+    vrCurrentV: 0,
     vrStartAvgPrice: 0,
     vrStartQty: 0,
     vrStartPool: 3000000,
     vrPool: 3000000,
     vrPoolLimit: 50,
-    vrBandPercent: 10,
+    vrBandPercent: FIRE_GATE_VR_BAND_PERCENT,
     vrGradient: 10,
     vrRegularAmount: 1000000,
     vrOrderUnit: 1,
@@ -592,6 +608,10 @@ function isStrategyMode(value: unknown): value is StrategyMode {
 }
 
 function normalizeVrStartMode(value: unknown, startQty: unknown): VrStartMode {
+  if (value === 'new' || value === 'running') {
+    return value
+  }
+
   const quantity =
     typeof startQty === 'number' && Number.isFinite(startQty)
       ? startQty
@@ -603,7 +623,7 @@ function normalizeVrStartMode(value: unknown, startQty: unknown): VrStartMode {
     return 'running'
   }
 
-  return value === 'running' ? 'running' : 'new'
+  return 'new'
 }
 
 function normalizePosition(position: Partial<Position> | undefined, stock: Stock): Position {
@@ -731,10 +751,15 @@ function extractStockSettings(state: AppState): StockSettings {
   }
 }
 
-function normalizeStockSettings(settings: unknown): Record<string, StockSettings> {
+function normalizeStockSettings(
+  settings: unknown,
+  storageVersion = CURRENT_STORAGE_VERSION,
+): Record<string, StockSettings> {
   if (!settings || typeof settings !== 'object') {
     return {}
   }
+
+  const needsVrBandDefaultUpgrade = positive(storageVersion) < CURRENT_STORAGE_VERSION
 
   return Object.entries(settings as Record<string, Partial<StockSettings>>).reduce<
     Record<string, StockSettings>
@@ -748,6 +773,11 @@ function normalizeStockSettings(settings: unknown): Record<string, StockSettings
     }
     const rawVrStartDate = rawSettings.vrStartDate
     const normalizedVrStartDate = getMondayOnOrAfterIso(rawVrStartDate)
+    const normalizedVrStartMode = normalizeVrStartMode(
+      stockSettings.vrStartMode,
+      stockSettings.vrStartQty,
+    )
+    const rawVrBandPercent = stockSettings.vrBandPercent ?? rawSettings.vrBandPercent
 
     nextSettings[stockId] = {
       ...rawSettings,
@@ -763,7 +793,15 @@ function normalizeStockSettings(settings: unknown): Record<string, StockSettings
       vrVersionId: VR_VERSIONS.some((version) => version.id === stockSettings.vrVersionId)
         ? (stockSettings.vrVersionId as VrVersion['id'])
         : 'lump',
-      vrStartMode: normalizeVrStartMode(stockSettings.vrStartMode, stockSettings.vrStartQty),
+      vrStartMode: normalizedVrStartMode,
+      vrCurrentV:
+        normalizedVrStartMode === 'new'
+          ? getAutoVrStartValue(rawSettings.vrStartAvgPrice, rawSettings.vrStartQty)
+          : rawSettings.vrCurrentV,
+      vrBandPercent:
+        needsVrBandDefaultUpgrade && Number(rawVrBandPercent) === 10
+          ? DEFAULT_STATE.vrBandPercent
+          : rawSettings.vrBandPercent,
       vrStartDate: normalizedVrStartDate,
       vrEndDate:
         rawVrStartDate === normalizedVrStartDate && rawSettings.vrEndDate
@@ -883,6 +921,15 @@ function round(value: number, digits = 2): number {
   const scale = 10 ** digits
 
   return Math.round(value * scale) / scale
+}
+
+function getAutoVrStartValue(avgPrice: unknown, quantity: unknown): number {
+  const normalizedAvgPrice = positive(Number(avgPrice))
+  const normalizedQuantity = positive(Number(quantity))
+
+  return normalizedAvgPrice > 0 && normalizedQuantity > 0
+    ? round(normalizedAvgPrice * normalizedQuantity)
+    : 0
 }
 
 function parseLocaleNumber(value: string): number {
@@ -1452,16 +1499,16 @@ function getReverseMultiplier(divisionDate: number): number {
   return 0.95
 }
 
-function isTqqqFormulaStock(stock: Stock): boolean {
-  return stock.ticker.toUpperCase() === 'TQQQ'
+function usesPrimaryLeveragedFormula(stock: Stock): boolean {
+  return stock.id === 'hynix'
 }
 
 function getV4TargetProfit(stock: Stock): number {
-  return isTqqqFormulaStock(stock) ? 15 : 20
+  return usesPrimaryLeveragedFormula(stock) ? 15 : 20
 }
 
 function getV4StarPercent(stock: Stock, divisionDate: number, tValue: number): number {
-  if (isTqqqFormulaStock(stock)) {
+  if (usesPrimaryLeveragedFormula(stock)) {
     if (divisionDate === 20) return 15 - 1.5 * tValue
     if (divisionDate === 30) return 15 - tValue
     return 15 - 0.75 * tValue
@@ -2379,16 +2426,15 @@ function App() {
 
   function updateVrStart<K extends 'vrStartAvgPrice' | 'vrStartQty'>(field: K, value: AppState[K]) {
     setState((prevState) => {
-      const otherValue =
-        field === 'vrStartAvgPrice' ? prevState.vrStartQty : prevState.vrStartAvgPrice
-      const nextMode =
-        positive(Number(value)) > 0 || positive(Number(otherValue)) > 0
-          ? 'running'
-          : prevState.vrStartMode
+      const nextAvgPrice =
+        field === 'vrStartAvgPrice' ? Number(value) : prevState.vrStartAvgPrice
+      const nextQty = field === 'vrStartQty' ? Number(value) : prevState.vrStartQty
       const nextState = {
         ...prevState,
         [field]: value,
-        vrStartMode: nextMode,
+        ...(prevState.vrStartMode === 'new'
+          ? { vrCurrentV: getAutoVrStartValue(nextAvgPrice, nextQty) }
+          : {}),
       }
 
       return rebuildStateFromTransactions(syncCurrentStockSettings(nextState), nextState.transactions)
@@ -2404,6 +2450,7 @@ function App() {
           ? {
               ...prevState,
               vrStartMode: 'new',
+              vrCurrentV: 0,
               vrStartAvgPrice: 0,
               vrStartQty: 0,
             }
@@ -3368,12 +3415,17 @@ function App() {
 
               <div className="form-grid">
                 <label className="field">
-                  <span>V 값</span>
+                  <span>{state.vrStartMode === 'new' ? '시작 V 자동값' : 'V 값'}</span>
                   <input
                     inputMode="numeric"
                     min="0"
+                    readOnly={state.vrStartMode === 'new'}
                     type="number"
-                    value={state.vrCurrentV}
+                    value={
+                      state.vrStartMode === 'new'
+                        ? getAutoVrStartValue(state.vrStartAvgPrice, state.vrStartQty)
+                        : state.vrCurrentV
+                    }
                     onChange={(event) => updateState('vrCurrentV', Number(event.target.value))}
                   />
                 </label>
@@ -3388,31 +3440,27 @@ function App() {
                     onChange={(event) => updateState('vrGradient', Number(event.target.value))}
                   />
                 </label>
-                {state.vrStartMode === 'running' ? (
-                  <>
-                    <label className="field">
-                      <span>평균 단가</span>
-                      <input
-                        inputMode="decimal"
-                        min="0"
-                        type="number"
-                        value={state.vrStartAvgPrice}
-                        onChange={(event) => updateVrStart('vrStartAvgPrice', Number(event.target.value))}
-                      />
-                    </label>
-                    <label className="field">
-                      <span>보유 수량</span>
-                      <input
-                        inputMode="decimal"
-                        min="0"
-                        step="0.01"
-                        type="number"
-                        value={state.vrStartQty}
-                        onChange={(event) => updateVrStart('vrStartQty', Number(event.target.value))}
-                      />
-                    </label>
-                  </>
-                ) : null}
+                <label className="field">
+                  <span>평균 단가</span>
+                  <input
+                    inputMode="decimal"
+                    min="0"
+                    type="number"
+                    value={state.vrStartAvgPrice}
+                    onChange={(event) => updateVrStart('vrStartAvgPrice', Number(event.target.value))}
+                  />
+                </label>
+                <label className="field">
+                  <span>보유 수량</span>
+                  <input
+                    inputMode="decimal"
+                    min="0"
+                    step="0.01"
+                    type="number"
+                    value={state.vrStartQty}
+                    onChange={(event) => updateVrStart('vrStartQty', Number(event.target.value))}
+                  />
+                </label>
                 <label className="field">
                   <span>시작 Pool</span>
                   <input
