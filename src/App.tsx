@@ -1825,10 +1825,11 @@ function buildVrGuide(state: AppState, position: Position, version: VrVersion): 
   }
 }
 
-function buildVrOrderBook(state: AppState): VrOrderBook {
+function buildVrOrderBook(state: AppState, position: Position): VrOrderBook {
   const targetValue = positive(state.vrCurrentV)
-  const startPool = positive(state.vrStartPool)
-  const startQty = Math.floor(positive(state.vrStartQty))
+  const hasStartQty = positive(state.vrStartQty) > 0
+  const startPool = hasStartQty ? positive(state.vrStartPool) : positive(state.vrPool)
+  const startQty = Math.floor(hasStartQty ? positive(state.vrStartQty) : positive(position.holdingQty))
   const orderUnit = clamp(Math.floor(positive(state.vrOrderUnit) || 1), 1, 100)
   const minV = targetValue > 0 ? targetValue * (1 - clamp(positive(state.vrBandPercent), 1, 50) / 100) : 0
   const maxV = targetValue > 0 ? targetValue * (1 + clamp(positive(state.vrBandPercent), 1, 50) / 100) : 0
@@ -2234,9 +2235,10 @@ function App() {
     [selectedVrPosition, selectedVrVersion, state],
   )
   const vrOrderBook = useMemo(
-    () => buildVrOrderBook(state),
-    [state],
+    () => buildVrOrderBook(state, selectedVrPosition),
+    [selectedVrPosition, state],
   )
+  const vrOrderBaseQty = positive(state.vrStartQty) || positive(selectedVrPosition.holdingQty)
   const selectedTransactions = useMemo(
     () =>
       state.transactions
@@ -3632,20 +3634,20 @@ function App() {
                 <div className="reserved-heading">
                   <h3>예약 주문표</h3>
                   <span>
-                    기준 {formatNumber(state.vrStartQty, 2)}주 · {formatNumber(state.vrOrderUnit, 0)}주 단위
+                    기준 {formatNumber(vrOrderBaseQty, 2)}주 · {formatNumber(state.vrOrderUnit, 0)}주 단위
                   </span>
                 </div>
                 <div className="reserved-columns">
                   <ReservedOrderList
                     bandPrice={vrOrderBook.minV}
-                    emptyText={state.vrStartQty > 0 ? '매수 산출 예정' : '시작 수량 필요'}
+                    emptyText={vrOrderBaseQty > 0 ? '매수 산출 예정' : '시작 수량 필요'}
                     orders={vrOrderBook.buyOrders}
                     title="매수표"
                     type="buy"
                   />
                   <ReservedOrderList
                     bandPrice={vrOrderBook.maxV}
-                    emptyText={state.vrStartQty > 0 ? '매도 산출 예정' : '시작 수량 필요'}
+                    emptyText={vrOrderBaseQty > 0 ? '매도 산출 예정' : '시작 수량 필요'}
                     orders={vrOrderBook.sellOrders}
                     title="매도표"
                     type="sell"
