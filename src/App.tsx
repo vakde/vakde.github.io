@@ -214,6 +214,7 @@ type ReportSummary = {
   totalBuy: number
   totalSell: number
   marketValue: number
+  poolValue: number
   pnl: number
   profitRate: number
   seedProfitRate: number
@@ -428,7 +429,14 @@ function normalizeStoredState(stored: Partial<AppState>): AppState {
     stockSettings: normalizedStockSettings,
   }
 
-  return syncCurrentStockSettings(normalized)
+  return syncCurrentStockSettings({
+    ...normalized,
+    strategyMode: resolveVisibleStrategyMode(
+      normalized,
+      normalized.selectedStockId,
+      normalized.strategyMode,
+    ),
+  })
 }
 
 function readStoredState(): AppState {
@@ -465,6 +473,30 @@ function getPosition(
     state.positions[stockId] ??
     createEmptyPosition(stock)
   )
+}
+
+function hasPositionData(position: Position): boolean {
+  return (
+    positive(position.holdingQty) > 0 ||
+    positive(position.totalBuy) > 0 ||
+    positive(position.totalSell) > 0
+  )
+}
+
+function resolveVisibleStrategyMode(
+  state: AppState,
+  stockId: string,
+  candidate: StrategyMode,
+): StrategyMode {
+  if (candidate !== 'mume') {
+    return candidate
+  }
+
+  const hasMumeTransactions = state.transactions.some(
+    (transaction) => transaction.stockId === stockId && transaction.strategy === 'mume',
+  )
+
+  return hasMumeTransactions || hasPositionData(getPosition(state, stockId, 'mume')) ? 'mume' : 'vr'
 }
 
 const STOCK_SETTING_KEYS = new Set<keyof StockSettings>([
@@ -1241,6 +1273,14 @@ function getTodayIso(): string {
   return toIsoDate(new Date())
 }
 
+function getStrategyTradeDate(state: AppState, fallbackDate = getTodayIso()): string {
+  if (state.strategyMode === 'vr' && state.vrStartDate && fallbackDate < state.vrStartDate) {
+    return state.vrStartDate
+  }
+
+  return fallbackDate
+}
+
 function getNextMondayIso(): string {
   const nextDate = new Date()
   const day = nextDate.getDay()
@@ -2005,12 +2045,19 @@ function buildReportSummary(state: AppState): ReportSummary {
   const totals = STOCKS.reduce(
     (summary, stock) => {
       const position = getPosition(state, stock.id, state.strategyMode)
+      const settings = getSettingsForStock(state, stock.id)
       const marketValue = position.holdingQty * position.currentPrice
       const pnl = marketValue + position.totalSell - position.totalBuy
+      const seedBase =
+        state.strategyMode === 'vr'
+          ? positive(settings.vrCurrentV) || positive(settings.vrStartPool)
+          : positive(settings.seed)
 
       summary.totalBuy += position.totalBuy
       summary.totalSell += position.totalSell
       summary.marketValue += marketValue
+      summary.poolValue += state.strategyMode === 'vr' ? positive(settings.vrPool) : 0
+      summary.seedBase += seedBase
       summary.pnlByStock.push({ name: stock.name, pnl })
 
       return summary
@@ -2019,14 +2066,12 @@ function buildReportSummary(state: AppState): ReportSummary {
       totalBuy: 0,
       totalSell: 0,
       marketValue: 0,
+      poolValue: 0,
+      seedBase: 0,
       pnlByStock: [] as Array<{ name: string; pnl: number }>,
     },
   )
   const pnl = totals.marketValue + totals.totalSell - totals.totalBuy
-  const seedBase =
-    state.strategyMode === 'vr'
-      ? positive(state.vrCurrentV) || positive(state.vrStartPool)
-      : positive(state.seed)
   const bestStock =
     totals.pnlByStock
       .filter((item) => item.pnl !== 0)
@@ -2036,9 +2081,10 @@ function buildReportSummary(state: AppState): ReportSummary {
     totalBuy: totals.totalBuy,
     totalSell: totals.totalSell,
     marketValue: totals.marketValue,
+    poolValue: totals.poolValue,
     pnl,
     profitRate: totals.totalBuy > 0 ? (pnl / totals.totalBuy) * 100 : 0,
-    seedProfitRate: seedBase > 0 ? (pnl / seedBase) * 100 : 0,
+    seedProfitRate: totals.seedBase > 0 ? (pnl / totals.seedBase) * 100 : 0,
     tradeCount: state.transactions.filter(
       (transaction) =>
         transaction.strategy === state.strategyMode && isTransactionInActiveCycle(state, transaction),
@@ -2356,22 +2402,29 @@ function App() {
   function selectStock(stockId: string) {
     const nextStock = getStock(stockId)
     const nextSettings = getSettingsForStock(state, nextStock.id)
+    const nextStrategyMode = resolveVisibleStrategyMode(state, nextStock.id, nextSettings.strategyMode)
 
     setState((prevState) => {
       const currentSavedState = syncCurrentStockSettings(prevState)
       const savedNextSettings =
         currentSavedState.stockSettings[nextStock.id] ?? getDefaultStockSettings()
+      const visibleStrategyMode = resolveVisibleStrategyMode(
+        currentSavedState,
+        nextStock.id,
+        savedNextSettings.strategyMode,
+      )
 
       return syncCurrentStockSettings({
         ...currentSavedState,
         ...savedNextSettings,
+        strategyMode: visibleStrategyMode,
         selectedStockId: nextStock.id,
       })
     })
     setDraft((prevDraft) => ({
       ...prevDraft,
       price:
-        getPosition(state, nextStock.id, nextSettings.strategyMode).currentPrice ||
+        getPosition(state, nextStock.id, nextStrategyMode).currentPrice ||
         nextStock.referencePrice,
     }))
   }
@@ -2468,7 +2521,7 @@ function App() {
     setDraft((prevDraft) => ({
       ...prevDraft,
       type: parsed.type ?? prevDraft.type,
-      date: parsed.date ?? prevDraft.date,
+      date: getStrategyTradeDate(state, parsed.date ?? prevDraft.date),
       price: positive(parsed.price ?? 0) || prevDraft.price,
       quantity: positive(parsed.quantity ?? 0) || prevDraft.quantity,
       fee: positive(parsed.fee ?? 0),
@@ -2513,6 +2566,7 @@ function App() {
     setDraft((prevDraft) => ({
       ...prevDraft,
       type: vrGuide.status.includes('매도') ? 'sell' : 'buy',
+      date: getStrategyTradeDate(state),
       price: round(vrGuide.actionPrice),
       quantity: vrGuide.actionQty,
       fee: 0,
@@ -2530,14 +2584,10 @@ function App() {
     }
 
     const grossPreview = price * quantity
+    const tradeDate = getStrategyTradeDate(state, draft.date || getTodayIso())
     const resolvedFee =
       positive(draft.fee) ||
       (state.strategyMode === 'mume' ? round(grossPreview * (positive(state.commissionRate) / 100), 3) : 0)
-
-    if (state.strategyMode === 'vr' && draft.date && draft.date < state.vrStartDate) {
-      setTradeWarning(`VR 거래일은 사이클 시작일(${state.vrStartDate}) 이후여야 합니다.`)
-      return
-    }
 
     if (state.strategyMode === 'vr' && draft.type === 'buy') {
       const cost = grossPreview + resolvedFee
@@ -2664,8 +2714,8 @@ function App() {
 
       const transaction: Transaction = {
         id: createTransactionId(),
-        at: new Date(`${draft.date || getTodayIso()}T12:00:00`).toISOString(),
-        date: draft.date || getTodayIso(),
+        at: new Date(`${tradeDate}T12:00:00`).toISOString(),
+        date: tradeDate,
         stockId: prevState.selectedStockId,
         strategy: prevState.strategyMode,
         type: draft.type,
@@ -2741,7 +2791,7 @@ function App() {
     setOverrideTurnLimit(false)
     setDraft((prevDraft) => ({
       ...prevDraft,
-      date: getTodayIso(),
+      date: getStrategyTradeDate(state),
       quantity: 1,
       fee: 0,
       memo: '',
@@ -3917,9 +3967,7 @@ function App() {
             <div>
               <span>{state.strategyMode === 'vr' ? 'Pool 포함' : '활성 평가'}</span>
               <strong>
-                {formatMoney(
-                  reportSummary.marketValue + (state.strategyMode === 'vr' ? state.vrPool : 0),
-                )}
+                {formatMoney(reportSummary.marketValue + reportSummary.poolValue)}
               </strong>
             </div>
             <div>
