@@ -3056,18 +3056,6 @@ function App() {
 
       <section className="strategy-strip" aria-label="운용 방식">
         <button
-          aria-selected={state.strategyMode === 'mume'}
-          className={state.strategyMode === 'mume' ? 'strategy-card is-active' : 'strategy-card'}
-          type="button"
-          onClick={() => updateState('strategyMode', 'mume')}
-        >
-          <span>무한매수법</span>
-          <strong>{mumeGuide.phase}</strong>
-          <em>
-            {selectedMumeVersion.label} · 1회차 {formatMoney(mumeGuide.unit)}
-          </em>
-        </button>
-        <button
           aria-selected={state.strategyMode === 'vr'}
           className={state.strategyMode === 'vr' ? 'strategy-card is-active' : 'strategy-card'}
           type="button"
@@ -3078,6 +3066,18 @@ function App() {
           <em>
             {selectedVrVersion.label} · V {formatMoney(vrGuide.targetValue)} · Pool{' '}
             {formatMoney(state.vrPool)}
+          </em>
+        </button>
+        <button
+          aria-selected={state.strategyMode === 'mume'}
+          className={state.strategyMode === 'mume' ? 'strategy-card is-active' : 'strategy-card'}
+          type="button"
+          onClick={() => updateState('strategyMode', 'mume')}
+        >
+          <span>무한매수법</span>
+          <strong>{mumeGuide.phase}</strong>
+          <em>
+            {selectedMumeVersion.label} · 1회차 {formatMoney(mumeGuide.unit)}
           </em>
         </button>
       </section>
@@ -3717,18 +3717,18 @@ function App() {
             <span>적용 전략</span>
             <div className="segmented compact">
               <button
-                className={state.strategyMode === 'mume' ? 'is-active' : ''}
-                type="button"
-                onClick={() => updateState('strategyMode', 'mume')}
-              >
-                무한매수
-              </button>
-              <button
                 className={state.strategyMode === 'vr' ? 'is-active' : ''}
                 type="button"
                 onClick={() => updateState('strategyMode', 'vr')}
               >
                 VR
+              </button>
+              <button
+                className={state.strategyMode === 'mume' ? 'is-active' : ''}
+                type="button"
+                onClick={() => updateState('strategyMode', 'mume')}
+              >
+                무한매수
               </button>
             </div>
           </div>
