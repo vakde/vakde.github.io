@@ -339,6 +339,20 @@
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
+.vr-start-mode {
+  display: grid;
+  grid-template-columns: minmax(92px, auto) minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.vr-start-mode > span {
+  color: #697081;
+  font-size: 0.78rem;
+  font-weight: 850;
+}
+
 .option {
   display: grid;
   gap: 0;
@@ -1018,6 +1032,7 @@ td {
     .form-grid,
     .trade-mode-row,
     .mode-row,
+    .vr-start-mode,
     .button-grid,
     .button-grid.vr-grid,
     .metric-grid,

@@ -3,6 +3,7 @@ import './App.css'
 
 type StrategyMode = 'mume' | 'vr'
 type TradeType = 'buy' | 'sell'
+type VrStartMode = 'new' | 'running'
 
 type Stock = {
   id: string
@@ -96,6 +97,7 @@ type StockSettings = {
   mumeCycleId: string
   tValue: number
   commissionRate: number
+  vrStartMode: VrStartMode
   vrCurrentV: number
   vrStartAvgPrice: number
   vrStartQty: number
@@ -128,6 +130,7 @@ type AppState = {
   mumeCycleId: string
   tValue: number
   commissionRate: number
+  vrStartMode: VrStartMode
   vrCurrentV: number
   vrStartAvgPrice: number
   vrStartQty: number
@@ -336,6 +339,7 @@ const DEFAULT_STATE: AppState = {
   mumeCycleId: 'legacy',
   tValue: 0,
   commissionRate: 0.015,
+  vrStartMode: 'new',
   vrCurrentV: 10000000,
   vrStartAvgPrice: 0,
   vrStartQty: 0,
@@ -415,6 +419,7 @@ function normalizeStoredState(stored: Partial<AppState>): AppState {
     mumeReverseMode: stored.mumeReverseMode ?? DEFAULT_STATE.mumeReverseMode,
     mumeReverseStarPrice: stored.mumeReverseStarPrice ?? DEFAULT_STATE.mumeReverseStarPrice,
     mumeCycleId: stored.mumeCycleId ?? DEFAULT_STATE.mumeCycleId,
+    vrStartMode: normalizeVrStartMode(stored.vrStartMode, stored.vrStartQty),
     vrStartDate: normalizedVrStartDate,
     vrEndDate: normalizedVrEndDate,
     positions: normalizePositions(stored.positions, storedTransactions, normalizedStockSettings),
@@ -479,6 +484,7 @@ const STOCK_SETTING_KEYS = new Set<keyof StockSettings>([
   'mumeCycleId',
   'tValue',
   'commissionRate',
+  'vrStartMode',
   'vrCurrentV',
   'vrStartAvgPrice',
   'vrStartQty',
@@ -513,6 +519,7 @@ function getDefaultStockSettings(): StockSettings {
     mumeCycleId: 'legacy',
     tValue: 0,
     commissionRate: 0.015,
+    vrStartMode: 'new',
     vrCurrentV: 10000000,
     vrStartAvgPrice: 0,
     vrStartQty: 0,
@@ -530,6 +537,21 @@ function getDefaultStockSettings(): StockSettings {
 
 function isStrategyMode(value: unknown): value is StrategyMode {
   return value === 'mume' || value === 'vr'
+}
+
+function normalizeVrStartMode(value: unknown, startQty: unknown): VrStartMode {
+  const quantity =
+    typeof startQty === 'number' && Number.isFinite(startQty)
+      ? startQty
+      : typeof startQty === 'string'
+        ? Number(startQty)
+        : 0
+
+  if (positive(quantity) > 0) {
+    return 'running'
+  }
+
+  return value === 'running' ? 'running' : 'new'
 }
 
 function normalizePosition(position: Partial<Position> | undefined, stock: Stock): Position {
@@ -641,6 +663,7 @@ function extractStockSettings(state: AppState): StockSettings {
     mumeCycleId: state.mumeCycleId,
     tValue: state.tValue,
     commissionRate: state.commissionRate,
+    vrStartMode: state.vrStartMode,
     vrCurrentV: state.vrCurrentV,
     vrStartAvgPrice: state.vrStartAvgPrice,
     vrStartQty: state.vrStartQty,
@@ -688,6 +711,7 @@ function normalizeStockSettings(settings: unknown): Record<string, StockSettings
       vrVersionId: VR_VERSIONS.some((version) => version.id === stockSettings.vrVersionId)
         ? (stockSettings.vrVersionId as VrVersion['id'])
         : 'lump',
+      vrStartMode: normalizeVrStartMode(stockSettings.vrStartMode, stockSettings.vrStartQty),
       vrStartDate: normalizedVrStartDate,
       vrEndDate:
         rawVrStartDate === normalizedVrStartDate && rawSettings.vrEndDate
@@ -2270,10 +2294,44 @@ function App() {
 
   function updateVrStart<K extends 'vrStartAvgPrice' | 'vrStartQty'>(field: K, value: AppState[K]) {
     setState((prevState) => {
+      const otherValue =
+        field === 'vrStartAvgPrice' ? prevState.vrStartQty : prevState.vrStartAvgPrice
+      const nextMode =
+        positive(Number(value)) > 0 || positive(Number(otherValue)) > 0
+          ? 'running'
+          : prevState.vrStartMode
       const nextState = {
         ...prevState,
         [field]: value,
+        vrStartMode: nextMode,
       }
+
+      return rebuildStateFromTransactions(syncCurrentStockSettings(nextState), nextState.transactions)
+    })
+  }
+
+  function selectVrStartMode(mode: VrStartMode) {
+    setState((prevState) => {
+      const currentVrPosition = getPosition(prevState, prevState.selectedStockId, 'vr')
+      const selected = getStock(prevState.selectedStockId)
+      const nextState: AppState =
+        mode === 'new'
+          ? {
+              ...prevState,
+              vrStartMode: 'new',
+              vrStartAvgPrice: 0,
+              vrStartQty: 0,
+            }
+          : {
+              ...prevState,
+              vrStartMode: 'running',
+              vrStartAvgPrice:
+                positive(prevState.vrStartAvgPrice) ||
+                positive(currentVrPosition.avgPrice) ||
+                positive(currentVrPosition.currentPrice) ||
+                selected.referencePrice,
+              vrStartQty: positive(prevState.vrStartQty) || positive(currentVrPosition.holdingQty),
+            }
 
       return rebuildStateFromTransactions(syncCurrentStockSettings(nextState), nextState.transactions)
     })
@@ -3177,9 +3235,29 @@ function App() {
                 ))}
               </div>
 
+              <div className="vr-start-mode">
+                <span>운영 시작</span>
+                <div className="segmented compact">
+                  <button
+                    className={state.vrStartMode === 'new' ? 'is-active' : ''}
+                    type="button"
+                    onClick={() => selectVrStartMode('new')}
+                  >
+                    신규
+                  </button>
+                  <button
+                    className={state.vrStartMode === 'running' ? 'is-active' : ''}
+                    type="button"
+                    onClick={() => selectVrStartMode('running')}
+                  >
+                    운용 중
+                  </button>
+                </div>
+              </div>
+
               <div className="form-grid">
                 <label className="field">
-                  <span>목표 V</span>
+                  <span>V 값</span>
                   <input
                     inputMode="numeric"
                     min="0"
@@ -3199,27 +3277,31 @@ function App() {
                     onChange={(event) => updateState('vrGradient', Number(event.target.value))}
                   />
                 </label>
-                <label className="field">
-                  <span>시작 평단</span>
-                  <input
-                    inputMode="decimal"
-                    min="0"
-                    type="number"
-                    value={state.vrStartAvgPrice}
-                    onChange={(event) => updateVrStart('vrStartAvgPrice', Number(event.target.value))}
-                  />
-                </label>
-                <label className="field">
-                  <span>시작 수량</span>
-                  <input
-                    inputMode="decimal"
-                    min="0"
-                    step="0.01"
-                    type="number"
-                    value={state.vrStartQty}
-                    onChange={(event) => updateVrStart('vrStartQty', Number(event.target.value))}
-                  />
-                </label>
+                {state.vrStartMode === 'running' ? (
+                  <>
+                    <label className="field">
+                      <span>평균 단가</span>
+                      <input
+                        inputMode="decimal"
+                        min="0"
+                        type="number"
+                        value={state.vrStartAvgPrice}
+                        onChange={(event) => updateVrStart('vrStartAvgPrice', Number(event.target.value))}
+                      />
+                    </label>
+                    <label className="field">
+                      <span>보유 수량</span>
+                      <input
+                        inputMode="decimal"
+                        min="0"
+                        step="0.01"
+                        type="number"
+                        value={state.vrStartQty}
+                        onChange={(event) => updateVrStart('vrStartQty', Number(event.target.value))}
+                      />
+                    </label>
+                  </>
+                ) : null}
                 <label className="field">
                   <span>시작 Pool</span>
                   <input
@@ -3253,7 +3335,7 @@ function App() {
                   />
                 </label>
                 <label className="field">
-                  <span>밴드 폭 %</span>
+                  <span>Value Band %</span>
                   <input
                     inputMode="decimal"
                     min="1"
@@ -3374,11 +3456,11 @@ function App() {
                   <strong>{formatMoney(state.vrPool)}</strong>
                 </div>
                 <div>
-                  <span>시작 수량</span>
+                  <span>보유 수량</span>
                   <strong>{formatNumber(state.vrStartQty, 2)}주</strong>
                 </div>
                 <div>
-                  <span>시작 평단</span>
+                  <span>평균 단가</span>
                   <strong>{formatMoney(state.vrStartAvgPrice)}</strong>
                 </div>
                 <div>
@@ -3465,7 +3547,7 @@ function App() {
                 <div className="reserved-heading">
                   <h3>예약 주문표</h3>
                   <span>
-                    시작 {formatNumber(state.vrStartQty, 2)}주 · {formatNumber(state.vrOrderUnit, 0)}주 단위
+                    기준 {formatNumber(state.vrStartQty, 2)}주 · {formatNumber(state.vrOrderUnit, 0)}주 단위
                   </span>
                 </div>
                 <div className="reserved-columns">
