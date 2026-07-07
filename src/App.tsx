@@ -2215,8 +2215,6 @@ function App() {
     () => buildCompletedReportSummary(filteredReports),
     [filteredReports],
   )
-  const primaryMumeBuyOrder = mumeGuide.buyOrders.find((order) => order.quantity > 0)
-  const primaryMumeSellOrder = mumeGuide.sellOrders.find((order) => order.quantity > 0)
   const easyStrategyName = state.strategyMode === 'vr' ? '리밸런싱' : '분할매수'
   const easyActionTitle =
     state.strategyMode === 'vr'
@@ -3014,48 +3012,15 @@ function App() {
         </div>
       </section>
 
-      <section className={`focus-board ${state.strategyMode === 'vr' ? 'is-compact' : ''}`} aria-label="오늘 운용">
+      <section
+        className={state.strategyMode === 'vr' ? 'focus-board is-compact' : 'focus-board is-orderbook'}
+        aria-label="오늘 운용"
+      >
         <div className="focus-status">
           <span>{easyStrategyName}</span>
           <strong>{easyActionTitle}</strong>
           <p>{easyActionReason}</p>
         </div>
-
-        {state.strategyMode === 'mume' ? (
-          <div className="focus-inputs">
-            <label className="field">
-              <span>전체 예산</span>
-              <NumberInput
-                inputMode="numeric"
-                min="0"
-                type="number"
-                value={state.seed}
-                onChange={(event) => updateMumeSeed(Number(event.target.value))}
-              />
-            </label>
-            <label className="field">
-              <span>평단가</span>
-              <NumberInput
-                inputMode="numeric"
-                min="0"
-                type="number"
-                value={selectedPosition.avgPrice}
-                onChange={(event) => updateEasyPosition('avgPrice', Number(event.target.value))}
-              />
-            </label>
-            <label className="field">
-              <span>보유 수량</span>
-              <NumberInput
-                inputMode="decimal"
-                min="0"
-                step="1"
-                type="number"
-                value={selectedPosition.holdingQty}
-                onChange={(event) => updateEasyPosition('holdingQty', Number(event.target.value))}
-              />
-            </label>
-          </div>
-        ) : null}
 
         <div className="focus-order">
           {state.strategyMode === 'vr' ? (
@@ -3086,26 +3051,12 @@ function App() {
           ) : (
             <>
               <div className="focus-order-title">
-                <span>오늘 주문</span>
+                <span>오늘 걸어둘 주문</span>
                 <strong>{mumeGuide.buyOrders.length + mumeGuide.sellOrders.length}개</strong>
               </div>
-              <div className="focus-order-split">
-                <div className="focus-order-item">
-                  <span>매수</span>
-                  <strong>
-                    {primaryMumeBuyOrder
-                      ? `${primaryMumeBuyOrder.method} · ${formatNumber(primaryMumeBuyOrder.quantity, 0)}주`
-                      : '없음'}
-                  </strong>
-                </div>
-                <div className="focus-order-item">
-                  <span>매도</span>
-                  <strong>
-                    {primaryMumeSellOrder
-                      ? `${primaryMumeSellOrder.method} · ${formatNumber(primaryMumeSellOrder.quantity, 0)}주`
-                      : '없음'}
-                  </strong>
-                </div>
+              <div className="mume-order-columns">
+                <CompactOrderList emptyText="매수 없음" orders={mumeGuide.buyOrders} title="매수" />
+                <CompactOrderList emptyText="매도 없음" orders={mumeGuide.sellOrders} title="매도" />
               </div>
             </>
           )}
@@ -3231,13 +3182,34 @@ function App() {
 
               <div className="form-grid">
                 <label className="field">
-                  <span>총 시드</span>
+                  <span>전체 예산</span>
                   <NumberInput
                     inputMode="numeric"
                     min="0"
                     type="number"
                     value={state.seed}
                     onChange={(event) => updateMumeSeed(Number(event.target.value))}
+                  />
+                </label>
+                <label className="field">
+                  <span>평단가</span>
+                  <NumberInput
+                    inputMode="numeric"
+                    min="0"
+                    type="number"
+                    value={selectedMumePosition.avgPrice}
+                    onChange={(event) => updateEasyPosition('avgPrice', Number(event.target.value))}
+                  />
+                </label>
+                <label className="field">
+                  <span>보유 수량</span>
+                  <NumberInput
+                    inputMode="decimal"
+                    min="0"
+                    step="1"
+                    type="number"
+                    value={selectedMumePosition.holdingQty}
+                    onChange={(event) => updateEasyPosition('holdingQty', Number(event.target.value))}
                   />
                 </label>
                 <label className="field">
@@ -4020,6 +3992,39 @@ function OrderList({
             </div>
           </div>
         ))
+      ) : (
+        <div className="empty-state">{emptyText}</div>
+      )}
+    </div>
+  )
+}
+
+function CompactOrderList({
+  emptyText,
+  orders,
+  title,
+}: {
+  emptyText: string
+  orders: OrderLine[]
+  title: string
+}) {
+  return (
+    <div className="compact-order-list">
+      <div className="compact-order-list-head">
+        <strong>{title}</strong>
+        <span>{formatNumber(orders.length, 0)}개</span>
+      </div>
+      {orders.length > 0 ? (
+        <div className="compact-order-rows">
+          {orders.map((order, index) => (
+            <div className="compact-order-row" key={`${order.title}-${order.method}-${index}`}>
+              <span>{order.method}</span>
+              <strong>{formatMoney(order.price)}</strong>
+              <span>{formatNumber(order.quantity, 0)}주</span>
+              <small>{order.title}</small>
+            </div>
+          ))}
+        </div>
       ) : (
         <div className="empty-state">{emptyText}</div>
       )}

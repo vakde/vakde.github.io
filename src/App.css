@@ -282,8 +282,11 @@
   grid-template-columns: minmax(260px, 0.9fr) minmax(420px, 1.1fr);
 }
 
+.focus-board.is-orderbook {
+  grid-template-columns: minmax(260px, 0.55fr) minmax(0, 1.45fr);
+}
+
 .focus-status,
-.focus-inputs,
 .focus-order {
   min-width: 0;
   border: 1px solid #d9dde5;
@@ -302,8 +305,7 @@
 
 .focus-status span,
 .focus-order-title span,
-.focus-order-metrics span,
-.focus-order-item span {
+.focus-order-metrics span {
   color: #737c8c;
   font-size: 0.76rem;
   font-weight: 900;
@@ -326,13 +328,6 @@
   font-weight: 850;
 }
 
-.focus-inputs {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
-  align-content: center;
-}
-
 .focus-order {
   display: grid;
   gap: 12px;
@@ -350,18 +345,22 @@
   line-height: 1.08;
 }
 
-.focus-order-metrics,
-.focus-order-split {
+.focus-order-metrics {
   display: grid;
   gap: 8px;
+}
+
+.mume-order-columns {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 10px;
 }
 
 .focus-order-metrics {
   grid-template-columns: 1fr;
 }
 
-.focus-order-metrics div,
-.focus-order-item {
+.focus-order-metrics div {
   display: grid;
   gap: 6px;
   min-width: 0;
@@ -371,11 +370,73 @@
   padding: 10px;
 }
 
-.focus-order-metrics strong,
-.focus-order-item strong {
+.focus-order-metrics strong {
   overflow-wrap: anywhere;
   font-size: 0.92rem;
   font-weight: 900;
+}
+
+.compact-order-list {
+  min-width: 0;
+  border: 1px solid #e1e5ed;
+  border-radius: 8px;
+  background: #f8fafc;
+  padding: 10px;
+}
+
+.compact-order-list-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.compact-order-list-head strong {
+  font-size: 0.95rem;
+  font-weight: 950;
+}
+
+.compact-order-list-head span {
+  color: #697081;
+  font-size: 0.76rem;
+  font-weight: 850;
+}
+
+.compact-order-rows {
+  display: grid;
+  gap: 6px;
+}
+
+.compact-order-row {
+  display: grid;
+  grid-template-columns: minmax(58px, 0.55fr) minmax(96px, 1fr) minmax(54px, 0.55fr) minmax(88px, 0.85fr);
+  gap: 8px;
+  align-items: center;
+  min-width: 0;
+  border: 1px solid #e7ebf2;
+  border-radius: 8px;
+  background: #fff;
+  padding: 8px;
+}
+
+.compact-order-row span,
+.compact-order-row small {
+  min-width: 0;
+  overflow: hidden;
+  color: #697081;
+  font-size: 0.74rem;
+  font-weight: 850;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.compact-order-row strong {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  color: #111318;
+  font-size: 0.92rem;
+  font-weight: 950;
 }
 
 .primary-button:disabled,
@@ -1208,7 +1269,8 @@ td {
     grid-template-columns: 1fr 1fr;
   }
 
-  .focus-status {
+  .focus-status,
+  .focus-order {
     grid-column: 1 / -1;
   }
 
@@ -1229,9 +1291,9 @@ td {
   .summary-bar,
   .focus-board,
   .focus-board.is-compact,
-  .focus-inputs,
+  .focus-board.is-orderbook,
   .focus-order-metrics,
-  .focus-order-split,
+  .mume-order-columns,
   .quick-trade-grid,
   .workspace-grid,
   .form-grid,
@@ -1314,6 +1376,14 @@ td {
 
   .order-line {
     grid-template-columns: 1fr;
+  }
+
+  .compact-order-row {
+    grid-template-columns: 58px minmax(0, 1fr) 54px;
+  }
+
+  .compact-order-row small {
+    grid-column: 1 / -1;
   }
 
 }
