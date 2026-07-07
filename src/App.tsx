@@ -1414,6 +1414,22 @@ function isVrCycleDue(state: AppState): boolean {
     return false
   }
 
+  const vrPosition = getPosition(state, state.selectedStockId, 'vr')
+  const hasStartedCycle =
+    positive(state.vrCurrentV) > 0 ||
+    positive(state.vrStartQty) > 0 ||
+    hasPositionData(vrPosition) ||
+    state.transactions.some(
+      (transaction) =>
+        transaction.stockId === state.selectedStockId &&
+        transaction.strategy === 'vr' &&
+        transaction.date >= state.vrStartDate,
+    )
+
+  if (!hasStartedCycle) {
+    return false
+  }
+
   const today = new Date()
   today.setHours(0, 0, 0, 0)
 
@@ -2383,6 +2399,8 @@ function App() {
   const appliedDraftFee =
     positive(draft.fee) ||
     (state.strategyMode === 'mume' ? round(draftGross * (positive(state.commissionRate) / 100), 3) : 0)
+  const primaryMumeBuyOrder = mumeGuide.buyOrders.find((order) => order.quantity > 0)
+  const primaryMumeSellOrder = mumeGuide.sellOrders.find((order) => order.quantity > 0)
 
   useEffect(() => {
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state))
@@ -2419,6 +2437,30 @@ function App() {
             ...currentPosition,
             [field]: value,
           },
+        },
+      }
+    })
+  }
+
+  function updateEasyPosition(field: 'avgPrice' | 'holdingQty', value: number) {
+    setState((prevState) => {
+      const currentPosition = getPosition(prevState, prevState.selectedStockId, prevState.strategyMode)
+      const positionKey = getPositionKey(prevState.selectedStockId, prevState.strategyMode)
+      const nextPosition = {
+        ...currentPosition,
+        [field]: value,
+      }
+      const impliedBuy = positive(nextPosition.avgPrice) * positive(nextPosition.holdingQty)
+
+      if (!positive(nextPosition.totalBuy) && impliedBuy > 0) {
+        nextPosition.totalBuy = round(impliedBuy)
+      }
+
+      return {
+        ...prevState,
+        positions: {
+          ...prevState.positions,
+          [positionKey]: nextPosition,
         },
       }
     })
@@ -2640,6 +2682,28 @@ function App() {
       quantity: vrGuide.actionQty,
       fee: 0,
       memo: `VR ${vrGuide.status}`,
+    }))
+    setTradeWarning('')
+  }
+
+  function loadMumeSuggestedOrder(order: OrderLine, type: TradeType) {
+    if (state.strategyMode !== 'mume') {
+      selectStrategyMode('mume')
+    }
+
+    if (order.quantity <= 0 || order.price <= 0) {
+      setTradeWarning('불러올 주문 수량이 없습니다.')
+      return
+    }
+
+    setDraft((prevDraft) => ({
+      ...prevDraft,
+      type,
+      date: getStrategyTradeDate(state),
+      price: round(order.price),
+      quantity: order.quantity,
+      fee: 0,
+      memo: `${order.title} · ${order.method}`,
     }))
     setTradeWarning('')
   }
@@ -3216,11 +3280,177 @@ function App() {
         </div>
       </section>
 
+      <section className="focus-board" aria-label="오늘 운용">
+        <div className="focus-status">
+          <span>{state.strategyMode === 'vr' ? selectedVrVersion.label : selectedMumeVersion.label}</span>
+          <strong>{state.strategyMode === 'vr' ? vrGuide.status : mumeGuide.phase}</strong>
+          <p>
+            {state.strategyMode === 'vr'
+              ? vrGuide.note
+              : `1회차 ${formatMoney(mumeGuide.unit)} · 별값 ${formatMoney(mumeGuide.starPrice)}`}
+          </p>
+        </div>
+
+        <div className="focus-inputs">
+          {state.strategyMode === 'vr' ? (
+            <>
+              <label className="field">
+                <span>평균 단가</span>
+                <input
+                  inputMode="decimal"
+                  min="0"
+                  type="number"
+                  value={state.vrStartAvgPrice}
+                  onChange={(event) => updateVrStart('vrStartAvgPrice', Number(event.target.value))}
+                />
+              </label>
+              <label className="field">
+                <span>보유 수량</span>
+                <input
+                  inputMode="decimal"
+                  min="0"
+                  step="0.01"
+                  type="number"
+                  value={state.vrStartQty}
+                  onChange={(event) => updateVrStart('vrStartQty', Number(event.target.value))}
+                />
+              </label>
+              <label className="field">
+                <span>현재 Pool</span>
+                <input
+                  inputMode="numeric"
+                  min="0"
+                  type="number"
+                  value={state.vrPool}
+                  onChange={(event) => updateState('vrPool', Number(event.target.value))}
+                />
+              </label>
+            </>
+          ) : (
+            <>
+              <label className="field">
+                <span>총 시드</span>
+                <input
+                  inputMode="numeric"
+                  min="0"
+                  type="number"
+                  value={state.seed}
+                  onChange={(event) => updateMumeSeed(Number(event.target.value))}
+                />
+              </label>
+              <label className="field">
+                <span>평단가</span>
+                <input
+                  inputMode="numeric"
+                  min="0"
+                  type="number"
+                  value={selectedPosition.avgPrice}
+                  onChange={(event) => updateEasyPosition('avgPrice', Number(event.target.value))}
+                />
+              </label>
+              <label className="field">
+                <span>보유 수량</span>
+                <input
+                  inputMode="decimal"
+                  min="0"
+                  step="0.01"
+                  type="number"
+                  value={selectedPosition.holdingQty}
+                  onChange={(event) => updateEasyPosition('holdingQty', Number(event.target.value))}
+                />
+              </label>
+            </>
+          )}
+        </div>
+
+        <div className="focus-order">
+          {state.strategyMode === 'vr' ? (
+            <>
+              <div className="focus-order-title">
+                <span>오늘 주문</span>
+                <strong>
+                  {vrGuide.actionQty > 0
+                    ? `${vrGuide.status} ${formatNumber(vrGuide.actionQty, 0)}주`
+                    : '주문 없음'}
+                </strong>
+              </div>
+              <div className="focus-order-metrics">
+                <div>
+                  <span>기준가</span>
+                  <strong>{formatMoney(vrGuide.actionPrice)}</strong>
+                </div>
+                <div>
+                  <span>금액</span>
+                  <strong>{formatMoney(vrGuide.actionAmount)}</strong>
+                </div>
+                <div>
+                  <span>Pool 이후</span>
+                  <strong>{formatMoney(vrGuide.poolAfter)}</strong>
+                </div>
+              </div>
+              <button
+                className="primary-button"
+                disabled={vrGuide.actionQty <= 0}
+                type="button"
+                onClick={loadVrSuggestedOrder}
+              >
+                권고 주문 입력
+              </button>
+            </>
+          ) : (
+            <>
+              <div className="focus-order-title">
+                <span>오늘 주문</span>
+                <strong>{mumeGuide.buyOrders.length + mumeGuide.sellOrders.length}개</strong>
+              </div>
+              <div className="focus-order-split">
+                <button
+                  className="focus-order-button"
+                  disabled={!primaryMumeBuyOrder}
+                  type="button"
+                  onClick={() =>
+                    primaryMumeBuyOrder
+                      ? loadMumeSuggestedOrder(primaryMumeBuyOrder, 'buy')
+                      : undefined
+                  }
+                >
+                  <span>{primaryMumeBuyOrder ? '매수 입력' : '매수'}</span>
+                  <strong>
+                    {primaryMumeBuyOrder
+                      ? `${primaryMumeBuyOrder.method} · ${formatNumber(primaryMumeBuyOrder.quantity, 0)}주`
+                      : '없음'}
+                  </strong>
+                </button>
+                <button
+                  className="focus-order-button"
+                  disabled={!primaryMumeSellOrder}
+                  type="button"
+                  onClick={() =>
+                    primaryMumeSellOrder
+                      ? loadMumeSuggestedOrder(primaryMumeSellOrder, 'sell')
+                      : undefined
+                  }
+                >
+                  <span>{primaryMumeSellOrder ? '매도 입력' : '매도'}</span>
+                  <strong>
+                    {primaryMumeSellOrder
+                      ? `${primaryMumeSellOrder.method} · ${formatNumber(primaryMumeSellOrder.quantity, 0)}주`
+                      : '없음'}
+                  </strong>
+                </button>
+              </div>
+            </>
+          )}
+        </div>
+      </section>
+
       <div className="workspace-grid">
-        <section className="panel settings-panel">
-          <div className="panel-heading">
-            <h2>{state.strategyMode === 'mume' ? '무한매수 설정' : 'VR 설정'}</h2>
-          </div>
+        <details className="panel settings-panel advanced-panel">
+          <summary className="panel-summary">
+            <span>{state.strategyMode === 'mume' ? '무한매수 설정' : 'VR 설정'}</span>
+            <small>버전, 시드, Pool, 고급값</small>
+          </summary>
+          <div className="panel-body">
 
           <div className="form-grid meta-grid">
             <label className="field">
@@ -3552,7 +3782,8 @@ function App() {
               {settingsMessage ? <p className="data-message">{settingsMessage}</p> : null}
             </>
           )}
-        </section>
+          </div>
+        </details>
 
         <section className="panel guide-panel">
           <div className="panel-heading">
@@ -3585,8 +3816,18 @@ function App() {
               </div>
 
               <div className="order-columns">
-                <OrderList emptyText="매수 없음" orders={mumeGuide.buyOrders} title="매수" />
-                <OrderList emptyText="매도 없음" orders={mumeGuide.sellOrders} title="매도" />
+                <OrderList
+                  emptyText="매수 없음"
+                  onSelectOrder={(order) => loadMumeSuggestedOrder(order, 'buy')}
+                  orders={mumeGuide.buyOrders}
+                  title="매수"
+                />
+                <OrderList
+                  emptyText="매도 없음"
+                  onSelectOrder={(order) => loadMumeSuggestedOrder(order, 'sell')}
+                  orders={mumeGuide.sellOrders}
+                  title="매도"
+                />
               </div>
             </>
           ) : (
@@ -4293,10 +4534,12 @@ function App() {
 
 function OrderList({
   emptyText,
+  onSelectOrder,
   orders,
   title,
 }: {
   emptyText: string
+  onSelectOrder?: (order: OrderLine) => void
   orders: OrderLine[]
   title: string
 }) {
@@ -4304,8 +4547,11 @@ function OrderList({
     <div className="order-list">
       <h3>{title}</h3>
       {orders.length > 0 ? (
-        orders.map((order) => (
-          <div className="order-line" key={`${order.title}-${order.method}`}>
+        orders.map((order, index) => (
+          <div
+            className={onSelectOrder ? 'order-line has-action' : 'order-line'}
+            key={`${order.title}-${order.method}-${index}`}
+          >
             <div>
               <span>{order.title}</span>
               <strong>{order.method}</strong>
@@ -4318,6 +4564,11 @@ function OrderList({
               <span>수량</span>
               <strong>{formatNumber(order.quantity, 0)}주</strong>
             </div>
+            {onSelectOrder ? (
+              <button className="small-action" type="button" onClick={() => onSelectOrder(order)}>
+                입력
+              </button>
+            ) : null}
           </div>
         ))
       ) : (

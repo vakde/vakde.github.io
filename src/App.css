@@ -9,6 +9,7 @@
 .control-strip,
 .strategy-strip,
 .summary-bar,
+.focus-board,
 .panel {
   width: min(1480px, 100%);
   margin-inline: auto;
@@ -184,18 +185,27 @@
 
 .strategy-card {
   display: grid;
-  gap: 7px;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 4px 12px;
+  align-items: center;
   min-width: 0;
   border: 1px solid #d9dde5;
   border-radius: 8px;
   background: #fff;
   color: #111318;
-  padding: 16px;
+  padding: 12px 14px;
   text-align: left;
   cursor: pointer;
 }
 
 .strategy-card span {
+  grid-row: 1 / span 2;
+  display: inline-grid;
+  place-items: center;
+  min-width: 48px;
+  min-height: 34px;
+  border-radius: 8px;
+  background: #f1f3f6;
   color: #697081;
   font-size: 0.78rem;
   font-weight: 900;
@@ -203,14 +213,14 @@
 
 .strategy-card strong {
   overflow-wrap: anywhere;
-  font-size: 1.45rem;
+  font-size: 1.08rem;
   font-weight: 950;
   line-height: 1.1;
 }
 
 .strategy-card em {
   color: #4e5665;
-  font-size: 0.9rem;
+  font-size: 0.78rem;
   font-style: normal;
   font-weight: 800;
 }
@@ -224,6 +234,10 @@
 .strategy-card.is-active span,
 .strategy-card.is-active em {
   color: #d7dbe3;
+}
+
+.strategy-card.is-active span {
+  background: rgba(255, 255, 255, 0.12);
 }
 
 .summary-bar {
@@ -264,9 +278,130 @@
   font-weight: 900;
 }
 
+.focus-board {
+  display: grid;
+  grid-template-columns: minmax(260px, 0.72fr) minmax(420px, 1.18fr) minmax(320px, 0.8fr);
+  gap: 12px;
+  align-items: stretch;
+  margin-top: 12px;
+  margin-bottom: 12px;
+}
+
+.focus-status,
+.focus-inputs,
+.focus-order {
+  min-width: 0;
+  border: 1px solid #d9dde5;
+  border-radius: 8px;
+  background: #fff;
+  padding: 18px;
+}
+
+.focus-status {
+  display: grid;
+  align-content: center;
+  gap: 8px;
+  background: #111318;
+  color: #fff;
+}
+
+.focus-status span,
+.focus-order-title span,
+.focus-order-metrics span,
+.focus-order-button span {
+  color: #737c8c;
+  font-size: 0.76rem;
+  font-weight: 900;
+}
+
+.focus-status span,
+.focus-status p {
+  color: #d8dde6;
+}
+
+.focus-status strong {
+  overflow-wrap: anywhere;
+  font-size: clamp(1.85rem, 4vw, 3.3rem);
+  font-weight: 950;
+  line-height: 0.98;
+}
+
+.focus-status p {
+  font-size: 0.9rem;
+  font-weight: 850;
+}
+
+.focus-inputs {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  align-content: center;
+}
+
+.focus-order {
+  display: grid;
+  gap: 12px;
+}
+
+.focus-order-title {
+  display: grid;
+  gap: 6px;
+}
+
+.focus-order-title strong {
+  overflow-wrap: anywhere;
+  font-size: 1.4rem;
+  font-weight: 950;
+  line-height: 1.08;
+}
+
+.focus-order-metrics,
+.focus-order-split {
+  display: grid;
+  gap: 8px;
+}
+
+.focus-order-metrics {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.focus-order-metrics div,
+.focus-order-button {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+  border: 1px solid #e1e5ed;
+  border-radius: 8px;
+  background: #f8fafc;
+  padding: 10px;
+}
+
+.focus-order-metrics strong,
+.focus-order-button strong {
+  overflow-wrap: anywhere;
+  font-size: 0.92rem;
+  font-weight: 900;
+}
+
+.focus-order-button {
+  color: #171a21;
+  cursor: pointer;
+  text-align: left;
+}
+
+.focus-order-button:hover {
+  border-color: #aeb7c6;
+}
+
+.primary-button:disabled,
+.focus-order-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
 .workspace-grid {
   display: grid;
-  grid-template-columns: minmax(340px, 0.92fr) minmax(420px, 1.15fr) minmax(340px, 0.92fr);
+  grid-template-columns: minmax(420px, 1.16fr) minmax(340px, 0.84fr);
   gap: 12px;
   width: min(1480px, 100%);
   min-width: 0;
@@ -283,11 +418,74 @@
 }
 
 .guide-panel {
-  grid-row: span 2;
+  order: 1;
+}
+
+.trade-panel {
+  order: 2;
+}
+
+.position-panel {
+  order: 3;
+}
+
+.settings-panel {
+  order: 4;
+}
+
+.report-panel {
+  order: 5;
 }
 
 .table-panel {
+  order: 6;
   grid-column: 1 / -1;
+}
+
+.advanced-panel {
+  padding: 0;
+}
+
+.panel-summary {
+  display: grid;
+  gap: 4px;
+  padding: 18px;
+  cursor: pointer;
+  list-style: none;
+}
+
+.panel-summary::-webkit-details-marker {
+  display: none;
+}
+
+.panel-summary span {
+  color: #111318;
+  font-size: 1.02rem;
+  font-weight: 900;
+}
+
+.panel-summary small {
+  color: #717988;
+  font-size: 0.78rem;
+  font-weight: 850;
+}
+
+.panel-summary::after {
+  content: "+";
+  justify-self: end;
+  grid-row: 1 / span 2;
+  align-self: center;
+  color: #4d5565;
+  font-size: 1.2rem;
+  font-weight: 900;
+}
+
+.advanced-panel[open] .panel-summary::after {
+  content: "-";
+}
+
+.panel-body {
+  padding: 0 18px 18px;
 }
 
 .panel-heading {
@@ -730,6 +928,11 @@
   padding: 12px;
 }
 
+.order-line.has-action {
+  grid-template-columns: 1fr 1fr 0.7fr auto;
+  align-items: center;
+}
+
 .order-line div {
   display: grid;
   gap: 5px;
@@ -1004,8 +1207,13 @@ td {
 
 @media (max-width: 1180px) {
   .control-strip,
+  .focus-board,
   .workspace-grid {
     grid-template-columns: 1fr 1fr;
+  }
+
+  .focus-status {
+    grid-column: 1 / -1;
   }
 
   .stock-field,
@@ -1020,11 +1228,15 @@ td {
     padding: 18px 12px 32px;
   }
 
-  .app-header,
-  .control-strip,
-  .strategy-strip,
-  .summary-bar,
-  .workspace-grid,
+    .app-header,
+    .control-strip,
+    .strategy-strip,
+    .summary-bar,
+    .focus-board,
+    .focus-inputs,
+    .focus-order-metrics,
+    .focus-order-split,
+    .workspace-grid,
     .form-grid,
     .trade-mode-row,
     .mode-row,
@@ -1091,6 +1303,10 @@ td {
   }
 
   .order-line {
+    grid-template-columns: 1fr;
+  }
+
+  .order-line.has-action {
     grid-template-columns: 1fr;
   }
 }
