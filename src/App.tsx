@@ -243,9 +243,27 @@ type BrokerParsedTrade = {
   currency: string
 }
 
+type NaverStockBasicResponse = {
+  closePrice?: string
+  localTradedAt?: string
+}
+
+type NaverRealtimeResponse = {
+  result?: {
+    areas?: Array<{
+      datas?: Array<{
+        nv?: number | string
+      }>
+    }>
+  }
+}
+
 const STORAGE_KEY = 'vakde-gate-state-v3'
 const CURRENT_STORAGE_VERSION = 12
 const FIRE_GATE_VR_BAND_PERCENT = 15
+const NAVER_STOCK_BASIC_URL = 'https://m.stock.naver.com/api/stock'
+const NAVER_REALTIME_URL = 'https://polling.finance.naver.com/api/realtime'
+const READER_PROXY_URL = 'https://r.jina.ai/http://r.jina.ai/http://'
 
 const STOCKS: Stock[] = [
   {
@@ -936,6 +954,59 @@ function parseLocaleNumber(value: string): number {
   const parsed = Number(value.replace(/[^\d.-]/g, ''))
 
   return Number.isFinite(parsed) ? parsed : 0
+}
+
+async function fetchTextWithTimeout(url: string, timeoutMs = 8000): Promise<string> {
+  const controller = new AbortController()
+  const timeoutId = window.setTimeout(() => controller.abort(), timeoutMs)
+
+  try {
+    const response = await fetch(url, { signal: controller.signal })
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`)
+    }
+
+    return response.text()
+  } finally {
+    window.clearTimeout(timeoutId)
+  }
+}
+
+function parseReaderJson<T>(text: string): T {
+  const start = text.indexOf('{')
+  const end = text.lastIndexOf('}')
+
+  if (start === -1 || end <= start) {
+    throw new Error('Reader JSON missing')
+  }
+
+  return JSON.parse(text.slice(start, end + 1)) as T
+}
+
+async function fetchReaderJson<T>(url: string): Promise<T> {
+  const text = await fetchTextWithTimeout(`${READER_PROXY_URL}${url}`)
+
+  return parseReaderJson<T>(text)
+}
+
+function formatNaverPriceTime(value: string | undefined): string {
+  if (!value) {
+    return ''
+  }
+
+  const date = new Date(value)
+
+  if (Number.isNaN(date.getTime())) {
+    return ''
+  }
+
+  return new Intl.DateTimeFormat('ko-KR', {
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+  }).format(date)
 }
 
 function extractText(text: string, pattern: RegExp, group = 1): string | null {
@@ -2285,6 +2356,8 @@ function App() {
   const [state, setState] = useState<AppState>(initialAppState.state)
   const [draft, setDraft] = useState<DraftTransaction>(initialAppState.draft)
   const [parserText, setParserText] = useState('')
+  const [priceMessage, setPriceMessage] = useState('')
+  const [isLoadingPrice, setIsLoadingPrice] = useState(false)
   const [poolAdjustment, setPoolAdjustment] = useState('')
   const [tradeWarning, setTradeWarning] = useState('')
   const [settingsMessage, setSettingsMessage] = useState('')
@@ -2401,7 +2474,7 @@ function App() {
     (state.strategyMode === 'mume' ? round(draftGross * (positive(state.commissionRate) / 100), 3) : 0)
   const primaryMumeBuyOrder = mumeGuide.buyOrders.find((order) => order.quantity > 0)
   const primaryMumeSellOrder = mumeGuide.sellOrders.find((order) => order.quantity > 0)
-  const easyStrategyName = state.strategyMode === 'vr' ? '현금 균형형' : '분할 매수형'
+  const easyStrategyName = state.strategyMode === 'vr' ? '리밸런싱' : '분할 매수형'
   const easyActionTitle =
     state.strategyMode === 'vr'
       ? vrGuide.actionQty > 0
@@ -2463,6 +2536,68 @@ function App() {
         },
       }
     })
+  }
+
+  function updateCurrentPrice(price: number) {
+    setState((prevState) => {
+      const stockId = prevState.selectedStockId
+      const mumePosition = getPosition(prevState, stockId, 'mume')
+      const vrPosition = getPosition(prevState, stockId, 'vr')
+
+      return {
+        ...prevState,
+        positions: {
+          ...prevState.positions,
+          [getPositionKey(stockId, 'mume')]: {
+            ...mumePosition,
+            currentPrice: price,
+          },
+          [getPositionKey(stockId, 'vr')]: {
+            ...vrPosition,
+            currentPrice: price,
+          },
+        },
+      }
+    })
+    setDraft((prevDraft) => ({
+      ...prevDraft,
+      price,
+    }))
+  }
+
+  async function loadNaverCurrentPrice() {
+    const realtimeUrl = `${NAVER_REALTIME_URL}?query=SERVICE_ITEM:${encodeURIComponent(selectedStock.ticker)}`
+    const naverUrl = `${NAVER_STOCK_BASIC_URL}/${encodeURIComponent(selectedStock.ticker)}/basic`
+
+    setIsLoadingPrice(true)
+    setPriceMessage('네이버 현재가 확인 중')
+
+    try {
+      let price = 0
+      let priceTime = ''
+
+      try {
+        const realtime = await fetchReaderJson<NaverRealtimeResponse>(realtimeUrl)
+        const realtimePrice = realtime.result?.areas?.[0]?.datas?.[0]?.nv
+        price = typeof realtimePrice === 'number' ? realtimePrice : parseLocaleNumber(String(realtimePrice ?? ''))
+      } catch {
+        const basic = await fetchReaderJson<NaverStockBasicResponse>(naverUrl)
+        price = basic.closePrice ? parseLocaleNumber(basic.closePrice) : 0
+        priceTime = formatNaverPriceTime(basic.localTradedAt)
+      }
+
+      if (!price) {
+        throw new Error('Price missing')
+      }
+
+      updateCurrentPrice(price)
+
+      setPriceMessage(priceTime ? `${priceTime} 네이버 기준` : '네이버 현재가 반영')
+    } catch {
+      setPriceMessage('현재가를 불러오지 못했습니다')
+    } finally {
+      setIsLoadingPrice(false)
+    }
   }
 
   function updateEasyPosition(field: 'avgPrice' | 'holdingQty', value: number) {
@@ -2693,7 +2828,7 @@ function App() {
     }
 
     if (vrGuide.actionQty <= 0) {
-      setTradeWarning('현재 VR 권고 주문이 없습니다.')
+      setTradeWarning('불러올 오늘 주문이 없습니다.')
       return
     }
 
@@ -2704,7 +2839,7 @@ function App() {
       price: round(vrGuide.actionPrice),
       quantity: vrGuide.actionQty,
       fee: 0,
-      memo: `VR ${vrGuide.status}`,
+      memo: `리밸런싱 ${vrGuide.status}`,
     }))
     setTradeWarning('')
   }
@@ -3176,7 +3311,7 @@ function App() {
   }
 
   function renewVrCycle() {
-    if (!window.confirm('다음 VR 사이클로 갱신할까요?')) {
+    if (!window.confirm('다음 리밸런싱 기간으로 갱신할까요?')) {
       return
     }
 
@@ -3243,16 +3378,22 @@ function App() {
           </select>
         </label>
 
-        <label className="field">
+        <div className="field price-field">
           <span>현재가</span>
-          <input
-            inputMode="numeric"
-            min="0"
-            type="number"
-            value={selectedPosition.currentPrice}
-            onChange={(event) => updatePosition('currentPrice', Number(event.target.value))}
-          />
-        </label>
+          <div className="price-input-row">
+            <input
+              inputMode="numeric"
+              min="0"
+              type="number"
+              value={selectedPosition.currentPrice}
+              onChange={(event) => updateCurrentPrice(Number(event.target.value))}
+            />
+            <button className="ghost-button" disabled={isLoadingPrice} type="button" onClick={loadNaverCurrentPrice}>
+              {isLoadingPrice ? '확인 중' : '현재가 받기'}
+            </button>
+          </div>
+          {priceMessage ? <small className="field-message">{priceMessage}</small> : null}
+        </div>
 
       </section>
 
@@ -3263,8 +3404,8 @@ function App() {
           type="button"
           onClick={() => selectStrategyMode('vr')}
         >
-          <span>현금</span>
-          <strong>현금 균형형</strong>
+          <span>리밸</span>
+          <strong>리밸런싱</strong>
           <em>
             기준보다 낮으면 사고, 높으면 팔기
           </em>
@@ -3412,7 +3553,7 @@ function App() {
                 type="button"
                 onClick={loadVrSuggestedOrder}
               >
-                권고 주문 입력
+                오늘 주문 불러오기
               </button>
             </>
           ) : (
@@ -3592,7 +3733,7 @@ function App() {
       <div className="workspace-grid">
         <details className="panel settings-panel advanced-panel">
           <summary className="panel-summary">
-            <span>{state.strategyMode === 'mume' ? '무한매수 설정' : 'VR 설정'}</span>
+            <span>{state.strategyMode === 'mume' ? '무한매수 설정' : '리밸런싱 설정'}</span>
             <small>버전, 예산, 현금, 고급값</small>
           </summary>
           <div className="panel-body">
@@ -3932,7 +4073,7 @@ function App() {
 
         <section className="panel guide-panel">
           <div className="panel-heading">
-            <h2>{state.strategyMode === 'mume' ? '오늘 주문' : 'VR 리밸런싱'}</h2>
+            <h2>{state.strategyMode === 'mume' ? '오늘 주문' : '리밸런싱 상세'}</h2>
           </div>
 
           {state.strategyMode === 'mume' ? (
@@ -4222,7 +4363,7 @@ function App() {
                 type="button"
                 onClick={() => selectStrategyMode('vr')}
               >
-                VR
+                리밸런싱
               </button>
               <button
                 className={state.strategyMode === 'mume' ? 'is-active' : ''}
@@ -4338,7 +4479,7 @@ function App() {
             </div>
           ) : (
             <div className="trade-hint">
-              <span>적용 전략 VR</span>
+              <span>적용 전략 리밸런싱</span>
               <span>현재 Pool {formatMoney(state.vrPool)}</span>
               <span>남은 한도 {formatMoney(vrGuide.poolRemainingAllowed)}</span>
               <span>
@@ -4350,7 +4491,7 @@ function App() {
 
           {state.strategyMode === 'vr' ? (
             <button className="ghost-button stretch" type="button" onClick={loadVrSuggestedOrder}>
-              VR 권고 주문 불러오기
+              오늘 주문 불러오기
             </button>
           ) : null}
 
@@ -4475,7 +4616,7 @@ function App() {
                   }
                 >
                   <option value="all">전체 전략</option>
-                  <option value="vr">VR</option>
+                  <option value="vr">리밸런싱</option>
                   <option value="mume">무한매수</option>
                 </select>
                 <select
@@ -4561,7 +4702,7 @@ function App() {
                       </span>
                       <strong>
                         {completedReport.alias ? `${completedReport.alias} · ` : ''}
-                        {completedReport.strategy === 'vr' ? 'VR' : '무한매수'} ·{' '}
+                        {completedReport.strategy === 'vr' ? '리밸런싱' : '무한매수'} ·{' '}
                         {completedReport.version} · {getStock(completedReport.stockId).ticker}
                       </strong>
                       {completedReport.tags.length > 0 ? (
@@ -4643,7 +4784,7 @@ function App() {
                   selectedTransactions.map((transaction) => (
                     <tr key={transaction.id}>
                       <td>{new Date(transaction.date ?? transaction.at).toLocaleDateString('ko-KR')}</td>
-                      <td>{transaction.strategy === 'mume' ? '무한' : 'VR'}</td>
+                      <td>{transaction.strategy === 'mume' ? '무한' : '리밸'}</td>
                       <td className={transaction.type === 'buy' ? 'up' : 'down'}>
                         {transaction.type === 'buy' ? '매수' : '매도'}
                       </td>

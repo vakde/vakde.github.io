@@ -97,7 +97,7 @@
 
 .control-strip {
   display: grid;
-  grid-template-columns: minmax(260px, 1.4fr) minmax(160px, 0.45fr);
+  grid-template-columns: minmax(260px, 1.3fr) minmax(300px, 0.7fr);
   gap: 10px;
   margin-bottom: 10px;
 }
@@ -142,6 +142,24 @@
 .field textarea:focus {
   border-color: #111318;
   outline: none;
+}
+
+.price-input-row {
+  display: grid;
+  grid-template-columns: minmax(120px, 1fr) auto;
+  gap: 8px;
+  min-width: 0;
+}
+
+.price-input-row .ghost-button {
+  min-height: 42px;
+  white-space: nowrap;
+}
+
+.field-message {
+  color: #717988;
+  font-size: 0.76rem;
+  font-weight: 850;
 }
 
 .segmented {
