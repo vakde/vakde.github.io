@@ -144,6 +144,50 @@
   outline: none;
 }
 
+.operation-field {
+  align-content: start;
+}
+
+.operation-tabs {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 8px;
+  min-width: 0;
+}
+
+.operation-tab {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  min-height: 48px;
+  border-color: #d9dde5;
+  background: #fff;
+  color: #111318;
+  text-align: left;
+}
+
+.operation-tab.is-active {
+  border-color: #111318;
+  background: #111318;
+  color: #fff;
+}
+
+.operation-tab strong {
+  min-width: 0;
+  overflow: hidden;
+  font-size: 0.86rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.operation-tab small {
+  color: inherit;
+  font-size: 0.76rem;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
 .price-input-row {
   display: grid;
   grid-template-columns: minmax(120px, 1fr) auto;

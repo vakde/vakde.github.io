@@ -505,6 +505,18 @@ function getStrategyLabel(strategy: StrategyMode): string {
   return strategy === 'vr' ? '리밸런싱' : '분할 매수'
 }
 
+function getShortStockName(stock: Stock): string {
+  if (stock.id === 'hynix') {
+    return '하이닉스 레버리지'
+  }
+
+  if (stock.id === 'samsung') {
+    return '삼성전자 레버리지'
+  }
+
+  return stock.name
+}
+
 function getOperationValue(stockId: string, strategyMode: StrategyMode): string {
   return `${stockId}:${strategyMode}`
 }
@@ -906,6 +918,53 @@ function getOperationState(
     selectedStockId: nextStock.id,
     strategyMode,
   })
+}
+
+function numberChanged(value: number, baseline: number): boolean {
+  return Math.round(positive(value)) !== Math.round(positive(baseline))
+}
+
+function hasOperationSettingsData(settings: StockSettings, strategyMode: StrategyMode): boolean {
+  const defaults = getDefaultStockSettings()
+
+  if (strategyMode === 'vr') {
+    return (
+      settings.vrVersionId !== defaults.vrVersionId ||
+      numberChanged(settings.vrCurrentV, defaults.vrCurrentV) ||
+      numberChanged(settings.vrStartAvgPrice, defaults.vrStartAvgPrice) ||
+      numberChanged(settings.vrStartQty, defaults.vrStartQty) ||
+      numberChanged(settings.vrStartPool, defaults.vrStartPool) ||
+      numberChanged(settings.vrPool, defaults.vrPool) ||
+      numberChanged(settings.vrPoolLimit, defaults.vrPoolLimit) ||
+      numberChanged(settings.vrBandPercent, defaults.vrBandPercent) ||
+      numberChanged(settings.vrGradient, defaults.vrGradient) ||
+      numberChanged(settings.vrRegularAmount, defaults.vrRegularAmount) ||
+      numberChanged(settings.vrOrderUnit, defaults.vrOrderUnit)
+    )
+  }
+
+  return (
+    settings.mumeVersionId !== defaults.mumeVersionId ||
+    numberChanged(settings.seed, defaults.seed) ||
+    numberChanged(settings.divisionDate, defaults.divisionDate) ||
+    numberChanged(settings.targetProfit, defaults.targetProfit) ||
+    numberChanged(settings.mumeBuyingUnit, defaults.mumeBuyingUnit) ||
+    settings.mumeQuarterMode ||
+    positive(settings.mumeQuarterModeCount) > 0 ||
+    settings.mumeReverseMode ||
+    numberChanged(settings.mumeReverseStarPrice, defaults.mumeReverseStarPrice) ||
+    numberChanged(settings.tValue, defaults.tValue)
+  )
+}
+
+function hasOperationData(state: AppState, stockId: string, strategyMode: StrategyMode): boolean {
+  return (
+    hasPositionData(getPosition(state, stockId, strategyMode)) ||
+    state.transactions.some(
+      (transaction) => transaction.stockId === stockId && transaction.strategy === strategyMode,
+    ) ||
+    hasOperationSettingsData(getSettingsForStock(state, stockId), strategyMode)
+  )
 }
 
 function getSettingsForStock(state: AppState, stockId: string): StockSettings {
@@ -2416,6 +2475,30 @@ function App() {
     [selectedStock.id, state],
   )
   const selectedPosition = state.strategyMode === 'vr' ? selectedVrPosition : selectedMumePosition
+  const operationItems = useMemo(
+    () =>
+      STOCKS.flatMap((stock) =>
+        STRATEGY_MODES.map((strategyMode) => {
+          const settings = getSettingsForStock(state, stock.id)
+          const isSelected = stock.id === state.selectedStockId && strategyMode === state.strategyMode
+
+          return {
+            value: getOperationValue(stock.id, strategyMode),
+            stockId: stock.id,
+            stockName: settings.alias || getShortStockName(stock),
+            strategyMode,
+            strategyLabel: getStrategyLabel(strategyMode),
+            isSelected,
+            hasData: hasOperationData(state, stock.id, strategyMode),
+          }
+        }),
+      ),
+    [state],
+  )
+  const visibleOperationItems = useMemo(
+    () => operationItems.filter((operation) => operation.isSelected || operation.hasData),
+    [operationItems],
+  )
   const selectedMumeVersion =
     MUME_VERSIONS.find((version) => version.id === state.mumeVersionId) ?? MUME_VERSIONS[1]
   const selectedVrVersion = getVrVersion(state.vrVersionId)
@@ -3402,29 +3485,37 @@ function App() {
       </header>
 
       <section className="control-strip" aria-label="운용 설정">
-        <label className="field stock-field">
+        <div className="field stock-field operation-field">
           <span>운용</span>
+          <div className="operation-tabs" aria-label="운용 중인 항목">
+            {visibleOperationItems.map((operation) => (
+              <button
+                key={operation.value}
+                className={operation.isSelected ? 'operation-tab is-active' : 'operation-tab'}
+                type="button"
+                onClick={() => selectOperation(operation.stockId, operation.strategyMode)}
+              >
+                <strong>{operation.stockName}</strong>
+                <small>{operation.strategyLabel}</small>
+              </button>
+            ))}
+          </div>
           <select
+            aria-label="다른 운용 선택"
             value={getOperationValue(state.selectedStockId, state.strategyMode)}
             onChange={(event) => selectOperationValue(event.target.value)}
           >
-            {STOCKS.flatMap((stock) =>
-              STRATEGY_MODES.map((strategyMode) => {
-                const settings = getSettingsForStock(state, stock.id)
-                const stockLabel = settings.alias ? `${settings.alias} · ${stock.name}` : stock.name
-
-                return (
-                  <option
-                    key={getOperationValue(stock.id, strategyMode)}
-                    value={getOperationValue(stock.id, strategyMode)}
-                  >
-                    {stockLabel} · {getStrategyLabel(strategyMode)}
+            {STOCKS.map((stock) => (
+              <optgroup key={stock.id} label={getShortStockName(stock)}>
+                {STRATEGY_MODES.map((strategyMode) => (
+                  <option key={getOperationValue(stock.id, strategyMode)} value={getOperationValue(stock.id, strategyMode)}>
+                    {getStrategyLabel(strategyMode)}
                   </option>
-                )
-              }),
-            )}
+                ))}
+              </optgroup>
+            ))}
           </select>
-        </label>
+        </div>
 
         <div className="field price-field">
           <span>현재가</span>
