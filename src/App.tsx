@@ -893,7 +893,7 @@ function formatNumber(value: number, digits = 0): string {
 function formatPercent(value: number): string {
   const safeValue = Number.isFinite(value) ? value : 0
 
-  return `${safeValue >= 0 ? '+' : ''}${formatNumber(safeValue, 2)}%`
+  return `${safeValue >= 0 ? '+' : ''}${formatNumber(safeValue, 0)}%`
 }
 
 function normalizeTextValue(value: unknown): string {
@@ -1671,7 +1671,7 @@ function buildMumeGuide(state: AppState, position: Position, version: MumeVersio
       price: targetSellPrice,
       quantity: Math.max(0, holdingQty - sellQty),
       amount: Math.max(0, holdingQty - sellQty) * targetSellPrice,
-      note: `${formatNumber(targetProfit, 1)}% 목표`,
+        note: `${formatNumber(targetProfit, 0)}% 목표`,
     })
   } else if (
     isQuarterMode
@@ -1686,7 +1686,7 @@ function buildMumeGuide(state: AppState, position: Position, version: MumeVersio
     const lossSellPrice = round(avgPrice * ((100 - targetProfit) / 100))
 
     buyOrders.push({
-      title: `LOC -${formatNumber(targetProfit, 1)}%`,
+      title: `LOC -${formatNumber(targetProfit, 0)}%`,
       method: 'LOC',
       price: lossBuyPrice,
       quantity: lossBuyQty,
@@ -1695,7 +1695,7 @@ function buildMumeGuide(state: AppState, position: Position, version: MumeVersio
     })
     buyOrders.push(...buildExtraBuyOrders(unit, lossBuyQty, lossBuyPrice, avgPrice))
     sellOrders.push({
-      title: `LOC -${formatNumber(targetProfit, 1)}%`,
+      title: `LOC -${formatNumber(targetProfit, 0)}%`,
       method: 'LOC',
       price: lossSellPrice,
       quantity: quarterQty,
@@ -1703,7 +1703,7 @@ function buildMumeGuide(state: AppState, position: Position, version: MumeVersio
       note: '보유수량 1/4 손절',
     })
     sellOrders.push({
-      title: `LOC +${formatNumber(targetProfit, 1)}%`,
+      title: `LOC +${formatNumber(targetProfit, 0)}%`,
       method: 'LOC',
       price: targetSellPrice,
       quantity: restQty,
@@ -1736,7 +1736,7 @@ function buildMumeGuide(state: AppState, position: Position, version: MumeVersio
       price: starBuyPrice,
       quantity: starQty,
       amount: starQty * starBuyPrice,
-      note: `${formatNumber(starPercent, 2)}% 별값`,
+      note: `${formatNumber(starPercent, 0)}% 별값`,
     })
     buyOrders.push(
       ...buildExtraBuyOrders(
@@ -1762,7 +1762,7 @@ function buildMumeGuide(state: AppState, position: Position, version: MumeVersio
       price: targetSellPrice,
       quantity: restQty,
       amount: restQty * targetSellPrice,
-      note: `${formatNumber(targetProfit, 1)}% 목표`,
+      note: `${formatNumber(targetProfit, 0)}% 목표`,
     })
   } else {
     const starQty = Math.floor(unit / starBuyPrice)
@@ -1799,7 +1799,7 @@ function buildMumeGuide(state: AppState, position: Position, version: MumeVersio
       price: targetSellPrice,
       quantity: restQty,
       amount: restQty * targetSellPrice,
-      note: `${formatNumber(targetProfit, 1)}% 목표`,
+      note: `${formatNumber(targetProfit, 0)}% 목표`,
     })
   }
 
@@ -3290,7 +3290,7 @@ function App() {
         </div>
         <div>
           <span>보유</span>
-          <strong>{formatNumber(selectedPosition.holdingQty, 2)}주</strong>
+          <strong>{formatNumber(selectedPosition.holdingQty, 0)}주</strong>
         </div>
         <div>
           <span>평가금</span>
@@ -3327,7 +3327,7 @@ function App() {
                 <input
                   inputMode="decimal"
                   min="0"
-                  step="0.01"
+                  step="1"
                   type="number"
                   value={state.vrStartQty}
                   onChange={(event) => updateVrStart('vrStartQty', Number(event.target.value))}
@@ -3371,7 +3371,7 @@ function App() {
                 <input
                   inputMode="decimal"
                   min="0"
-                  step="0.01"
+                  step="1"
                   type="number"
                   value={selectedPosition.holdingQty}
                   onChange={(event) => updateEasyPosition('holdingQty', Number(event.target.value))}
@@ -3515,7 +3515,7 @@ function App() {
             <input
               inputMode="decimal"
               min="0"
-              step="0.01"
+              step="1"
               type="number"
               value={draft.quantity}
               onChange={(event) =>
@@ -3660,7 +3660,7 @@ function App() {
                     className={state.mumeVersionId === 'v4' ? 'is-readonly' : ''}
                     inputMode="decimal"
                     min="0"
-                    step="0.1"
+                    step="1"
                     type="number"
                     value={
                       state.mumeVersionId === 'v4'
@@ -3676,9 +3676,9 @@ function App() {
                     <input
                       inputMode="decimal"
                       min="0"
-                      step="0.1"
+                      step="1"
                       type="number"
-                      value={state.tValue}
+                      value={Math.round(state.tValue)}
                       onChange={(event) => updateState('tValue', Number(event.target.value))}
                     />
                   </label>
@@ -3698,11 +3698,11 @@ function App() {
                 <label className="field">
                   <span>수수료율 %</span>
                   <input
-                    inputMode="decimal"
+                    inputMode="numeric"
                     min="0"
-                    step="0.001"
+                    step="1"
                     type="number"
-                    value={state.commissionRate}
+                    value={Math.round(state.commissionRate)}
                     onChange={(event) => updateState('commissionRate', Number(event.target.value))}
                   />
                 </label>
@@ -3830,7 +3830,7 @@ function App() {
                   <input
                     inputMode="decimal"
                     min="0"
-                    step="0.01"
+                    step="1"
                     type="number"
                     value={state.vrStartQty}
                     onChange={(event) => updateVrStart('vrStartQty', Number(event.target.value))}
@@ -3948,7 +3948,7 @@ function App() {
                 </div>
                 <div>
                   <span>T</span>
-                  <strong>{formatNumber(mumeGuide.tValue, 2)}</strong>
+                  <strong>{formatNumber(mumeGuide.tValue, 0)}</strong>
                 </div>
                 <div>
                   <span>별값</span>
@@ -4001,7 +4001,7 @@ function App() {
                 </div>
                 <div>
                   <span>현재 수량</span>
-                  <strong>{formatNumber(selectedVrPosition.holdingQty, 2)}주</strong>
+                  <strong>{formatNumber(selectedVrPosition.holdingQty, 0)}주</strong>
                 </div>
                 <div>
                   <span>현재 평단</span>
@@ -4091,7 +4091,7 @@ function App() {
                 <div className="reserved-heading">
                   <h3>예약 주문표</h3>
                   <span>
-                    기준 {formatNumber(vrOrderBaseQty, 2)}주 · {formatNumber(state.vrOrderUnit, 0)}주 단위
+                    기준 {formatNumber(vrOrderBaseQty, 0)}주 · {formatNumber(state.vrOrderUnit, 0)}주 단위
                   </span>
                 </div>
                 <div className="reserved-columns">
@@ -4136,7 +4136,7 @@ function App() {
               <input
                 inputMode="decimal"
                 min="0"
-                step="0.01"
+                step="1"
                 type="number"
                 value={selectedPosition.holdingQty}
                 onChange={(event) => updatePosition('holdingQty', Number(event.target.value))}
@@ -4265,7 +4265,7 @@ function App() {
               <input
                 inputMode="decimal"
                 min="0"
-                step="0.01"
+                step="1"
                 type="number"
                 value={draft.quantity}
                 onChange={(event) =>
@@ -4301,9 +4301,9 @@ function App() {
                   <input
                     inputMode="decimal"
                     min="0"
-                    step="0.5"
+                    step="1"
                     type="number"
-                    value={draft.tDelta}
+                    value={Math.round(draft.tDelta)}
                     onChange={(event) =>
                       setDraft((prevDraft) => ({ ...prevDraft, tDelta: Number(event.target.value) }))
                     }
@@ -4316,9 +4316,9 @@ function App() {
                     inputMode="decimal"
                     min="0"
                     max="1"
-                    step="0.25"
+                    step="1"
                     type="number"
-                    value={draft.tMultiplier}
+                    value={Math.round(draft.tMultiplier)}
                     onChange={(event) =>
                       setDraft((prevDraft) => ({
                         ...prevDraft,
@@ -4647,7 +4647,7 @@ function App() {
                       <td className={transaction.type === 'buy' ? 'up' : 'down'}>
                         {transaction.type === 'buy' ? '매수' : '매도'}
                       </td>
-                      <td>{formatNumber(transaction.quantity, 2)}</td>
+                      <td>{formatNumber(transaction.quantity, 0)}</td>
                       <td>{formatMoney(transaction.price)}</td>
                       <td>{formatMoney(transaction.price * transaction.quantity)}</td>
                       <td>{transaction.memo || '-'}</td>
