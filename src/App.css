@@ -10,6 +10,8 @@
 .strategy-strip,
 .summary-bar,
 .focus-board,
+.quick-trade-panel,
+.advanced-workspace,
 .panel {
   width: min(1480px, 100%);
   margin-inline: auto;
@@ -180,7 +182,7 @@
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
 
 .strategy-card {
@@ -283,7 +285,7 @@
   grid-template-columns: minmax(260px, 0.72fr) minmax(420px, 1.18fr) minmax(320px, 0.8fr);
   gap: 12px;
   align-items: stretch;
-  margin-top: 12px;
+  margin-top: 10px;
   margin-bottom: 12px;
 }
 
@@ -398,18 +400,104 @@
 }
 
 .primary-button:disabled,
-.focus-order-button:disabled {
+.focus-order-button:disabled,
+.ghost-button:disabled {
   cursor: not-allowed;
   opacity: 0.45;
+}
+
+.quick-trade-panel {
+  margin-top: 12px;
+}
+
+.quick-trade-grid {
+  display: grid;
+  grid-template-columns: minmax(170px, 0.8fr) repeat(3, minmax(150px, 1fr)) minmax(150px, 0.7fr);
+  gap: 10px;
+  align-items: end;
+}
+
+.quick-trade-grid .segmented.full {
+  margin-bottom: 0;
+}
+
+.quick-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.quick-actions .ghost-button {
+  min-width: 150px;
+}
+
+.quick-parser {
+  margin-top: 10px;
+  border-top: 1px solid #e6e9ef;
+  padding-top: 10px;
+}
+
+.quick-parser summary {
+  cursor: pointer;
+  color: #4d5565;
+  font-size: 0.82rem;
+  font-weight: 850;
+}
+
+.advanced-workspace {
+  margin-top: 12px;
+  border: 1px solid #d9dde5;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.advanced-workspace-summary {
+  display: grid;
+  gap: 4px;
+  padding: 16px 18px;
+  cursor: pointer;
+  list-style: none;
+}
+
+.advanced-workspace-summary::-webkit-details-marker {
+  display: none;
+}
+
+.advanced-workspace-summary span {
+  color: #111318;
+  font-size: 1rem;
+  font-weight: 900;
+}
+
+.advanced-workspace-summary small {
+  color: #717988;
+  font-size: 0.78rem;
+  font-weight: 850;
+}
+
+.advanced-workspace-summary::after {
+  content: "+";
+  justify-self: end;
+  grid-row: 1 / span 2;
+  align-self: center;
+  color: #4d5565;
+  font-size: 1.2rem;
+  font-weight: 900;
+}
+
+.advanced-workspace[open] .advanced-workspace-summary::after {
+  content: "-";
 }
 
 .workspace-grid {
   display: grid;
   grid-template-columns: minmax(420px, 1.16fr) minmax(340px, 0.84fr);
   gap: 12px;
-  width: min(1480px, 100%);
+  width: 100%;
   min-width: 0;
-  margin: 12px auto 0;
+  margin: 0;
+  padding: 0 18px 18px;
   align-items: start;
 }
 
@@ -1212,6 +1300,7 @@ td {
 @media (max-width: 1180px) {
   .control-strip,
   .focus-board,
+  .quick-trade-grid,
   .workspace-grid {
     grid-template-columns: 1fr 1fr;
   }
@@ -1221,6 +1310,7 @@ td {
   }
 
   .stock-field,
+  .quick-trade-grid .segmented.full,
   .guide-panel,
   .table-panel {
     grid-column: 1 / -1;
@@ -1240,6 +1330,7 @@ td {
     .focus-inputs,
     .focus-order-metrics,
     .focus-order-split,
+    .quick-trade-grid,
     .workspace-grid,
     .form-grid,
     .trade-mode-row,

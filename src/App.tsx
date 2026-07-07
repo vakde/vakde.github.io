@@ -2401,6 +2401,29 @@ function App() {
     (state.strategyMode === 'mume' ? round(draftGross * (positive(state.commissionRate) / 100), 3) : 0)
   const primaryMumeBuyOrder = mumeGuide.buyOrders.find((order) => order.quantity > 0)
   const primaryMumeSellOrder = mumeGuide.sellOrders.find((order) => order.quantity > 0)
+  const easyStrategyName = state.strategyMode === 'vr' ? '현금 균형형' : '분할 매수형'
+  const easyActionTitle =
+    state.strategyMode === 'vr'
+      ? vrGuide.actionQty > 0
+        ? `${vrGuide.status} ${formatNumber(vrGuide.actionQty, 0)}주`
+        : vrGuide.cycleDue
+          ? '다시 계산'
+          : '쉬어가기'
+      : mumeGuide.buyOrders.length + mumeGuide.sellOrders.length > 0
+        ? `${mumeGuide.phase} · ${mumeGuide.buyOrders.length + mumeGuide.sellOrders.length}개`
+        : '쉬어가기'
+  const easyActionReason =
+    state.strategyMode === 'vr'
+      ? vrGuide.actionQty > 0
+        ? vrGuide.status.includes('매도')
+          ? '보유액이 기준보다 커서 일부를 현금으로 돌립니다'
+          : '보유액이 기준보다 작아서 현금으로 채웁니다'
+        : vrGuide.cycleDue
+          ? '기간이 끝나 새 기준을 잡을 차례입니다'
+          : '기준 범위 안이라 오늘은 주문하지 않습니다'
+      : selectedMumePosition.holdingQty <= 0
+        ? `${formatMoney(mumeGuide.unit)} 안에서 첫 진입합니다`
+        : '평균단가와 목표가에 맞춰 매수·매도 주문을 둡니다'
 
   useEffect(() => {
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state))
@@ -3195,9 +3218,9 @@ function App() {
         <div className="brand">
           <span className="brand-mark">VG</span>
           <div>
-            <h1>Vakde Gate</h1>
+            <h1>오늘 주문 계산기</h1>
             <p>
-              {state.alias ? `${state.alias} · ` : ''}{selectedStock.ticker} · {selectedStock.market}
+              Vakde Gate · {state.alias ? `${state.alias} · ` : ''}{selectedStock.ticker}
             </p>
           </div>
         </div>
@@ -3240,11 +3263,10 @@ function App() {
           type="button"
           onClick={() => selectStrategyMode('vr')}
         >
-          <span>VR</span>
-          <strong>{vrGuide.status}</strong>
+          <span>현금</span>
+          <strong>현금 균형형</strong>
           <em>
-            {selectedVrVersion.label} · V {formatMoney(vrGuide.targetValue)} · Pool{' '}
-            {formatMoney(state.vrPool)}
+            기준보다 낮으면 사고, 높으면 팔기
           </em>
         </button>
         <button
@@ -3253,10 +3275,10 @@ function App() {
           type="button"
           onClick={() => selectStrategyMode('mume')}
         >
-          <span>무한매수법</span>
-          <strong>{mumeGuide.phase}</strong>
+          <span>분할</span>
+          <strong>분할 매수형</strong>
           <em>
-            {selectedMumeVersion.label} · 1회차 {formatMoney(mumeGuide.unit)}
+            예산을 나눠 사고 목표가에 팔기
           </em>
         </button>
       </section>
@@ -3282,13 +3304,9 @@ function App() {
 
       <section className="focus-board" aria-label="오늘 운용">
         <div className="focus-status">
-          <span>{state.strategyMode === 'vr' ? selectedVrVersion.label : selectedMumeVersion.label}</span>
-          <strong>{state.strategyMode === 'vr' ? vrGuide.status : mumeGuide.phase}</strong>
-          <p>
-            {state.strategyMode === 'vr'
-              ? vrGuide.note
-              : `1회차 ${formatMoney(mumeGuide.unit)} · 별값 ${formatMoney(mumeGuide.starPrice)}`}
-          </p>
+          <span>{easyStrategyName}</span>
+          <strong>{easyActionTitle}</strong>
+          <p>{easyActionReason}</p>
         </div>
 
         <div className="focus-inputs">
@@ -3316,7 +3334,7 @@ function App() {
                 />
               </label>
               <label className="field">
-                <span>현재 Pool</span>
+                <span>남은 현금</span>
                 <input
                   inputMode="numeric"
                   min="0"
@@ -3329,7 +3347,7 @@ function App() {
           ) : (
             <>
               <label className="field">
-                <span>총 시드</span>
+                <span>전체 예산</span>
                 <input
                   inputMode="numeric"
                   min="0"
@@ -3384,7 +3402,7 @@ function App() {
                   <strong>{formatMoney(vrGuide.actionAmount)}</strong>
                 </div>
                 <div>
-                  <span>Pool 이후</span>
+                  <span>남은 현금</span>
                   <strong>{formatMoney(vrGuide.poolAfter)}</strong>
                 </div>
               </div>
@@ -3444,11 +3462,138 @@ function App() {
         </div>
       </section>
 
+      <section className="panel quick-trade-panel" aria-label="체결 기록">
+        <div className="panel-heading">
+          <h2>체결했으면 기록</h2>
+        </div>
+
+        <div className="quick-trade-grid">
+          <div className="segmented full">
+            <button
+              className={draft.type === 'buy' ? 'is-active' : ''}
+              type="button"
+              onClick={() => setDraft((prevDraft) => ({ ...prevDraft, type: 'buy' }))}
+            >
+              매수
+            </button>
+            <button
+              className={draft.type === 'sell' ? 'is-active' : ''}
+              type="button"
+              onClick={() => setDraft((prevDraft) => ({ ...prevDraft, type: 'sell' }))}
+            >
+              매도
+            </button>
+          </div>
+
+          <label className="field">
+            <span>날짜</span>
+            <input
+              type="date"
+              value={draft.date}
+              onChange={(event) =>
+                setDraft((prevDraft) => ({ ...prevDraft, date: event.target.value }))
+              }
+              onInput={(event) =>
+                setDraft((prevDraft) => ({ ...prevDraft, date: event.currentTarget.value }))
+              }
+            />
+          </label>
+          <label className="field">
+            <span>가격</span>
+            <input
+              inputMode="numeric"
+              min="0"
+              type="number"
+              value={draft.price}
+              onChange={(event) =>
+                setDraft((prevDraft) => ({ ...prevDraft, price: Number(event.target.value) }))
+              }
+            />
+          </label>
+          <label className="field">
+            <span>수량</span>
+            <input
+              inputMode="decimal"
+              min="0"
+              step="0.01"
+              type="number"
+              value={draft.quantity}
+              onChange={(event) =>
+                setDraft((prevDraft) => ({ ...prevDraft, quantity: Number(event.target.value) }))
+              }
+            />
+          </label>
+          <button className="primary-button" type="button" onClick={applyTransaction}>
+            기록하기
+          </button>
+        </div>
+
+        <div className="quick-actions">
+          {state.strategyMode === 'vr' ? (
+            <button className="ghost-button" type="button" onClick={loadVrSuggestedOrder}>
+              오늘 주문 불러오기
+            </button>
+          ) : (
+            <>
+              <button
+                className="ghost-button"
+                disabled={!primaryMumeBuyOrder}
+                type="button"
+                onClick={() =>
+                  primaryMumeBuyOrder ? loadMumeSuggestedOrder(primaryMumeBuyOrder, 'buy') : undefined
+                }
+              >
+                매수 불러오기
+              </button>
+              <button
+                className="ghost-button"
+                disabled={!primaryMumeSellOrder}
+                type="button"
+                onClick={() =>
+                  primaryMumeSellOrder ? loadMumeSuggestedOrder(primaryMumeSellOrder, 'sell') : undefined
+                }
+              >
+                매도 불러오기
+              </button>
+            </>
+          )}
+        </div>
+
+        {tradeWarning ? <p className="warning-text">{tradeWarning}</p> : null}
+
+        <details className="quick-parser">
+          <summary>문자 붙여넣기</summary>
+          <label className="field parser-field">
+            <span>증권사 문자</span>
+            <textarea
+              rows={4}
+              value={parserText}
+              onChange={(event) => setParserText(event.target.value)}
+              placeholder="[증권사] 매수 체결수량 10주 체결단가 23,390"
+            />
+          </label>
+          <div className="parser-actions">
+            <button className="ghost-button" type="button" onClick={pasteAndParseBrokerText}>
+              붙여넣기
+            </button>
+            <button className="ghost-button" type="button" onClick={applyParserText}>
+              문자 파싱
+            </button>
+          </div>
+        </details>
+      </section>
+
+      <details className="advanced-workspace">
+        <summary className="advanced-workspace-summary">
+          <span>세부 설정과 기록</span>
+          <small>버전, 보유 상세, 리포트, 백업</small>
+        </summary>
+
       <div className="workspace-grid">
         <details className="panel settings-panel advanced-panel">
           <summary className="panel-summary">
             <span>{state.strategyMode === 'mume' ? '무한매수 설정' : 'VR 설정'}</span>
-            <small>버전, 시드, Pool, 고급값</small>
+            <small>버전, 예산, 현금, 고급값</small>
           </summary>
           <div className="panel-body">
 
@@ -4528,6 +4673,7 @@ function App() {
           </div>
         </section>
       </div>
+      </details>
     </main>
   )
 }
