@@ -502,32 +502,7 @@ function getStock(stockId: string): Stock {
 }
 
 function getStrategyLabel(strategy: StrategyMode): string {
-  return strategy === 'vr' ? '리밸런싱' : '분할 매수'
-}
-
-function getShortStockName(stock: Stock): string {
-  if (stock.id === 'hynix') {
-    return '하이닉스 레버리지'
-  }
-
-  if (stock.id === 'samsung') {
-    return '삼성전자 레버리지'
-  }
-
-  return stock.name
-}
-
-function getOperationValue(stockId: string, strategyMode: StrategyMode): string {
-  return `${stockId}:${strategyMode}`
-}
-
-function parseOperationValue(value: string): { stockId: string; strategyMode: StrategyMode } {
-  const [stockId, rawStrategyMode] = value.split(':')
-
-  return {
-    stockId: getStock(stockId).id,
-    strategyMode: isStrategyMode(rawStrategyMode) ? rawStrategyMode : 'vr',
-  }
+  return strategy === 'vr' ? '리밸런싱' : '분할매수'
 }
 
 function getPosition(
@@ -918,53 +893,6 @@ function getOperationState(
     selectedStockId: nextStock.id,
     strategyMode,
   })
-}
-
-function numberChanged(value: number, baseline: number): boolean {
-  return Math.round(positive(value)) !== Math.round(positive(baseline))
-}
-
-function hasOperationSettingsData(settings: StockSettings, strategyMode: StrategyMode): boolean {
-  const defaults = getDefaultStockSettings()
-
-  if (strategyMode === 'vr') {
-    return (
-      settings.vrVersionId !== defaults.vrVersionId ||
-      numberChanged(settings.vrCurrentV, defaults.vrCurrentV) ||
-      numberChanged(settings.vrStartAvgPrice, defaults.vrStartAvgPrice) ||
-      numberChanged(settings.vrStartQty, defaults.vrStartQty) ||
-      numberChanged(settings.vrStartPool, defaults.vrStartPool) ||
-      numberChanged(settings.vrPool, defaults.vrPool) ||
-      numberChanged(settings.vrPoolLimit, defaults.vrPoolLimit) ||
-      numberChanged(settings.vrBandPercent, defaults.vrBandPercent) ||
-      numberChanged(settings.vrGradient, defaults.vrGradient) ||
-      numberChanged(settings.vrRegularAmount, defaults.vrRegularAmount) ||
-      numberChanged(settings.vrOrderUnit, defaults.vrOrderUnit)
-    )
-  }
-
-  return (
-    settings.mumeVersionId !== defaults.mumeVersionId ||
-    numberChanged(settings.seed, defaults.seed) ||
-    numberChanged(settings.divisionDate, defaults.divisionDate) ||
-    numberChanged(settings.targetProfit, defaults.targetProfit) ||
-    numberChanged(settings.mumeBuyingUnit, defaults.mumeBuyingUnit) ||
-    settings.mumeQuarterMode ||
-    positive(settings.mumeQuarterModeCount) > 0 ||
-    settings.mumeReverseMode ||
-    numberChanged(settings.mumeReverseStarPrice, defaults.mumeReverseStarPrice) ||
-    numberChanged(settings.tValue, defaults.tValue)
-  )
-}
-
-function hasOperationData(state: AppState, stockId: string, strategyMode: StrategyMode): boolean {
-  return (
-    hasPositionData(getPosition(state, stockId, strategyMode)) ||
-    state.transactions.some(
-      (transaction) => transaction.stockId === stockId && transaction.strategy === strategyMode,
-    ) ||
-    hasOperationSettingsData(getSettingsForStock(state, stockId), strategyMode)
-  )
 }
 
 function getSettingsForStock(state: AppState, stockId: string): StockSettings {
@@ -2475,30 +2403,6 @@ function App() {
     [selectedStock.id, state],
   )
   const selectedPosition = state.strategyMode === 'vr' ? selectedVrPosition : selectedMumePosition
-  const operationItems = useMemo(
-    () =>
-      STOCKS.flatMap((stock) =>
-        STRATEGY_MODES.map((strategyMode) => {
-          const settings = getSettingsForStock(state, stock.id)
-          const isSelected = stock.id === state.selectedStockId && strategyMode === state.strategyMode
-
-          return {
-            value: getOperationValue(stock.id, strategyMode),
-            stockId: stock.id,
-            stockName: settings.alias || getShortStockName(stock),
-            strategyMode,
-            strategyLabel: getStrategyLabel(strategyMode),
-            isSelected,
-            hasData: hasOperationData(state, stock.id, strategyMode),
-          }
-        }),
-      ),
-    [state],
-  )
-  const visibleOperationItems = useMemo(
-    () => operationItems.filter((operation) => operation.isSelected || operation.hasData),
-    [operationItems],
-  )
   const selectedMumeVersion =
     MUME_VERSIONS.find((version) => version.id === state.mumeVersionId) ?? MUME_VERSIONS[1]
   const selectedVrVersion = getVrVersion(state.vrVersionId)
@@ -2592,7 +2496,7 @@ function App() {
     (state.strategyMode === 'mume' ? round(draftGross * (positive(state.commissionRate) / 100), 3) : 0)
   const primaryMumeBuyOrder = mumeGuide.buyOrders.find((order) => order.quantity > 0)
   const primaryMumeSellOrder = mumeGuide.sellOrders.find((order) => order.quantity > 0)
-  const easyStrategyName = state.strategyMode === 'vr' ? '리밸런싱' : '분할 매수형'
+  const easyStrategyName = state.strategyMode === 'vr' ? '리밸런싱' : '분할매수'
   const easyActionTitle =
     state.strategyMode === 'vr'
       ? vrGuide.actionQty > 0
@@ -2636,12 +2540,6 @@ function App() {
 
     setState(nextState)
     setDraft((prevDraft) => createDraftForState(nextState, prevDraft))
-  }
-
-  function selectOperationValue(value: string) {
-    const operation = parseOperationValue(value)
-
-    selectOperation(operation.stockId, operation.strategyMode)
   }
 
   function selectStrategyMode(strategyMode: StrategyMode) {
@@ -2812,9 +2710,7 @@ function App() {
   }
 
   function selectStock(stockId: string) {
-    const savedStrategyMode = state.stockSettings[getStock(stockId).id]?.strategyMode ?? state.strategyMode
-
-    selectOperation(stockId, savedStrategyMode)
+    selectOperation(stockId, state.strategyMode)
   }
 
   function selectMumeVersion(versionId: MumeVersion['id']) {
@@ -3484,58 +3380,6 @@ function App() {
         </button>
       </header>
 
-      <section className="control-strip" aria-label="운용 설정">
-        <div className="field stock-field operation-field">
-          <span>운용</span>
-          <div className="operation-tabs" aria-label="운용 중인 항목">
-            {visibleOperationItems.map((operation) => (
-              <button
-                key={operation.value}
-                className={operation.isSelected ? 'operation-tab is-active' : 'operation-tab'}
-                type="button"
-                onClick={() => selectOperation(operation.stockId, operation.strategyMode)}
-              >
-                <strong>{operation.stockName}</strong>
-                <small>{operation.strategyLabel}</small>
-              </button>
-            ))}
-          </div>
-          <select
-            aria-label="다른 운용 선택"
-            value={getOperationValue(state.selectedStockId, state.strategyMode)}
-            onChange={(event) => selectOperationValue(event.target.value)}
-          >
-            {STOCKS.map((stock) => (
-              <optgroup key={stock.id} label={getShortStockName(stock)}>
-                {STRATEGY_MODES.map((strategyMode) => (
-                  <option key={getOperationValue(stock.id, strategyMode)} value={getOperationValue(stock.id, strategyMode)}>
-                    {getStrategyLabel(strategyMode)}
-                  </option>
-                ))}
-              </optgroup>
-            ))}
-          </select>
-        </div>
-
-        <div className="field price-field">
-          <span>현재가</span>
-          <div className="price-input-row">
-            <input
-              inputMode="numeric"
-              min="0"
-              type="number"
-              value={selectedPosition.currentPrice}
-              onChange={(event) => updateCurrentPrice(Number(event.target.value))}
-            />
-            <button className="ghost-button" disabled={isLoadingPrice} type="button" onClick={loadNaverCurrentPrice}>
-              {isLoadingPrice ? '확인 중' : '현재가 받기'}
-            </button>
-          </div>
-          {priceMessage ? <small className="field-message">{priceMessage}</small> : null}
-        </div>
-
-      </section>
-
       <section className="strategy-strip" aria-label="운용 방식">
         <button
           aria-selected={state.strategyMode === 'vr'}
@@ -3556,11 +3400,45 @@ function App() {
           onClick={() => selectStrategyMode('mume')}
         >
           <span>분할</span>
-          <strong>분할 매수형</strong>
+          <strong>분할매수</strong>
           <em>
             예산을 나눠 사고 목표가에 팔기
           </em>
         </button>
+      </section>
+
+      <section className="control-strip" aria-label="종목과 가격">
+        <label className="field stock-field">
+          <span>종목</span>
+          <select value={state.selectedStockId} onChange={(event) => selectStock(event.target.value)}>
+            {STOCKS.map((stock) => {
+              const settings = getSettingsForStock(state, stock.id)
+
+              return (
+                <option key={stock.id} value={stock.id}>
+                  {settings.alias ? `${settings.alias} · ${stock.name}` : stock.name}
+                </option>
+              )
+            })}
+          </select>
+        </label>
+
+        <div className="field price-field">
+          <span>현재가</span>
+          <div className="price-input-row">
+            <input
+              inputMode="numeric"
+              min="0"
+              type="number"
+              value={selectedPosition.currentPrice}
+              onChange={(event) => updateCurrentPrice(Number(event.target.value))}
+            />
+            <button className="ghost-button" disabled={isLoadingPrice} type="button" onClick={loadNaverCurrentPrice}>
+              {isLoadingPrice ? '확인 중' : '현재가 받기'}
+            </button>
+          </div>
+          {priceMessage ? <small className="field-message">{priceMessage}</small> : null}
+        </div>
       </section>
 
       <section className="summary-bar" aria-label="요약">
