@@ -115,6 +115,7 @@ type StockSettings = {
 type AppState = {
   storageVersion: number
   selectedStockId: string
+  selectedStockByStrategy: Record<StrategyMode, string>
   alias: string
   tags: string
   strategyMode: StrategyMode
@@ -346,6 +347,10 @@ const DEFAULT_POSITIONS = STOCKS.reduce<Record<string, Position>>((positions, st
 const DEFAULT_STATE: AppState = {
   storageVersion: CURRENT_STORAGE_VERSION,
   selectedStockId: STOCKS[0].id,
+  selectedStockByStrategy: {
+    vr: STOCKS[0].id,
+    mume: STOCKS[0].id,
+  },
   alias: '',
   tags: '',
   strategyMode: 'vr',
@@ -392,6 +397,51 @@ const DEFAULT_DRAFT = {
   tMultiplier: 0.75,
 } satisfies DraftTransaction
 
+function normalizeStockId(value: unknown, fallback = DEFAULT_STATE.selectedStockId): string {
+  return typeof value === 'string' && STOCKS.some((stock) => stock.id === value) ? value : fallback
+}
+
+function getRecentTransactionStockId(transactions: Transaction[], strategy: StrategyMode): string | null {
+  const recentTransaction = transactions
+    .filter((transaction) => transaction.strategy === strategy && STOCKS.some((stock) => stock.id === transaction.stockId))
+    .sort((left, right) => new Date(right.at).getTime() - new Date(left.at).getTime())[0]
+
+  return recentTransaction?.stockId ?? null
+}
+
+function getPositionStockId(positions: Record<string, Position>, strategy: StrategyMode): string | null {
+  return (
+    STOCKS.find((stock) => hasPositionData(positions[getPositionKey(stock.id, strategy)]))?.id ??
+    null
+  )
+}
+
+function normalizeSelectedStockByStrategy(
+  value: unknown,
+  currentStockId: string,
+  currentStrategy: StrategyMode,
+  positions: Record<string, Position>,
+  transactions: Transaction[],
+): Record<StrategyMode, string> {
+  const storedValue =
+    value && typeof value === 'object'
+      ? (value as Partial<Record<StrategyMode, unknown>>)
+      : {}
+
+  const getFallback = (strategy: StrategyMode) =>
+    currentStrategy === strategy
+      ? currentStockId
+      : getRecentTransactionStockId(transactions, strategy) ??
+        getPositionStockId(positions, strategy) ??
+        currentStockId
+
+  return {
+    vr: normalizeStockId(storedValue.vr, getFallback('vr')),
+    mume: normalizeStockId(storedValue.mume, getFallback('mume')),
+    [currentStrategy]: currentStockId,
+  }
+}
+
 function normalizeStoredState(stored: Partial<AppState>): AppState {
   const storedVersion = positive(stored.storageVersion ?? 0)
   const needsLegacyStrategyDefault =
@@ -408,6 +458,9 @@ function normalizeStoredState(stored: Partial<AppState>): AppState {
   const storedStockId = STOCKS.some((stock) => stock.id === stored.selectedStockId)
     ? stored.selectedStockId
     : DEFAULT_STATE.selectedStockId
+  const normalizedStrategyMode = isStrategyMode(stored.strategyMode)
+    ? stored.strategyMode
+    : DEFAULT_STATE.strategyMode
 
   const rawVrStartDate = stored.vrStartDate ?? DEFAULT_STATE.vrStartDate
   const normalizedVrStartDate = getMondayOnOrAfterIso(rawVrStartDate)
@@ -425,17 +478,24 @@ function normalizeStoredState(stored: Partial<AppState>): AppState {
     needsVrBandDefaultUpgrade && Number(storedVrBandPercent) === 10
       ? DEFAULT_STATE.vrBandPercent
       : storedVrBandPercent
+  const normalizedPositions = normalizePositions(stored.positions, storedTransactions, normalizedStockSettings)
+  const normalizedSelectedStockByStrategy = normalizeSelectedStockByStrategy(
+    stored.selectedStockByStrategy,
+    storedStockId ?? DEFAULT_STATE.selectedStockId,
+    normalizedStrategyMode,
+    normalizedPositions,
+    storedTransactions,
+  )
 
   const normalized: AppState = {
     ...DEFAULT_STATE,
     ...stored,
     storageVersion: CURRENT_STORAGE_VERSION,
     selectedStockId: storedStockId ?? DEFAULT_STATE.selectedStockId,
+    selectedStockByStrategy: normalizedSelectedStockByStrategy,
     alias: normalizeTextValue(stored.alias),
     tags: normalizeTextValue(stored.tags),
-    strategyMode: isStrategyMode(stored.strategyMode)
-      ? stored.strategyMode
-      : DEFAULT_STATE.strategyMode,
+    strategyMode: normalizedStrategyMode,
     mumeVersionId: storedMumeVersionId,
     vrVersionId: storedVersionId,
     vrStartMode: normalizedVrStartMode,
@@ -463,7 +523,7 @@ function normalizeStoredState(stored: Partial<AppState>): AppState {
     mumeCycleId: stored.mumeCycleId ?? DEFAULT_STATE.mumeCycleId,
     vrStartDate: normalizedVrStartDate,
     vrEndDate: normalizedVrEndDate,
-    positions: normalizePositions(stored.positions, storedTransactions, normalizedStockSettings),
+    positions: normalizedPositions,
     transactions: storedTransactions,
     reports: normalizeCompletedReports(stored.reports),
     stockSettings: normalizedStockSettings,
@@ -476,6 +536,10 @@ function normalizeStoredState(stored: Partial<AppState>): AppState {
   return syncCurrentStockSettings({
     ...normalized,
     strategyMode: nextStrategyMode,
+    selectedStockByStrategy: {
+      ...normalized.selectedStockByStrategy,
+      [nextStrategyMode]: normalized.selectedStockId,
+    },
   })
 }
 
@@ -892,6 +956,10 @@ function getOperationState(
     ...savedNextSettings,
     selectedStockId: nextStock.id,
     strategyMode,
+    selectedStockByStrategy: {
+      ...currentSavedState.selectedStockByStrategy,
+      [strategyMode]: nextStock.id,
+    },
   })
 }
 
@@ -2543,7 +2611,7 @@ function App() {
   }
 
   function selectStrategyMode(strategyMode: StrategyMode) {
-    selectOperation(state.selectedStockId, strategyMode)
+    selectOperation(state.selectedStockByStrategy[strategyMode] ?? state.selectedStockId, strategyMode)
   }
 
   function updatePosition<K extends keyof Position>(field: K, value: Position[K]) {
