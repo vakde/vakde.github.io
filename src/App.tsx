@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState, type ComponentProps } from 'react'
 import './App.css'
 
 type StrategyMode = 'mume' | 'vr'
@@ -1097,6 +1097,63 @@ function formatNaverPriceTime(value: string | undefined): string {
     hour: '2-digit',
     minute: '2-digit',
   }).format(date)
+}
+
+type NumberInputProps = Omit<ComponentProps<'input'>, 'value'> & {
+  value: number | string
+}
+
+function NumberInput({
+  value,
+  onBlur,
+  onChange,
+  onClick,
+  onFocus,
+  onMouseDown,
+  onPointerDown,
+  type = 'number',
+  ...props
+}: NumberInputProps) {
+  const [isBlankEditing, setIsBlankEditing] = useState(false)
+  const numericValue = typeof value === 'number' ? value : Number(value)
+  const visibleValue = isBlankEditing && numericValue === 0 ? '' : value
+  const clearZero = (input: HTMLInputElement) => {
+    if (!input.disabled && !input.readOnly && input.value === '0') {
+      setIsBlankEditing(true)
+    }
+  }
+
+  return (
+    <input
+      {...props}
+      type={type}
+      value={visibleValue}
+      onBlur={(event) => {
+        setIsBlankEditing(false)
+        onBlur?.(event)
+      }}
+      onChange={(event) => {
+        setIsBlankEditing(event.currentTarget.value === '')
+        onChange?.(event)
+      }}
+      onClick={(event) => {
+        clearZero(event.currentTarget)
+        onClick?.(event)
+      }}
+      onFocus={(event) => {
+        clearZero(event.currentTarget)
+        onFocus?.(event)
+      }}
+      onMouseDown={(event) => {
+        clearZero(event.currentTarget)
+        onMouseDown?.(event)
+      }}
+      onPointerDown={(event) => {
+        clearZero(event.currentTarget)
+        onPointerDown?.(event)
+      }}
+    />
+  )
 }
 
 function extractText(text: string, pattern: RegExp, group = 1): string | null {
@@ -3455,11 +3512,7 @@ function App() {
           type="button"
           onClick={() => selectStrategyMode('vr')}
         >
-          <span>리밸</span>
           <strong>리밸런싱</strong>
-          <em>
-            기준보다 낮으면 사고, 높으면 팔기
-          </em>
         </button>
         <button
           aria-selected={state.strategyMode === 'mume'}
@@ -3467,11 +3520,7 @@ function App() {
           type="button"
           onClick={() => selectStrategyMode('mume')}
         >
-          <span>분할</span>
           <strong>분할매수</strong>
-          <em>
-            예산을 나눠 사고 목표가에 팔기
-          </em>
         </button>
       </section>
 
@@ -3494,7 +3543,7 @@ function App() {
         <div className="field price-field">
           <span>현재가</span>
           <div className="price-input-row">
-            <input
+            <NumberInput
               inputMode="numeric"
               min="0"
               type="number"
@@ -3540,7 +3589,7 @@ function App() {
             <>
               <label className="field">
                 <span>평균 단가</span>
-                <input
+                <NumberInput
                   inputMode="decimal"
                   min="0"
                   type="number"
@@ -3550,7 +3599,7 @@ function App() {
               </label>
               <label className="field">
                 <span>보유 수량</span>
-                <input
+                <NumberInput
                   inputMode="decimal"
                   min="0"
                   step="1"
@@ -3561,7 +3610,7 @@ function App() {
               </label>
               <label className="field">
                 <span>남은 현금</span>
-                <input
+                <NumberInput
                   inputMode="numeric"
                   min="0"
                   type="number"
@@ -3574,7 +3623,7 @@ function App() {
             <>
               <label className="field">
                 <span>전체 예산</span>
-                <input
+                <NumberInput
                   inputMode="numeric"
                   min="0"
                   type="number"
@@ -3584,7 +3633,7 @@ function App() {
               </label>
               <label className="field">
                 <span>평단가</span>
-                <input
+                <NumberInput
                   inputMode="numeric"
                   min="0"
                   type="number"
@@ -3594,7 +3643,7 @@ function App() {
               </label>
               <label className="field">
                 <span>보유 수량</span>
-                <input
+                <NumberInput
                   inputMode="decimal"
                   min="0"
                   step="1"
@@ -3726,7 +3775,7 @@ function App() {
           </label>
           <label className="field">
             <span>가격</span>
-            <input
+            <NumberInput
               inputMode="numeric"
               min="0"
               type="number"
@@ -3738,7 +3787,7 @@ function App() {
           </label>
           <label className="field">
             <span>수량</span>
-            <input
+            <NumberInput
               inputMode="decimal"
               min="0"
               step="1"
@@ -3861,7 +3910,7 @@ function App() {
               <div className="form-grid">
                 <label className="field">
                   <span>총 시드</span>
-                  <input
+                  <NumberInput
                     inputMode="numeric"
                     min="0"
                     type="number"
@@ -3871,7 +3920,7 @@ function App() {
                 </label>
                 <label className="field">
                   <span>분할 일수</span>
-                  <input
+                  <NumberInput
                     inputMode="numeric"
                     min="1"
                     type="number"
@@ -3881,7 +3930,7 @@ function App() {
                 </label>
                 <label className="field">
                   <span>목표 수익률 %</span>
-                  <input
+                  <NumberInput
                     readOnly={state.mumeVersionId === 'v4'}
                     className={state.mumeVersionId === 'v4' ? 'is-readonly' : ''}
                     inputMode="decimal"
@@ -3899,7 +3948,7 @@ function App() {
                 {state.mumeVersionId === 'v4' ? (
                   <label className="field">
                     <span>T값</span>
-                    <input
+                    <NumberInput
                       inputMode="decimal"
                       min="0"
                       step="1"
@@ -3912,7 +3961,7 @@ function App() {
                 {state.mumeVersionId === 'v3' ? (
                   <label className="field">
                     <span>1회차</span>
-                    <input
+                    <NumberInput
                       inputMode="numeric"
                       min="0"
                       type="number"
@@ -3923,7 +3972,7 @@ function App() {
                 ) : null}
                 <label className="field">
                   <span>수수료율 %</span>
-                  <input
+                  <NumberInput
                     inputMode="numeric"
                     min="0"
                     step="1"
@@ -3946,7 +3995,7 @@ function App() {
                   </label>
                   <label className="field compact-field">
                     <span>쿼터 카운트</span>
-                    <input
+                    <NumberInput
                       inputMode="numeric"
                       min="0"
                       type="number"
@@ -3967,7 +4016,7 @@ function App() {
                   </label>
                   <label className="field compact-field">
                     <span>리버스 ★</span>
-                    <input
+                    <NumberInput
                       inputMode="decimal"
                       min="0"
                       type="number"
@@ -4017,7 +4066,7 @@ function App() {
               <div className="form-grid">
                 <label className="field">
                   <span>{state.vrStartMode === 'new' ? '시작 V 자동값' : 'V 값'}</span>
-                  <input
+                  <NumberInput
                     inputMode="numeric"
                     min="0"
                     readOnly={state.vrStartMode === 'new'}
@@ -4032,7 +4081,7 @@ function App() {
                 </label>
                 <label className="field">
                   <span>G 값</span>
-                  <input
+                  <NumberInput
                     inputMode="numeric"
                     min="1"
                     step="1"
@@ -4043,7 +4092,7 @@ function App() {
                 </label>
                 <label className="field">
                   <span>평균 단가</span>
-                  <input
+                  <NumberInput
                     inputMode="decimal"
                     min="0"
                     type="number"
@@ -4053,7 +4102,7 @@ function App() {
                 </label>
                 <label className="field">
                   <span>보유 수량</span>
-                  <input
+                  <NumberInput
                     inputMode="decimal"
                     min="0"
                     step="1"
@@ -4064,7 +4113,7 @@ function App() {
                 </label>
                 <label className="field">
                   <span>시작 Pool</span>
-                  <input
+                  <NumberInput
                     inputMode="numeric"
                     min="0"
                     type="number"
@@ -4074,7 +4123,7 @@ function App() {
                 </label>
                 <label className="field">
                   <span>현재 Pool</span>
-                  <input
+                  <NumberInput
                     inputMode="numeric"
                     min="0"
                     type="number"
@@ -4084,7 +4133,7 @@ function App() {
                 </label>
                 <label className="field">
                   <span>Pool 사용 한도 %</span>
-                  <input
+                  <NumberInput
                     inputMode="decimal"
                     min="0"
                     max="100"
@@ -4096,7 +4145,7 @@ function App() {
                 </label>
                 <label className="field">
                   <span>Value Band %</span>
-                  <input
+                  <NumberInput
                     inputMode="decimal"
                     min="1"
                     max="50"
@@ -4108,7 +4157,7 @@ function App() {
                 </label>
                 <label className="field">
                   <span>예약 단위</span>
-                  <input
+                  <NumberInput
                     inputMode="numeric"
                     min="1"
                     max="100"
@@ -4120,7 +4169,7 @@ function App() {
                 {state.vrVersionId !== 'lump' ? (
                   <label className="field">
                     <span>{state.vrVersionId === 'contribution' ? '적립금' : '인출금'}</span>
-                    <input
+                    <NumberInput
                       inputMode="numeric"
                       min="0"
                       type="number"
@@ -4255,7 +4304,7 @@ function App() {
                 </div>
                 <small>남은 한도 {formatMoney(vrGuide.poolRemainingAllowed)}</small>
                 <div className="pool-actions">
-                  <input
+                  <NumberInput
                     aria-label="Pool 조정 금액"
                     inputMode="numeric"
                     min="0"
@@ -4349,7 +4398,7 @@ function App() {
           <div className="form-grid">
             <label className="field">
               <span>평단가</span>
-              <input
+              <NumberInput
                 inputMode="numeric"
                 min="0"
                 type="number"
@@ -4359,7 +4408,7 @@ function App() {
             </label>
             <label className="field">
               <span>보유 수량</span>
-              <input
+              <NumberInput
                 inputMode="decimal"
                 min="0"
                 step="1"
@@ -4370,7 +4419,7 @@ function App() {
             </label>
             <label className="field">
               <span>총매수</span>
-              <input
+              <NumberInput
                 inputMode="numeric"
                 min="0"
                 type="number"
@@ -4380,7 +4429,7 @@ function App() {
             </label>
             <label className="field">
               <span>총매도</span>
-              <input
+              <NumberInput
                 inputMode="numeric"
                 min="0"
                 type="number"
@@ -4476,7 +4525,7 @@ function App() {
             </label>
             <label className="field">
               <span>체결가</span>
-              <input
+              <NumberInput
                 inputMode="numeric"
                 min="0"
                 type="number"
@@ -4488,7 +4537,7 @@ function App() {
             </label>
             <label className="field">
               <span>수량</span>
-              <input
+              <NumberInput
                 inputMode="decimal"
                 min="0"
                 step="1"
@@ -4501,7 +4550,7 @@ function App() {
             </label>
             <label className="field">
               <span>수수료</span>
-              <input
+              <NumberInput
                 inputMode="numeric"
                 min="0"
                 type="number"
@@ -4524,7 +4573,7 @@ function App() {
               draft.type === 'buy' ? (
                 <label className="field">
                   <span>T 증가</span>
-                  <input
+                  <NumberInput
                     inputMode="decimal"
                     min="0"
                     step="1"
@@ -4538,7 +4587,7 @@ function App() {
               ) : (
                 <label className="field">
                   <span>T 배수</span>
-                  <input
+                  <NumberInput
                     inputMode="decimal"
                     min="0"
                     max="1"

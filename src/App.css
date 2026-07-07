@@ -123,6 +123,7 @@
   background: #fff;
   color: #111318;
   padding: 0 12px;
+  font-size: 1rem;
   font-weight: 760;
 }
 
@@ -205,8 +206,7 @@
 
 .strategy-card {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  gap: 4px 12px;
+  place-items: center;
   align-items: center;
   min-width: 0;
   border: 1px solid #d9dde5;
@@ -214,21 +214,8 @@
   background: #fff;
   color: #111318;
   padding: 12px 14px;
-  text-align: left;
+  text-align: center;
   cursor: pointer;
-}
-
-.strategy-card span {
-  grid-row: 1 / span 2;
-  display: inline-grid;
-  place-items: center;
-  min-width: 48px;
-  min-height: 34px;
-  border-radius: 8px;
-  background: #f1f3f6;
-  color: #697081;
-  font-size: 0.78rem;
-  font-weight: 900;
 }
 
 .strategy-card strong {
@@ -238,26 +225,10 @@
   line-height: 1.1;
 }
 
-.strategy-card em {
-  color: #4e5665;
-  font-size: 0.78rem;
-  font-style: normal;
-  font-weight: 800;
-}
-
 .strategy-card.is-active {
   border-color: #111318;
   background: #111318;
   color: #fff;
-}
-
-.strategy-card.is-active span,
-.strategy-card.is-active em {
-  color: #d7dbe3;
-}
-
-.strategy-card.is-active span {
-  background: rgba(255, 255, 255, 0.12);
 }
 
 .summary-bar {
@@ -1336,41 +1307,52 @@ td {
     padding: 18px 12px 32px;
   }
 
-    .app-header,
-    .control-strip,
-    .strategy-strip,
-    .summary-bar,
-    .focus-board,
-    .focus-inputs,
-    .focus-order-metrics,
-    .focus-order-split,
-    .quick-trade-grid,
-    .workspace-grid,
-    .form-grid,
-    .trade-mode-row,
-    .mode-row,
-    .vr-start-mode,
-    .button-grid,
-    .button-grid.vr-grid,
-    .metric-grid,
-    .report-grid,
-    .report-summary-grid,
-    .report-filters,
-    .data-actions,
-    .order-columns,
-    .pool-actions,
-    .reserved-columns,
-    .featured-order,
+  .control-strip,
+  .summary-bar,
+  .focus-board,
+  .focus-inputs,
+  .focus-order-metrics,
+  .focus-order-split,
+  .quick-trade-grid,
+  .workspace-grid,
+  .form-grid,
+  .trade-mode-row,
+  .mode-row,
+  .vr-start-mode,
+  .button-grid,
+  .button-grid.vr-grid,
+  .metric-grid,
+  .report-grid,
+  .report-summary-grid,
+  .report-filters,
+  .data-actions,
+  .order-columns,
+  .pool-actions,
+  .reserved-columns,
+  .featured-order,
   .next-cycle {
     grid-template-columns: 1fr;
   }
 
   .app-header {
-    align-items: flex-start;
+    display: none;
   }
 
-  .brand h1 {
-    font-size: 1.25rem;
+  .strategy-strip {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+
+  .strategy-card {
+    min-height: 44px;
+    padding: 10px 8px;
+  }
+
+  .field input,
+  .field select,
+  .field textarea {
+    font-size: 16px;
   }
 
   .summary-bar {
