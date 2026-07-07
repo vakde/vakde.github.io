@@ -289,7 +289,7 @@ const STOCKS: Stock[] = [
   },
 ]
 
-const STRATEGY_MODES: StrategyMode[] = ['mume', 'vr']
+const STRATEGY_MODES: StrategyMode[] = ['vr', 'mume']
 
 const MUME_VERSIONS: MumeVersion[] = [
   {
@@ -499,6 +499,23 @@ function readStoredState(): AppState {
 
 function getStock(stockId: string): Stock {
   return STOCKS.find((stock) => stock.id === stockId) ?? STOCKS[0]
+}
+
+function getStrategyLabel(strategy: StrategyMode): string {
+  return strategy === 'vr' ? '리밸런싱' : '분할 매수'
+}
+
+function getOperationValue(stockId: string, strategyMode: StrategyMode): string {
+  return `${stockId}:${strategyMode}`
+}
+
+function parseOperationValue(value: string): { stockId: string; strategyMode: StrategyMode } {
+  const [stockId, rawStrategyMode] = value.split(':')
+
+  return {
+    stockId: getStock(stockId).id,
+    strategyMode: isStrategyMode(rawStrategyMode) ? rawStrategyMode : 'vr',
+  }
 }
 
 function getPosition(
@@ -871,6 +888,24 @@ function applySelectedStockSettings(
     ...selectedSettings,
     stockSettings,
   }
+}
+
+function getOperationState(
+  state: AppState,
+  stockId: string,
+  strategyMode: StrategyMode,
+): AppState {
+  const nextStock = getStock(stockId)
+  const currentSavedState = syncCurrentStockSettings(state)
+  const savedNextSettings =
+    currentSavedState.stockSettings[nextStock.id] ?? getDefaultStockSettings()
+
+  return syncCurrentStockSettings({
+    ...currentSavedState,
+    ...savedNextSettings,
+    selectedStockId: nextStock.id,
+    strategyMode,
+  })
 }
 
 function getSettingsForStock(state: AppState, stockId: string): StockSettings {
@@ -2513,11 +2548,21 @@ function App() {
     }))
   }
 
-  function selectStrategyMode(strategyMode: StrategyMode) {
-    const nextState = applySettingsPatch(state, { strategyMode })
+  function selectOperation(stockId: string, strategyMode: StrategyMode) {
+    const nextState = getOperationState(state, stockId, strategyMode)
 
     setState(nextState)
     setDraft((prevDraft) => createDraftForState(nextState, prevDraft))
+  }
+
+  function selectOperationValue(value: string) {
+    const operation = parseOperationValue(value)
+
+    selectOperation(operation.stockId, operation.strategyMode)
+  }
+
+  function selectStrategyMode(strategyMode: StrategyMode) {
+    selectOperation(state.selectedStockId, strategyMode)
   }
 
   function updatePosition<K extends keyof Position>(field: K, value: Position[K]) {
@@ -2684,18 +2729,9 @@ function App() {
   }
 
   function selectStock(stockId: string) {
-    const nextStock = getStock(stockId)
-    const currentSavedState = syncCurrentStockSettings(state)
-    const savedNextSettings =
-      currentSavedState.stockSettings[nextStock.id] ?? getDefaultStockSettings()
-    const nextState = syncCurrentStockSettings({
-      ...currentSavedState,
-      ...savedNextSettings,
-      selectedStockId: nextStock.id,
-    })
+    const savedStrategyMode = state.stockSettings[getStock(stockId).id]?.strategyMode ?? state.strategyMode
 
-    setState(nextState)
-    setDraft((prevDraft) => createDraftForState(nextState, prevDraft))
+    selectOperation(stockId, savedStrategyMode)
   }
 
   function selectMumeVersion(versionId: MumeVersion['id']) {
@@ -3355,7 +3391,8 @@ function App() {
           <div>
             <h1>오늘 주문 계산기</h1>
             <p>
-              Vakde Gate · {state.alias ? `${state.alias} · ` : ''}{selectedStock.ticker}
+              Vakde Gate · {state.alias ? `${state.alias} · ` : ''}{selectedStock.ticker} ·{' '}
+              {getStrategyLabel(state.strategyMode)}
             </p>
           </div>
         </div>
@@ -3366,15 +3403,26 @@ function App() {
 
       <section className="control-strip" aria-label="운용 설정">
         <label className="field stock-field">
-          <span>종목</span>
-          <select value={state.selectedStockId} onChange={(event) => selectStock(event.target.value)}>
-            {STOCKS.map((stock) => (
-              <option key={stock.id} value={stock.id}>
-                {getSettingsForStock(state, stock.id).alias
-                  ? `${getSettingsForStock(state, stock.id).alias} · ${stock.name}`
-                  : stock.name}
-              </option>
-            ))}
+          <span>운용</span>
+          <select
+            value={getOperationValue(state.selectedStockId, state.strategyMode)}
+            onChange={(event) => selectOperationValue(event.target.value)}
+          >
+            {STOCKS.flatMap((stock) =>
+              STRATEGY_MODES.map((strategyMode) => {
+                const settings = getSettingsForStock(state, stock.id)
+                const stockLabel = settings.alias ? `${settings.alias} · ${stock.name}` : stock.name
+
+                return (
+                  <option
+                    key={getOperationValue(stock.id, strategyMode)}
+                    value={getOperationValue(stock.id, strategyMode)}
+                  >
+                    {stockLabel} · {getStrategyLabel(strategyMode)}
+                  </option>
+                )
+              }),
+            )}
           </select>
         </label>
 
