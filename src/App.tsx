@@ -234,16 +234,6 @@ type CompletedReportSummary = {
 
 type ReportStrategyFilter = 'all' | StrategyMode
 
-type BrokerParsedTrade = {
-  type: TradeType
-  date: string
-  ticker: string
-  quantity: number
-  price: number
-  fee?: number
-  currency: string
-}
-
 type NaverStockBasicResponse = {
   closePrice?: string
   localTradedAt?: string
@@ -317,7 +307,7 @@ const MUME_VERSIONS: MumeVersion[] = [
 ]
 
 const VR_VERSIONS: VrVersion[] = [
-  { id: 'lump', label: '거치식', note: 'Pool 안에서 운용' },
+  { id: 'lump', label: '거치식', note: '현금 안에서 운용' },
   { id: 'contribution', label: '적립식', note: '사이클마다 적립' },
   { id: 'withdrawal', label: '인출식', note: '사이클마다 인출' },
 ]
@@ -1156,392 +1146,6 @@ function NumberInput({
   )
 }
 
-function extractText(text: string, pattern: RegExp, group = 1): string | null {
-  const match = text.match(pattern)
-
-  return match ? match[group]?.trim() ?? null : null
-}
-
-function parseTradeDate(text: string): string {
-  const now = new Date()
-  const fullDateMatch = text.match(/(20\d{2})[.\-/년\s]+(\d{1,2})[.\-/월\s]+(\d{1,2})/)
-  const shortDateMatch =
-    text.match(/(?:^|\s)(\d{1,2})[./월](\d{1,2})(?:일)?(?:\s|$)/) ??
-    text.match(/체결일[^\d]*(\d{1,2})[./월](\d{1,2})/)
-
-  if (fullDateMatch) {
-    return toIsoDate(new Date(Number(fullDateMatch[1]), Number(fullDateMatch[2]) - 1, Number(fullDateMatch[3])))
-  }
-
-  if (shortDateMatch) {
-    let year = now.getFullYear()
-    const month = Number(shortDateMatch[1])
-    const day = Number(shortDateMatch[2])
-    const date = new Date(year, month - 1, day)
-
-    if (date > now) {
-      year -= 1
-    }
-
-    return toIsoDate(new Date(year, month - 1, day))
-  }
-
-  return getTodayIso()
-}
-
-function compactText(value: string): string {
-  return value.replace(/\s+/g, '').toUpperCase()
-}
-
-function detectStockFromText(text: string): Stock | null {
-  const compactInput = compactText(text)
-
-  return (
-    STOCKS.find((stock) => {
-      const aliases = [
-        stock.ticker,
-        stock.name,
-        stock.name.replace('TIGER ', ''),
-        stock.id === 'hynix' ? '하이닉스레버리지' : '',
-        stock.id === 'samsung' ? '삼성전자레버리지' : '',
-        stock.id === 'samcns' ? '샘씨엔에스' : '',
-      ].filter(Boolean)
-
-      return aliases.some((alias) => compactInput.includes(compactText(alias)))
-    }) ?? null
-  )
-}
-
-function normalizeTicker(value: string): string {
-  const ticker = value.trim().replace(/^A(?=\d)/i, '')
-
-  return ticker.replace(/\s+/g, ' ')
-}
-
-function detectStockFromTickerOrText(ticker: string, text: string): Stock | null {
-  const compactTicker = compactText(normalizeTicker(ticker))
-
-  return (
-    STOCKS.find((stock) => {
-      const aliases = [stock.ticker, stock.name, stock.name.replace('TIGER ', '')]
-
-      return aliases.some((alias) => compactText(alias) === compactTicker)
-    }) ??
-    detectStockFromText(`${ticker}\n${text}`)
-  )
-}
-
-function commonBrokerData(text: string): Pick<BrokerParsedTrade, 'type' | 'date'> {
-  return {
-    type: /매도|판매|SELL/i.test(text) ? 'sell' : 'buy',
-    date: parseTradeDate(text),
-  }
-}
-
-function makeBrokerTrade(
-  text: string,
-  ticker: string | null,
-  quantity: string | null,
-  price: string | null,
-  overrides: Partial<Pick<BrokerParsedTrade, 'type' | 'date' | 'currency'>> = {},
-): BrokerParsedTrade | null {
-  if (!ticker || !quantity || !price) {
-    return null
-  }
-
-  const parsedQuantity = parseLocaleNumber(quantity)
-  const parsedPrice = parseLocaleNumber(price)
-
-  if (!parsedQuantity || parsedPrice <= 0) {
-    return null
-  }
-
-  const common = commonBrokerData(text)
-
-  return {
-    type: overrides.type ?? common.type,
-    date: overrides.date ?? common.date,
-    ticker: normalizeTicker(ticker),
-    quantity: parsedQuantity,
-    price: parsedPrice,
-    currency: overrides.currency ?? (/USD|\$|해외|미국/i.test(text) ? 'USD' : 'KRW'),
-  }
-}
-
-function parseBrokerSpecific(text: string): BrokerParsedTrade | null {
-  const lines = text.split('\n').map((line) => line.trim()).filter(Boolean)
-
-  if (/\[DB금융투자]|\[DB증권]/.test(text)) {
-    return makeBrokerTrade(
-      text,
-      extractText(text, /종목명\s*:\s*.*\(([^)]+)\)/) ??
-        extractText(text, /종목(?:코드|번호)\s*[:：]?\s*([A-Z0-9]+)/i) ??
-        extractText(text, /종목명\s*:\s*([^\n]+)/),
-      extractText(text, /체결수량\s*:\s*([0-9,]+)/),
-      extractText(text, /체결단가\s*:\s*([0-9,.]+)/),
-    )
-  }
-
-  if (text.includes('[대신증권]')) {
-    const matched = text.match(/([0-9,]+)\s*주\s+([0-9,.]+)\s*(매수|매도)/)
-
-    return makeBrokerTrade(
-      text,
-      extractText(text, /\(([^)]+)\)\s+[0-9,]+\s*주/),
-      matched?.[1] ?? null,
-      matched?.[2] ?? null,
-      {
-        type: matched?.[3] === '매도' ? 'sell' : 'buy',
-        currency: 'USD',
-      },
-    )
-  }
-
-  if (text.includes('[한국투자') || text.includes('한국투자증권')) {
-    let ticker =
-      extractText(text, /\*종목명\s*:\s*([^/\n]+)/) ??
-      extractText(text, /([A-Z0-9]+)\/[A-Z0-9]/i) ??
-      extractText(text, /([A-Za-z0-9]+)\/[가-힣]/)
-
-    if (ticker?.includes('(')) {
-      const bracketMatches = ticker.match(/\(([^)]+)\)/g)
-      const lastBracket = bracketMatches?.[bracketMatches.length - 1]?.slice(1, -1)
-
-      ticker = lastBracket && /^[0-9]+$/.test(lastBracket)
-        ? ticker.split(' ')[0].split('(')[0].trim()
-        : extractText(ticker, /\(([^)]+)\)/) ?? ticker
-    }
-
-    return makeBrokerTrade(
-      text,
-      ticker,
-      extractText(text, /\*체결수량\s*:\s*([0-9,]+)/) ?? extractText(text, /\s([0-9,]+)주@/),
-      extractText(text, /\*체결단가\s*:\s*(?:USD\s*)?([0-9,.]+)/) ?? extractText(text, /@([0-9,.]+)/),
-    )
-  }
-
-  if (text.includes('[삼성증권]')) {
-    let ticker = extractText(text, /종목(?:코드|번호)\s*[:：]?\s*([A-Z0-9]+)/i)
-    let quantity = extractText(text, /체결수량\s*:\s*([0-9,]+)/)
-    let price = extractText(text, /체결가격\s*:\s*([0-9,.]+)/)
-
-    if (!ticker && text.includes('주식체결안내')) {
-      const matched = text.match(/-\s*[0-9]+\s+(.*)\s+(매수|매도)([0-9,]+)주/)
-
-      ticker = matched?.[1]?.trim() ?? null
-      quantity = matched?.[3] ?? null
-      price = extractText(text, /([0-9,]+)원\s*체결/)
-    }
-
-    return makeBrokerTrade(text, ticker, quantity, price)
-  }
-
-  if (text.includes('[KB증권]')) {
-    const name = extractText(text, /종목명\s*:\s*([^\n]+)/)
-    const ticker =
-      name && (text.includes('거래시장 : 미국') || /^[A-Z]{3,5}/.test(name.trim().split(' ')[0]))
-        ? name.trim().split(' ')[0]
-        : name
-
-    return makeBrokerTrade(
-      text,
-      ticker,
-      extractText(text, /(?:수량|주문수량)\s*:\s*([0-9,]+)/),
-      extractText(text, /(?:체결가|체결금액)\s*:\s*([0-9,.]+)/),
-    )
-  }
-
-  if (text.includes('[미래에셋증권]')) {
-    return makeBrokerTrade(
-      text,
-      extractText(text, /\(([^)]+)\)\s*$/m) ??
-        extractText(text, /\(([^)]+)\)\n/) ??
-        extractText(text, /\(([^)]+)\)\s*(?:매매구분|주문수량)/) ??
-        extractText(text, /\(([A-Z0-9]+)\)/i),
-      extractText(text, /체결수량\s*:\s*([0-9,]+)/),
-      extractText(text, /체결단가\s*:\s*(?:USD\s*)?([0-9,.]+)/),
-    )
-  }
-
-  if (text.includes('[신한투자증권]')) {
-    return makeBrokerTrade(
-      text,
-      extractText(text, /종목(?:코드|번호)\s*[:：]?\s*([A-Z0-9]+)/i),
-      extractText(text, /체결수량\s*:\s*([0-9,]+)/),
-      extractText(text, /체결단가\s*:\s*\$?([0-9,.]+)/),
-    )
-  }
-
-  if (text.includes('[NH투자') || text.includes('NH투자증권')) {
-    let ticker =
-      extractText(text, /\(([A-Z]+)\s+US\)/) ??
-      extractText(text, /종목(?:코드|번호)\s*[:：]?\s*([0-9A-Z]+)/i)
-    let quantity = extractText(text, /체결수량\s*:\s*([0-9,]+)/)
-    let price = extractText(text, /체결(?:가격|단가)\s*:\s*([0-9,.]+)/)
-
-    if (!ticker || !quantity) {
-      const rowIndex = lines.findIndex((line, index) => /^[0-9,]+주$/.test(line) && index > 0 && !lines[index - 1].includes('체결'))
-
-      if (rowIndex > 0) {
-        ticker = ticker ?? lines[rowIndex - 1]
-        quantity = quantity ?? lines[rowIndex]
-        price = price ?? lines[rowIndex + 1] ?? null
-      }
-    }
-
-    ticker = ticker ?? extractText(text, /종목명\s*:\s*([^\n]+)/)
-
-    if (ticker?.includes('(')) {
-      ticker = ticker.split('(')[0].trim()
-    }
-
-    return makeBrokerTrade(text, ticker, quantity, price)
-  }
-
-  if (text.includes('[하나증권]')) {
-    return makeBrokerTrade(
-      text,
-      extractText(text, /종목명\s*:\s*([^\n]+)/),
-      extractText(text, /수량\s*:\s*([0-9,]+)/),
-      extractText(text, /가격\s*:\s*([0-9,.]+)/),
-      { currency: 'USD' },
-    )
-  }
-
-  if (text.includes('[유진투자') || (text.includes('해외주식 체결 안내') && text.includes('* 계좌'))) {
-    return makeBrokerTrade(
-      text,
-      extractText(text, /\[([^\]]+)]/),
-      extractText(text, /수량\s*:\s*([0-9,]+)/),
-      extractText(text, /가격\s*:\s*([0-9,.]+)/),
-    )
-  }
-
-  if (text.includes('[키움') || text.includes('키움증권')) {
-    let ticker = extractText(text, /\(([^)]+)\)/)
-
-    if (ticker === '매수' || ticker === '매도') {
-      ticker = null
-    }
-
-    ticker = ticker ?? extractText(text, /([A-Z0-9]+)\((?:매수|매도)\)/i)
-
-    if (!ticker && text.includes('체결통보')) {
-      const rowIndex = lines.findIndex((line) => line.includes('체결통보'))
-
-      ticker = rowIndex >= 0 ? lines[rowIndex + 1] ?? null : null
-    }
-
-    let price =
-      extractText(text, /단가\s*:\s*(?:USD)?\s*([0-9,.]+)/) ??
-      extractText(text, /단가\s*(?:USD)?\s+([0-9,.]+)/) ??
-      extractText(text, /단가\s*([0-9,.]+)/)
-
-    if (!price) {
-      price = text.match(/([0-9,]+)\s*주\s+([0-9,.]+)\s*체결/)?.[2] ?? null
-    }
-
-    return makeBrokerTrade(
-      text,
-      ticker,
-      extractText(text, /(?:매수|매도)\s*([0-9,]+)\s*주/) ??
-        extractText(text, /수량\s*:\s*([0-9,]+)/) ??
-        extractText(text, /체결수량\s*:\s*([0-9,]+)/) ??
-        '0',
-      price ?? '0',
-    )
-  }
-
-  if (text.includes('[메리츠')) {
-    let ticker: string | null = null
-    const bracketMatches = text.match(/\(([^)]+)\)/g)
-
-    if (bracketMatches?.length) {
-      ticker = bracketMatches[bracketMatches.length - 1].slice(1, -1)
-    }
-
-    if (!ticker && text.includes('님')) {
-      ticker = text.match(/님\s+\d{2}\/\d{2}\s+\d{2}:\d{2}\s+(.*?)\s+\d+(?:,\d+)*주/)?.[1]?.trim() ?? null
-    }
-
-    return makeBrokerTrade(
-      text,
-      ticker,
-      extractText(text, /체결수량\s*:\s*([0-9,]+)/) ??
-        extractText(text, /주문수량\s*:\s*([0-9,]+)/) ??
-        extractText(text, /([0-9,]+)주/),
-      extractText(text, /체결단가\s*:\s*(?:USD\s*)?([0-9,.]+)/) ??
-        extractText(text, /USD\s+([0-9,.]+)/) ??
-        '0',
-    )
-  }
-
-  if (text.includes('[현대차증권]') || text.includes('현대차증권')) {
-    return makeBrokerTrade(
-      text,
-      extractText(text, /종목\s*:\s*.*?\(([^)]+)\)/) ?? extractText(text, /종목\s*:\s*([^\n]+)/),
-      extractText(text, /수량\s*:\s*([0-9,]+)/),
-      extractText(text, /단가\s*:\s*(?:USD\s*)?([0-9,.]+)/),
-    )
-  }
-
-  return makeBrokerTrade(
-    text,
-    extractText(text, /종목(?:코드|번호)\s*[:：]?\s*([A-Z0-9]+)/i),
-    extractText(text, /체결수량\s*:\s*([0-9,]+)/),
-    extractText(text, /체결단가\s*:\s*([0-9,.]+)/),
-    { currency: 'KRW' },
-  )
-}
-
-function parseBrokerMessage(text: string): Partial<DraftTransaction> & { stockId?: string } {
-  const normalized = text.replace(/\r/g, '\n')
-  const parsed = parseBrokerSpecific(normalized)
-  const stock = parsed
-    ? detectStockFromTickerOrText(parsed.ticker, normalized)
-    : detectStockFromText(normalized)
-
-  if (parsed) {
-    return {
-      type: parsed.type,
-      date: parsed.date,
-      price: parsed.price,
-      quantity: parsed.quantity,
-      fee: parsed.fee ?? 0,
-      memo: `문자 파싱 · ${parsed.ticker}`,
-      stockId: stock?.id,
-    }
-  }
-
-  const type: TradeType = /매도|판매|SELL/i.test(normalized) ? 'sell' : 'buy'
-  const quantityText =
-    extractText(normalized, /(?:체결수량|주문수량|수량|size|qty|quantity)\s*[:：]?\s*([0-9,.]+)/i) ??
-    extractText(normalized, /([0-9,.]+)\s*주\s*@/) ??
-    extractText(normalized, /(?:매수|매도)\s*([0-9,.]+)\s*주/) ??
-    extractText(normalized, /([0-9,.]+)\s*주/)
-  const priceText =
-    extractText(normalized, /(?:체결단가|체결가격|체결가|단가|가격|price)\s*[:：]?\s*(?:KRW|USD|[$₩])?\s*([0-9,.]+)/i) ??
-    extractText(normalized, /@\s*(?:KRW|USD|[$₩])?\s*([0-9,.]+)/) ??
-    extractText(normalized, /([0-9,.]+)\s*원\s*체결/) ??
-    extractText(normalized, /(?:KRW|USD|[$₩])\s*([0-9,.]+)/i)
-  const feeText =
-    extractText(normalized, /(?:수수료|제비용|commission)\s*[:：]?\s*(?:KRW|USD|[$₩])?\s*([0-9,.]+)/i)
-  const parsedTicker =
-    extractText(normalized, /종목(?:코드|번호)\s*[:：]?\s*([A-Z0-9]+)/i) ??
-    extractText(normalized, /종목명\s*[:：]?\s*.*\(([^)]+)\)/) ??
-    extractText(normalized, /\(([A-Z0-9]{4,8})\)/i)
-
-  return {
-    type,
-    date: parseTradeDate(normalized),
-    price: priceText ? parseLocaleNumber(priceText) : 0,
-    quantity: quantityText ? parseLocaleNumber(quantityText) : 0,
-    fee: feeText ? parseLocaleNumber(feeText) : 0,
-    memo: parsedTicker ? `문자 파싱 · ${parsedTicker.replace(/^A(?=\d)/, '')}` : '문자 파싱',
-    stockId: stock?.id,
-  }
-}
-
 function createTransactionId(): string {
   return `${Date.now()}-${Math.random().toString(36).slice(2)}`
 }
@@ -1881,7 +1485,7 @@ function buildMumeGuide(state: AppState, position: Position, version: MumeVersio
       price: currentPrice,
       quantity: sellQty,
       amount: sellQty * currentPrice,
-      note: 'Pool 확보 후 다음 회차 대기',
+      note: '현금 확보 후 다음 회차 대기',
     })
     sellOrders.push({
       title: '목표가 잔량',
@@ -2087,14 +1691,14 @@ function buildVrGuide(state: AppState, position: Position, version: VrVersion): 
     actionAmount = actionQty * currentPrice
     poolAfter = Math.max(0, pool - actionAmount)
     status = '매수'
-    note = actionQty > 0 ? 'Pool 한도 안에서 목표 V로 복귀' : 'Pool 한도 또는 단가 때문에 매수 불가'
+    note = actionQty > 0 ? '현금 한도 안에서 목표 보유액으로 복귀' : '현금 한도 또는 단가 때문에 매수 불가'
   } else if (marketValue > upperValue) {
     actionAmount = marketValue - targetValue
     actionQty = Math.min(positive(position.holdingQty), Math.floor(actionAmount / currentPrice))
     actionAmount = actionQty * currentPrice
     poolAfter = pool + actionAmount
     status = version.id === 'withdrawal' ? '인출 매도' : '매도'
-    note = version.id === 'withdrawal' ? '초과분을 Pool 또는 인출금으로 회수' : '상단 밴드 초과분 회수'
+    note = version.id === 'withdrawal' ? '초과분을 현금 또는 인출금으로 회수' : '상단 범위 초과분 회수'
   }
 
   return {
@@ -2502,11 +2106,9 @@ function App() {
   })
   const [state, setState] = useState<AppState>(initialAppState.state)
   const [draft, setDraft] = useState<DraftTransaction>(initialAppState.draft)
-  const [parserText, setParserText] = useState('')
   const [priceMessage, setPriceMessage] = useState('')
   const [isLoadingPrice, setIsLoadingPrice] = useState(false)
   const [poolAdjustment, setPoolAdjustment] = useState('')
-  const [tradeWarning, setTradeWarning] = useState('')
   const [settingsMessage, setSettingsMessage] = useState('')
   const [backupText, setBackupText] = useState('')
   const [dataMessage, setDataMessage] = useState('')
@@ -2515,8 +2117,6 @@ function App() {
   const [reportTagFilter, setReportTagFilter] = useState('')
   const [reportStartDateFilter, setReportStartDateFilter] = useState('')
   const [reportEndDateFilter, setReportEndDateFilter] = useState('')
-  const [overridePoolLimit, setOverridePoolLimit] = useState(false)
-  const [overrideTurnLimit, setOverrideTurnLimit] = useState(false)
 
   const selectedStock = useMemo(() => getStock(state.selectedStockId), [state.selectedStockId])
   const selectedMumePosition = useMemo(
@@ -2615,10 +2215,6 @@ function App() {
     () => buildCompletedReportSummary(filteredReports),
     [filteredReports],
   )
-  const draftGross = positive(draft.price) * positive(draft.quantity)
-  const appliedDraftFee =
-    positive(draft.fee) ||
-    (state.strategyMode === 'mume' ? round(draftGross * (positive(state.commissionRate) / 100), 3) : 0)
   const primaryMumeBuyOrder = mumeGuide.buyOrders.find((order) => order.quantity > 0)
   const primaryMumeSellOrder = mumeGuide.sellOrders.find((order) => order.quantity > 0)
   const easyStrategyName = state.strategyMode === 'vr' ? '리밸런싱' : '분할매수'
@@ -2669,24 +2265,6 @@ function App() {
 
   function selectStrategyMode(strategyMode: StrategyMode) {
     selectOperation(state.selectedStockByStrategy[strategyMode] ?? state.selectedStockId, strategyMode)
-  }
-
-  function updatePosition<K extends keyof Position>(field: K, value: Position[K]) {
-    setState((prevState) => {
-      const currentPosition = getPosition(prevState, prevState.selectedStockId, prevState.strategyMode)
-      const positionKey = getPositionKey(prevState.selectedStockId, prevState.strategyMode)
-
-      return {
-        ...prevState,
-        positions: {
-          ...prevState.positions,
-          [positionKey]: {
-            ...currentPosition,
-            [field]: value,
-          },
-        },
-      }
-    })
   }
 
   function updateCurrentPrice(price: number) {
@@ -2897,115 +2475,6 @@ function App() {
     }))
   }
 
-  function applyParserText() {
-    const text = parserText.trim()
-
-    if (!text) {
-      setTradeWarning('파싱할 문자가 없습니다.')
-      return
-    }
-
-    applyParsedBrokerTrade(parseBrokerMessage(text))
-  }
-
-  function applyParsedBrokerTrade(parsed: Partial<DraftTransaction> & { stockId?: string }) {
-    if (!parsed.price || !parsed.quantity) {
-      setTradeWarning('문자에서 체결가와 수량을 찾지 못했습니다.')
-      return
-    }
-
-    if (parsed.stockId) {
-      const parsedStock = getStock(parsed.stockId)
-
-      if (parsedStock.id !== state.selectedStockId) {
-        setTradeWarning(
-          `문자 종목은 ${parsedStock.name}입니다. 현재 종목(${selectedStock.name})과 달라 반영하지 않았습니다.`,
-        )
-        return
-      }
-
-      selectStock(parsed.stockId)
-    }
-
-    setDraft((prevDraft) => ({
-      ...prevDraft,
-      type: parsed.type ?? prevDraft.type,
-      date: getStrategyTradeDate(state, parsed.date ?? prevDraft.date),
-      price: positive(parsed.price ?? 0) || prevDraft.price,
-      quantity: positive(parsed.quantity ?? 0) || prevDraft.quantity,
-      fee: positive(parsed.fee ?? 0),
-      memo: parsed.memo ?? '문자 파싱',
-    }))
-    setTradeWarning('')
-  }
-
-  async function pasteAndParseBrokerText() {
-    if (typeof navigator === 'undefined' || !navigator.clipboard) {
-      setTradeWarning('클립보드를 읽을 수 없습니다.')
-      return
-    }
-
-    try {
-      const text = await navigator.clipboard.readText()
-
-      if (!text.trim()) {
-        setTradeWarning('클립보드가 비어 있습니다.')
-        return
-      }
-
-      setParserText(text)
-
-      const parsed = parseBrokerMessage(text)
-      applyParsedBrokerTrade(parsed)
-    } catch {
-      setTradeWarning('클립보드 권한이 필요합니다.')
-    }
-  }
-
-  function loadVrSuggestedOrder() {
-    if (state.strategyMode !== 'vr') {
-      updateState('strategyMode', 'vr')
-    }
-
-    if (vrGuide.actionQty <= 0) {
-      setTradeWarning('불러올 오늘 주문이 없습니다.')
-      return
-    }
-
-    setDraft((prevDraft) => ({
-      ...prevDraft,
-      type: vrGuide.status.includes('매도') ? 'sell' : 'buy',
-      date: getStrategyTradeDate(state),
-      price: round(vrGuide.actionPrice),
-      quantity: vrGuide.actionQty,
-      fee: 0,
-      memo: `리밸런싱 ${vrGuide.status}`,
-    }))
-    setTradeWarning('')
-  }
-
-  function loadMumeSuggestedOrder(order: OrderLine, type: TradeType) {
-    if (state.strategyMode !== 'mume') {
-      selectStrategyMode('mume')
-    }
-
-    if (order.quantity <= 0 || order.price <= 0) {
-      setTradeWarning('불러올 주문 수량이 없습니다.')
-      return
-    }
-
-    setDraft((prevDraft) => ({
-      ...prevDraft,
-      type,
-      date: getStrategyTradeDate(state),
-      price: round(order.price),
-      quantity: order.quantity,
-      fee: 0,
-      memo: `${order.title} · ${order.method}`,
-    }))
-    setTradeWarning('')
-  }
-
   function applyTransaction() {
     const price = positive(draft.price)
     const quantity = positive(draft.quantity)
@@ -3014,32 +2483,7 @@ function App() {
       return
     }
 
-    const grossPreview = price * quantity
     const tradeDate = getStrategyTradeDate(state, draft.date || getTodayIso())
-    const resolvedFee =
-      positive(draft.fee) ||
-      (state.strategyMode === 'mume' ? round(grossPreview * (positive(state.commissionRate) / 100), 3) : 0)
-
-    if (state.strategyMode === 'vr' && draft.type === 'buy') {
-      const cost = grossPreview + resolvedFee
-
-      if (cost > vrGuide.poolRemainingAllowed && !overridePoolLimit) {
-        setTradeWarning(
-          `Pool 사용 한도 초과: 남은 한도 ${formatMoney(vrGuide.poolRemainingAllowed)}`,
-        )
-        return
-      }
-    }
-
-    if (
-      state.strategyMode === 'mume' &&
-      draft.type === 'buy' &&
-      grossPreview > mumeGuide.unit &&
-      !overrideTurnLimit
-    ) {
-      setTradeWarning(`1회차 초과: ${formatMoney(mumeGuide.unit)}`)
-      return
-    }
 
     setState((prevState) => {
       const position = getPosition(prevState, prevState.selectedStockId, prevState.strategyMode)
@@ -3217,9 +2661,6 @@ function App() {
         ].slice(0, 80),
       }
     })
-    setTradeWarning('')
-    setOverridePoolLimit(false)
-    setOverrideTurnLimit(false)
     setDraft((prevDraft) => ({
       ...prevDraft,
       date: getStrategyTradeDate(state),
@@ -3373,15 +2814,11 @@ function App() {
 
     setState(nextState)
     setDraft(createDraftForState(nextState))
-    setParserText('')
     setPoolAdjustment('')
-    setTradeWarning('')
     setSettingsMessage('')
     setBackupText('')
     setDataMessage('')
     clearReportFilters()
-    setOverridePoolLimit(false)
-    setOverrideTurnLimit(false)
   }
 
   function exportData() {
@@ -3577,84 +3014,48 @@ function App() {
         </div>
       </section>
 
-      <section className="focus-board" aria-label="오늘 운용">
+      <section className={`focus-board ${state.strategyMode === 'vr' ? 'is-compact' : ''}`} aria-label="오늘 운용">
         <div className="focus-status">
           <span>{easyStrategyName}</span>
           <strong>{easyActionTitle}</strong>
           <p>{easyActionReason}</p>
         </div>
 
-        <div className="focus-inputs">
-          {state.strategyMode === 'vr' ? (
-            <>
-              <label className="field">
-                <span>평균 단가</span>
-                <NumberInput
-                  inputMode="decimal"
-                  min="0"
-                  type="number"
-                  value={state.vrStartAvgPrice}
-                  onChange={(event) => updateVrStart('vrStartAvgPrice', Number(event.target.value))}
-                />
-              </label>
-              <label className="field">
-                <span>보유 수량</span>
-                <NumberInput
-                  inputMode="decimal"
-                  min="0"
-                  step="1"
-                  type="number"
-                  value={state.vrStartQty}
-                  onChange={(event) => updateVrStart('vrStartQty', Number(event.target.value))}
-                />
-              </label>
-              <label className="field">
-                <span>남은 현금</span>
-                <NumberInput
-                  inputMode="numeric"
-                  min="0"
-                  type="number"
-                  value={state.vrPool}
-                  onChange={(event) => updateState('vrPool', Number(event.target.value))}
-                />
-              </label>
-            </>
-          ) : (
-            <>
-              <label className="field">
-                <span>전체 예산</span>
-                <NumberInput
-                  inputMode="numeric"
-                  min="0"
-                  type="number"
-                  value={state.seed}
-                  onChange={(event) => updateMumeSeed(Number(event.target.value))}
-                />
-              </label>
-              <label className="field">
-                <span>평단가</span>
-                <NumberInput
-                  inputMode="numeric"
-                  min="0"
-                  type="number"
-                  value={selectedPosition.avgPrice}
-                  onChange={(event) => updateEasyPosition('avgPrice', Number(event.target.value))}
-                />
-              </label>
-              <label className="field">
-                <span>보유 수량</span>
-                <NumberInput
-                  inputMode="decimal"
-                  min="0"
-                  step="1"
-                  type="number"
-                  value={selectedPosition.holdingQty}
-                  onChange={(event) => updateEasyPosition('holdingQty', Number(event.target.value))}
-                />
-              </label>
-            </>
-          )}
-        </div>
+        {state.strategyMode === 'mume' ? (
+          <div className="focus-inputs">
+            <label className="field">
+              <span>전체 예산</span>
+              <NumberInput
+                inputMode="numeric"
+                min="0"
+                type="number"
+                value={state.seed}
+                onChange={(event) => updateMumeSeed(Number(event.target.value))}
+              />
+            </label>
+            <label className="field">
+              <span>평단가</span>
+              <NumberInput
+                inputMode="numeric"
+                min="0"
+                type="number"
+                value={selectedPosition.avgPrice}
+                onChange={(event) => updateEasyPosition('avgPrice', Number(event.target.value))}
+              />
+            </label>
+            <label className="field">
+              <span>보유 수량</span>
+              <NumberInput
+                inputMode="decimal"
+                min="0"
+                step="1"
+                type="number"
+                value={selectedPosition.holdingQty}
+                onChange={(event) => updateEasyPosition('holdingQty', Number(event.target.value))}
+              />
+            </label>
+          </div>
+        ) : null}
 
         <div className="focus-order">
           {state.strategyMode === 'vr' ? (
@@ -3681,14 +3082,6 @@ function App() {
                   <strong>{formatMoney(vrGuide.poolAfter)}</strong>
                 </div>
               </div>
-              <button
-                className="primary-button"
-                disabled={vrGuide.actionQty <= 0}
-                type="button"
-                onClick={loadVrSuggestedOrder}
-              >
-                오늘 주문 불러오기
-              </button>
             </>
           ) : (
             <>
@@ -3697,40 +3090,22 @@ function App() {
                 <strong>{mumeGuide.buyOrders.length + mumeGuide.sellOrders.length}개</strong>
               </div>
               <div className="focus-order-split">
-                <button
-                  className="focus-order-button"
-                  disabled={!primaryMumeBuyOrder}
-                  type="button"
-                  onClick={() =>
-                    primaryMumeBuyOrder
-                      ? loadMumeSuggestedOrder(primaryMumeBuyOrder, 'buy')
-                      : undefined
-                  }
-                >
-                  <span>{primaryMumeBuyOrder ? '매수 입력' : '매수'}</span>
+                <div className="focus-order-item">
+                  <span>매수</span>
                   <strong>
                     {primaryMumeBuyOrder
                       ? `${primaryMumeBuyOrder.method} · ${formatNumber(primaryMumeBuyOrder.quantity, 0)}주`
                       : '없음'}
                   </strong>
-                </button>
-                <button
-                  className="focus-order-button"
-                  disabled={!primaryMumeSellOrder}
-                  type="button"
-                  onClick={() =>
-                    primaryMumeSellOrder
-                      ? loadMumeSuggestedOrder(primaryMumeSellOrder, 'sell')
-                      : undefined
-                  }
-                >
-                  <span>{primaryMumeSellOrder ? '매도 입력' : '매도'}</span>
+                </div>
+                <div className="focus-order-item">
+                  <span>매도</span>
                   <strong>
                     {primaryMumeSellOrder
                       ? `${primaryMumeSellOrder.method} · ${formatNumber(primaryMumeSellOrder.quantity, 0)}주`
                       : '없음'}
                   </strong>
-                </button>
+                </div>
               </div>
             </>
           )}
@@ -3803,65 +3178,12 @@ function App() {
           </button>
         </div>
 
-        <div className="quick-actions">
-          {state.strategyMode === 'vr' ? (
-            <button className="ghost-button" type="button" onClick={loadVrSuggestedOrder}>
-              오늘 주문 불러오기
-            </button>
-          ) : (
-            <>
-              <button
-                className="ghost-button"
-                disabled={!primaryMumeBuyOrder}
-                type="button"
-                onClick={() =>
-                  primaryMumeBuyOrder ? loadMumeSuggestedOrder(primaryMumeBuyOrder, 'buy') : undefined
-                }
-              >
-                매수 불러오기
-              </button>
-              <button
-                className="ghost-button"
-                disabled={!primaryMumeSellOrder}
-                type="button"
-                onClick={() =>
-                  primaryMumeSellOrder ? loadMumeSuggestedOrder(primaryMumeSellOrder, 'sell') : undefined
-                }
-              >
-                매도 불러오기
-              </button>
-            </>
-          )}
-        </div>
-
-        {tradeWarning ? <p className="warning-text">{tradeWarning}</p> : null}
-
-        <details className="quick-parser">
-          <summary>문자 붙여넣기</summary>
-          <label className="field parser-field">
-            <span>증권사 문자</span>
-            <textarea
-              rows={4}
-              value={parserText}
-              onChange={(event) => setParserText(event.target.value)}
-              placeholder="[증권사] 매수 체결수량 10주 체결단가 23,390"
-            />
-          </label>
-          <div className="parser-actions">
-            <button className="ghost-button" type="button" onClick={pasteAndParseBrokerText}>
-              붙여넣기
-            </button>
-            <button className="ghost-button" type="button" onClick={applyParserText}>
-              문자 파싱
-            </button>
-          </div>
-        </details>
       </section>
 
       <details className="advanced-workspace">
         <summary className="advanced-workspace-summary">
-          <span>세부 설정과 기록</span>
-          <small>버전, 보유 상세, 리포트, 백업</small>
+          <span>세부 설정</span>
+          <small>버전, 리포트, 백업</small>
         </summary>
 
       <div className="workspace-grid">
@@ -4065,7 +3387,7 @@ function App() {
 
               <div className="form-grid">
                 <label className="field">
-                  <span>{state.vrStartMode === 'new' ? '시작 V 자동값' : 'V 값'}</span>
+                  <span>{state.vrStartMode === 'new' ? '시작 기준 자동값' : '기준 자산'}</span>
                   <NumberInput
                     inputMode="numeric"
                     min="0"
@@ -4080,7 +3402,7 @@ function App() {
                   />
                 </label>
                 <label className="field">
-                  <span>G 값</span>
+                  <span>반응 속도</span>
                   <NumberInput
                     inputMode="numeric"
                     min="1"
@@ -4112,7 +3434,7 @@ function App() {
                   />
                 </label>
                 <label className="field">
-                  <span>시작 Pool</span>
+                  <span>시작 현금</span>
                   <NumberInput
                     inputMode="numeric"
                     min="0"
@@ -4122,7 +3444,7 @@ function App() {
                   />
                 </label>
                 <label className="field">
-                  <span>현재 Pool</span>
+                  <span>남은 현금</span>
                   <NumberInput
                     inputMode="numeric"
                     min="0"
@@ -4132,7 +3454,7 @@ function App() {
                   />
                 </label>
                 <label className="field">
-                  <span>Pool 사용 한도 %</span>
+                  <span>현금 사용 한도 %</span>
                   <NumberInput
                     inputMode="decimal"
                     min="0"
@@ -4144,7 +3466,7 @@ function App() {
                   />
                 </label>
                 <label className="field">
-                  <span>Value Band %</span>
+                  <span>기준 범위 %</span>
                   <NumberInput
                     inputMode="decimal"
                     min="1"
@@ -4238,13 +3560,11 @@ function App() {
               <div className="order-columns">
                 <OrderList
                   emptyText="매수 없음"
-                  onSelectOrder={(order) => loadMumeSuggestedOrder(order, 'buy')}
                   orders={mumeGuide.buyOrders}
                   title="매수"
                 />
                 <OrderList
                   emptyText="매도 없음"
-                  onSelectOrder={(order) => loadMumeSuggestedOrder(order, 'sell')}
                   orders={mumeGuide.sellOrders}
                   title="매도"
                 />
@@ -4259,11 +3579,11 @@ function App() {
 
               <div className="metric-grid vr-metrics">
                 <div>
-                  <span>목표 V</span>
+                  <span>목표 보유액</span>
                   <strong>{formatMoney(vrGuide.targetValue)}</strong>
                 </div>
                 <div>
-                  <span>현재 V</span>
+                  <span>현재 총자산</span>
                   <strong>{formatMoney(vrGuide.vNow)}</strong>
                 </div>
                 <div>
@@ -4271,7 +3591,7 @@ function App() {
                   <strong>{formatMoney(vrGuide.marketValue)}</strong>
                 </div>
                 <div>
-                  <span>현재 Pool</span>
+                  <span>남은 현금</span>
                   <strong>{formatMoney(state.vrPool)}</strong>
                 </div>
                 <div>
@@ -4294,30 +3614,30 @@ function App() {
 
               <div className="pool-meter">
                 <div>
-                  <span>Pool 사용</span>
+                  <span>쓴 현금</span>
                   <strong>
                     {formatMoney(vrGuide.poolUsed)} / {formatMoney(vrGuide.poolAllowed)}
                   </strong>
                 </div>
-                <div className="progress-track compact" aria-label="Pool 사용률">
+                <div className="progress-track compact" aria-label="현금 사용률">
                   <span style={{ width: `${clamp(vrGuide.poolUsedPercent, 0, 100)}%` }} />
                 </div>
-                <small>남은 한도 {formatMoney(vrGuide.poolRemainingAllowed)}</small>
+                <small>사용 가능 현금 {formatMoney(vrGuide.poolRemainingAllowed)}</small>
                 <div className="pool-actions">
                   <NumberInput
-                    aria-label="Pool 조정 금액"
+                    aria-label="현금 조정 금액"
                     inputMode="numeric"
                     min="0"
                     type="number"
                     value={poolAdjustment}
                     onChange={(event) => setPoolAdjustment(event.target.value)}
-                    placeholder="Pool 조정"
+                    placeholder="현금 조정"
                   />
                   <button type="button" onClick={() => updateVrPool('increase')}>
-                    +증액
+                    넣기
                   </button>
                   <button type="button" onClick={() => updateVrPool('decrease')}>
-                    -감액
+                    빼기
                   </button>
                   <button type="button" onClick={() => updateVrPool('direct')}>
                     직접
@@ -4343,18 +3663,18 @@ function App() {
                   <strong>{formatMoney(vrGuide.actionAmount)}</strong>
                 </div>
                 <div>
-                  <span>Pool 이후</span>
+                  <span>주문 후 현금</span>
                   <strong>{formatMoney(vrGuide.poolAfter)}</strong>
                 </div>
               </div>
 
               <div className="next-cycle">
                 <div>
-                  <span>다음 V</span>
+                  <span>다음 기준</span>
                   <strong>{formatMoney(vrGuide.nextCycleV)}</strong>
                 </div>
                 <div>
-                  <span>다음 Pool</span>
+                  <span>다음 현금</span>
                   <strong>{formatMoney(vrGuide.nextCyclePool)}</strong>
                 </div>
                 <button className="ghost-button" type="button" onClick={renewVrCycle}>
@@ -4390,291 +3710,6 @@ function App() {
           )}
         </section>
 
-        <section className="panel position-panel">
-          <div className="panel-heading">
-            <h2>보유 정보</h2>
-          </div>
-
-          <div className="form-grid">
-            <label className="field">
-              <span>평단가</span>
-              <NumberInput
-                inputMode="numeric"
-                min="0"
-                type="number"
-                value={selectedPosition.avgPrice}
-                onChange={(event) => updatePosition('avgPrice', Number(event.target.value))}
-              />
-            </label>
-            <label className="field">
-              <span>보유 수량</span>
-              <NumberInput
-                inputMode="decimal"
-                min="0"
-                step="1"
-                type="number"
-                value={selectedPosition.holdingQty}
-                onChange={(event) => updatePosition('holdingQty', Number(event.target.value))}
-              />
-            </label>
-            <label className="field">
-              <span>총매수</span>
-              <NumberInput
-                inputMode="numeric"
-                min="0"
-                type="number"
-                value={selectedPosition.totalBuy}
-                onChange={(event) => updatePosition('totalBuy', Number(event.target.value))}
-              />
-            </label>
-            <label className="field">
-              <span>총매도</span>
-              <NumberInput
-                inputMode="numeric"
-                min="0"
-                type="number"
-                value={selectedPosition.totalSell}
-                onChange={(event) => updatePosition('totalSell', Number(event.target.value))}
-              />
-            </label>
-          </div>
-
-          <div className="report-grid">
-            <div>
-              <span>{state.strategyMode === 'vr' ? 'Pool 사용' : '투입'}</span>
-              <strong>
-                {state.strategyMode === 'vr'
-                  ? formatMoney(vrGuide.poolUsed)
-                  : formatMoney(mumeGuide.investedValue)}
-              </strong>
-            </div>
-            <div>
-              <span>{state.strategyMode === 'vr' ? '남은 한도' : '잔여 시드'}</span>
-              <strong>
-                {state.strategyMode === 'vr'
-                  ? formatMoney(vrGuide.poolRemainingAllowed)
-                  : formatMoney(mumeGuide.remainingSeed)}
-              </strong>
-            </div>
-            <div>
-              <span>평가 손익</span>
-              <strong className={report.pnl >= 0 ? 'up' : 'down'}>{formatPercent(report.pnlRate)}</strong>
-            </div>
-            <div>
-              <span>{state.strategyMode === 'vr' ? 'Pool 포함' : '평가금'}</span>
-              <strong>{formatMoney(report.totalAsset)}</strong>
-            </div>
-          </div>
-        </section>
-
-        <section className="panel trade-panel">
-          <div className="panel-heading">
-            <h2>거래 입력</h2>
-          </div>
-
-          <div className="segmented full">
-            <button
-              className={draft.type === 'buy' ? 'is-active' : ''}
-              type="button"
-              onClick={() => setDraft((prevDraft) => ({ ...prevDraft, type: 'buy' }))}
-            >
-              매수
-            </button>
-            <button
-              className={draft.type === 'sell' ? 'is-active' : ''}
-              type="button"
-              onClick={() => setDraft((prevDraft) => ({ ...prevDraft, type: 'sell' }))}
-            >
-              매도
-            </button>
-          </div>
-
-          <div className="trade-mode-row">
-            <span>적용 전략</span>
-            <div className="segmented compact">
-              <button
-                className={state.strategyMode === 'vr' ? 'is-active' : ''}
-                type="button"
-                onClick={() => selectStrategyMode('vr')}
-              >
-                리밸런싱
-              </button>
-              <button
-                className={state.strategyMode === 'mume' ? 'is-active' : ''}
-                type="button"
-                onClick={() => selectStrategyMode('mume')}
-              >
-                무한매수
-              </button>
-            </div>
-          </div>
-
-          <div className="form-grid">
-            <label className="field">
-              <span>거래일</span>
-              <input
-                type="date"
-                value={draft.date}
-                onChange={(event) =>
-                  setDraft((prevDraft) => ({ ...prevDraft, date: event.target.value }))
-                }
-                onInput={(event) =>
-                  setDraft((prevDraft) => ({ ...prevDraft, date: event.currentTarget.value }))
-                }
-              />
-            </label>
-            <label className="field">
-              <span>체결가</span>
-              <NumberInput
-                inputMode="numeric"
-                min="0"
-                type="number"
-                value={draft.price}
-                onChange={(event) =>
-                  setDraft((prevDraft) => ({ ...prevDraft, price: Number(event.target.value) }))
-                }
-              />
-            </label>
-            <label className="field">
-              <span>수량</span>
-              <NumberInput
-                inputMode="decimal"
-                min="0"
-                step="1"
-                type="number"
-                value={draft.quantity}
-                onChange={(event) =>
-                  setDraft((prevDraft) => ({ ...prevDraft, quantity: Number(event.target.value) }))
-                }
-              />
-            </label>
-            <label className="field">
-              <span>수수료</span>
-              <NumberInput
-                inputMode="numeric"
-                min="0"
-                type="number"
-                value={draft.fee}
-                onChange={(event) =>
-                  setDraft((prevDraft) => ({ ...prevDraft, fee: Number(event.target.value) }))
-                }
-              />
-            </label>
-            <label className="field">
-              <span>메모</span>
-              <input
-                value={draft.memo}
-                onChange={(event) =>
-                  setDraft((prevDraft) => ({ ...prevDraft, memo: event.target.value }))
-                }
-              />
-            </label>
-            {state.strategyMode === 'mume' && state.mumeVersionId === 'v4' ? (
-              draft.type === 'buy' ? (
-                <label className="field">
-                  <span>T 증가</span>
-                  <NumberInput
-                    inputMode="decimal"
-                    min="0"
-                    step="1"
-                    type="number"
-                    value={Math.round(draft.tDelta)}
-                    onChange={(event) =>
-                      setDraft((prevDraft) => ({ ...prevDraft, tDelta: Number(event.target.value) }))
-                    }
-                  />
-                </label>
-              ) : (
-                <label className="field">
-                  <span>T 배수</span>
-                  <NumberInput
-                    inputMode="decimal"
-                    min="0"
-                    max="1"
-                    step="1"
-                    type="number"
-                    value={Math.round(draft.tMultiplier)}
-                    onChange={(event) =>
-                      setDraft((prevDraft) => ({
-                        ...prevDraft,
-                        tMultiplier: Number(event.target.value),
-                      }))
-                    }
-                  />
-                </label>
-              )
-            ) : null}
-          </div>
-
-          {state.strategyMode === 'mume' ? (
-            <div className="trade-hint">
-              <span>적용 수수료 {formatMoney(appliedDraftFee)}</span>
-              <span>1회차 {formatMoney(mumeGuide.unit)}</span>
-            </div>
-          ) : (
-            <div className="trade-hint">
-              <span>적용 전략 리밸런싱</span>
-              <span>현재 Pool {formatMoney(state.vrPool)}</span>
-              <span>남은 한도 {formatMoney(vrGuide.poolRemainingAllowed)}</span>
-              <span>
-                권고 {vrGuide.status}{' '}
-                {vrGuide.actionQty > 0 ? `${formatNumber(vrGuide.actionQty, 0)}주` : '없음'}
-              </span>
-            </div>
-          )}
-
-          {state.strategyMode === 'vr' ? (
-            <button className="ghost-button stretch" type="button" onClick={loadVrSuggestedOrder}>
-              오늘 주문 불러오기
-            </button>
-          ) : null}
-
-          <button className="primary-button" type="button" onClick={applyTransaction}>
-            거래 반영
-          </button>
-
-          {state.strategyMode === 'vr' ? (
-            <label className="check-line">
-              <input
-                checked={overridePoolLimit}
-                type="checkbox"
-                onChange={(event) => setOverridePoolLimit(event.target.checked)}
-              />
-              <span>Pool 한도 초과 허용</span>
-            </label>
-          ) : null}
-          {state.strategyMode === 'mume' ? (
-            <label className="check-line">
-              <input
-                checked={overrideTurnLimit}
-                type="checkbox"
-                onChange={(event) => setOverrideTurnLimit(event.target.checked)}
-              />
-              <span>1회차 초과 허용</span>
-            </label>
-          ) : null}
-
-          {tradeWarning ? <p className="warning-text">{tradeWarning}</p> : null}
-
-          <label className="field parser-field">
-            <span>증권사 문자</span>
-            <textarea
-              rows={4}
-              value={parserText}
-              onChange={(event) => setParserText(event.target.value)}
-              placeholder="[증권사] 매수 체결수량 10주 체결단가 23,390"
-            />
-          </label>
-          <div className="parser-actions">
-            <button className="ghost-button" type="button" onClick={pasteAndParseBrokerText}>
-              붙여넣기
-            </button>
-            <button className="ghost-button" type="button" onClick={applyParserText}>
-              문자 파싱
-            </button>
-          </div>
-        </section>
-
         <section className="panel report-panel">
           <div className="panel-heading">
             <h2>리포트</h2>
@@ -4688,7 +3723,7 @@ function App() {
               </strong>
             </div>
             <div>
-              <span>{state.strategyMode === 'vr' ? 'V 대비' : '시드 대비'}</span>
+              <span>{state.strategyMode === 'vr' ? '기준 대비' : '시드 대비'}</span>
               <strong className={reportSummary.seedProfitRate >= 0 ? 'up' : 'down'}>
                 {formatPercent(reportSummary.seedProfitRate)}
               </strong>
@@ -4698,7 +3733,7 @@ function App() {
               <strong>{formatMoney(reportSummary.marketValue)}</strong>
             </div>
             <div>
-              <span>{state.strategyMode === 'vr' ? 'Pool 포함' : '활성 평가'}</span>
+              <span>{state.strategyMode === 'vr' ? '현금 포함' : '활성 평가'}</span>
               <strong>
                 {formatMoney(reportSummary.marketValue + reportSummary.poolValue)}
               </strong>
@@ -4955,12 +3990,10 @@ function App() {
 
 function OrderList({
   emptyText,
-  onSelectOrder,
   orders,
   title,
 }: {
   emptyText: string
-  onSelectOrder?: (order: OrderLine) => void
   orders: OrderLine[]
   title: string
 }) {
@@ -4970,7 +4003,7 @@ function OrderList({
       {orders.length > 0 ? (
         orders.map((order, index) => (
           <div
-            className={onSelectOrder ? 'order-line has-action' : 'order-line'}
+            className="order-line"
             key={`${order.title}-${order.method}-${index}`}
           >
             <div>
@@ -4985,11 +4018,6 @@ function OrderList({
               <span>수량</span>
               <strong>{formatNumber(order.quantity, 0)}주</strong>
             </div>
-            {onSelectOrder ? (
-              <button className="small-action" type="button" onClick={() => onSelectOrder(order)}>
-                입력
-              </button>
-            ) : null}
           </div>
         ))
       ) : (
@@ -5026,7 +4054,7 @@ function ReservedOrderList({
             <tr>
               <th>수량</th>
               <th>가격</th>
-              <th>Pool</th>
+              <th>현금</th>
             </tr>
           </thead>
           <tbody>
