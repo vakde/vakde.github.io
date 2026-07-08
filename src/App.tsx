@@ -250,26 +250,30 @@ type NaverRealtimeResponse = {
 }
 
 const STORAGE_KEY = 'vakde-gate-state-v3'
-const CURRENT_STORAGE_VERSION = 12
+const CURRENT_STORAGE_VERSION = 13
+const LEGACY_STRATEGY_DEFAULT_VERSION = 12
+const VR_BAND_DEFAULT_VERSION = 12
+const KODEX_LEVERAGED_STOCK_VERSION = 13
 const FIRE_GATE_VR_BAND_PERCENT = 15
 const NAVER_STOCK_BASIC_URL = 'https://m.stock.naver.com/api/stock'
 const NAVER_REALTIME_URL = 'https://polling.finance.naver.com/api/realtime'
 const READER_PROXY_URL = 'https://r.jina.ai/http://r.jina.ai/http://'
+const KODEX_MIGRATED_STOCK_IDS = new Set(['hynix', 'samsung'])
 
 const STOCKS: Stock[] = [
   {
     id: 'hynix',
-    name: 'TIGER SK하이닉스단일종목레버리지',
-    ticker: '0195S0',
+    name: 'KODEX SK하이닉스단일종목레버리지',
+    ticker: '0193T0',
     market: 'KOSPI ETF',
-    referencePrice: 23390,
+    referencePrice: 19635,
   },
   {
     id: 'samsung',
-    name: 'TIGER 삼성전자단일종목레버리지',
-    ticker: '0195R0',
+    name: 'KODEX 삼성전자단일종목레버리지',
+    ticker: '0193W0',
     market: 'KOSPI ETF',
-    referencePrice: 18805,
+    referencePrice: 16185,
   },
   {
     id: 'samcns',
@@ -435,8 +439,8 @@ function normalizeSelectedStockByStrategy(
 function normalizeStoredState(stored: Partial<AppState>): AppState {
   const storedVersion = positive(stored.storageVersion ?? 0)
   const needsLegacyStrategyDefault =
-    storedVersion < CURRENT_STORAGE_VERSION
-  const needsVrBandDefaultUpgrade = storedVersion < CURRENT_STORAGE_VERSION
+    storedVersion < LEGACY_STRATEGY_DEFAULT_VERSION
+  const needsVrBandDefaultUpgrade = storedVersion < VR_BAND_DEFAULT_VERSION
   const storedVersionId: VrVersion['id'] =
     VR_VERSIONS.some((version) => version.id === stored.vrVersionId)
       ? (stored.vrVersionId as VrVersion['id'])
@@ -468,7 +472,12 @@ function normalizeStoredState(stored: Partial<AppState>): AppState {
     needsVrBandDefaultUpgrade && Number(storedVrBandPercent) === 10
       ? DEFAULT_STATE.vrBandPercent
       : storedVrBandPercent
-  const normalizedPositions = normalizePositions(stored.positions, storedTransactions, normalizedStockSettings)
+  const normalizedPositions = normalizePositions(
+    stored.positions,
+    storedTransactions,
+    normalizedStockSettings,
+    storedVersion,
+  )
   const normalizedSelectedStockByStrategy = normalizeSelectedStockByStrategy(
     stored.selectedStockByStrategy,
     storedStockId ?? DEFAULT_STATE.selectedStockId,
@@ -702,13 +711,29 @@ function normalizeVrStartMode(value: unknown, startQty: unknown): VrStartMode {
   return 'new'
 }
 
-function normalizePosition(position: Partial<Position> | undefined, stock: Stock): Position {
+function normalizePosition(
+  position: Partial<Position> | undefined,
+  stock: Stock,
+  shouldUpgradeKodexReferencePrice = false,
+): Position {
+  const avgPrice = positive(position?.avgPrice ?? 0)
+  const holdingQty = positive(position?.holdingQty ?? 0)
+  const totalBuy = positive(position?.totalBuy ?? 0)
+  const totalSell = positive(position?.totalSell ?? 0)
+  const currentPrice = positive(position?.currentPrice ?? 0) || stock.referencePrice
+  const hasUserPositionData = avgPrice > 0 || holdingQty > 0 || totalBuy > 0 || totalSell > 0
+
   return {
-    currentPrice: positive(position?.currentPrice ?? 0) || stock.referencePrice,
-    avgPrice: positive(position?.avgPrice ?? 0),
-    holdingQty: positive(position?.holdingQty ?? 0),
-    totalBuy: positive(position?.totalBuy ?? 0),
-    totalSell: positive(position?.totalSell ?? 0),
+    currentPrice:
+      shouldUpgradeKodexReferencePrice &&
+      !hasUserPositionData &&
+      KODEX_MIGRATED_STOCK_IDS.has(stock.id)
+        ? stock.referencePrice
+        : currentPrice,
+    avgPrice,
+    holdingQty,
+    totalBuy,
+    totalSell,
   }
 }
 
@@ -736,8 +761,10 @@ function normalizePositions(
   positions: unknown,
   transactions: Transaction[],
   stockSettings: Record<string, StockSettings>,
+  storageVersion = CURRENT_STORAGE_VERSION,
 ): Record<string, Position> {
   const nextPositions = { ...DEFAULT_POSITIONS }
+  const shouldUpgradeKodexReferencePrice = positive(storageVersion) < KODEX_LEVERAGED_STOCK_VERSION
 
   if (!positions || typeof positions !== 'object') {
     return nextPositions
@@ -748,7 +775,11 @@ function normalizePositions(
     const stock = getStock(stockId)
 
     if (STOCKS.some((item) => item.id === stockId) && isStrategyMode(strategy)) {
-      nextPositions[getPositionKey(stockId, strategy)] = normalizePosition(position, stock)
+      nextPositions[getPositionKey(stockId, strategy)] = normalizePosition(
+        position,
+        stock,
+        shouldUpgradeKodexReferencePrice,
+      )
       return
     }
 
@@ -756,7 +787,11 @@ function normalizePositions(
       const legacyStock = getStock(key)
       const legacyStrategy = inferLegacyPositionStrategy(key, transactions, stockSettings)
 
-      nextPositions[getPositionKey(key, legacyStrategy)] = normalizePosition(position, legacyStock)
+      nextPositions[getPositionKey(key, legacyStrategy)] = normalizePosition(
+        position,
+        legacyStock,
+        shouldUpgradeKodexReferencePrice,
+      )
     }
   })
 
@@ -835,7 +870,7 @@ function normalizeStockSettings(
     return {}
   }
 
-  const needsVrBandDefaultUpgrade = positive(storageVersion) < CURRENT_STORAGE_VERSION
+  const needsVrBandDefaultUpgrade = positive(storageVersion) < VR_BAND_DEFAULT_VERSION
 
   return Object.entries(settings as Record<string, Partial<StockSettings>>).reduce<
     Record<string, StockSettings>
