@@ -288,7 +288,7 @@ const MUME_VERSIONS: MumeVersion[] = [
     label: 'v2.2',
     defaultDivision: 40,
     defaultTargetProfit: 10,
-    note: '40분할, 완만한 별값',
+    note: '40분할, 완만한 수익 기준',
   },
   {
     id: 'v3',
@@ -1312,12 +1312,12 @@ function buildExtraBuyOrders(
 
     if (price > 0 && price < firstPrice && price < maxPrice) {
       orders.push({
-        title: '+@ LOC',
+        title: '추가 매수',
         method: 'LOC',
         price,
         quantity: quantityUnit,
         amount: price * quantityUnit,
-        note: '폭락장 추가 매수',
+        note: '더 내려가면 조금 더 매수',
       })
     }
 
@@ -1445,7 +1445,7 @@ function buildMumeGuide(state: AppState, position: Position, version: MumeVersio
       const buyQty = Math.floor(remainingSeed / 4 / buyPrice)
 
       buyOrders.push({
-        title: '리버스 ★',
+        title: '리버스 매수',
         method: 'LOC',
         price: buyPrice,
         quantity: buyQty,
@@ -1453,7 +1453,7 @@ function buildMumeGuide(state: AppState, position: Position, version: MumeVersio
         note: '리버스 매수',
       })
       sellOrders.push({
-        title: '리버스 ★',
+        title: '리버스 매도',
         method: 'LOC',
         price: reversePrice,
         quantity: reverseSellQty,
@@ -1545,20 +1545,20 @@ function buildMumeGuide(state: AppState, position: Position, version: MumeVersio
         : Math.max(0, Math.floor(unit / basePrice - starQty))
 
     buyOrders.push({
-      title: '평단 LOC',
+      title: '평균가 매수',
       method: 'LOC',
       price: basePrice,
       quantity: avgQty,
       amount: avgQty * basePrice,
-      note: '전반전 평단 보강',
+      note: '평균 매수가 근처에서 매수',
     })
     buyOrders.push({
-      title: '별값 LOC',
+      title: '수익 기준 매수',
       method: 'LOC',
       price: starBuyPrice,
       quantity: starQty,
       amount: starQty * starBuyPrice,
-      note: `${formatNumber(starPercent, 0)}% 별값`,
+      note: `${formatNumber(starPercent, 0)}% 수익 기준`,
     })
     buyOrders.push(
       ...buildExtraBuyOrders(
@@ -1571,12 +1571,12 @@ function buildMumeGuide(state: AppState, position: Position, version: MumeVersio
       ),
     )
     sellOrders.push({
-      title: '별값 25%',
+      title: '일부 매도',
       method: 'LOC',
       price: starPrice,
       quantity: quarterQty,
       amount: quarterQty * starPrice,
-      note: '보유수량 1/4 회수',
+      note: '보유수량 1/4 매도',
     })
     sellOrders.push({
       title: '목표가 잔량',
@@ -1590,7 +1590,7 @@ function buildMumeGuide(state: AppState, position: Position, version: MumeVersio
     const starQty = Math.floor(unit / starBuyPrice)
 
     buyOrders.push({
-      title: '별값 LOC',
+      title: '수익 기준 매수',
       method: 'LOC',
       price: starBuyPrice,
       quantity: starQty,
@@ -1608,12 +1608,12 @@ function buildMumeGuide(state: AppState, position: Position, version: MumeVersio
       ),
     )
     sellOrders.push({
-      title: '별값 25%',
+      title: '일부 매도',
       method: 'LOC',
       price: starPrice,
       quantity: quarterQty,
       amount: quarterQty * starPrice,
-      note: '보유수량 1/4 회수',
+      note: '보유수량 1/4 매도',
     })
     sellOrders.push({
       title: '목표가 잔량',
@@ -2995,7 +2995,7 @@ function App() {
 
       <section className="summary-bar" aria-label="요약">
         <div>
-          <span>평단</span>
+          <span>평균 매수가</span>
           <strong>{formatMoney(selectedPosition.avgPrice)}</strong>
         </div>
         <div>
@@ -3192,7 +3192,7 @@ function App() {
                   />
                 </label>
                 <label className="field">
-                  <span>평단가</span>
+                  <span>평균 매수가</span>
                   <NumberInput
                     inputMode="numeric"
                     min="0"
@@ -3309,7 +3309,7 @@ function App() {
                     <span>리버스 모드</span>
                   </label>
                   <label className="field compact-field">
-                    <span>리버스 ★</span>
+                    <span>리버스 기준가</span>
                     <NumberInput
                       inputMode="decimal"
                       min="0"
@@ -3520,7 +3520,7 @@ function App() {
                   <strong>{formatNumber(mumeGuide.tValue, 0)}</strong>
                 </div>
                 <div>
-                  <span>별값</span>
+                  <span>수익 기준가</span>
                   <strong>{formatMoney(mumeGuide.starPrice)}</strong>
                 </div>
               </div>
@@ -3571,7 +3571,7 @@ function App() {
                   <strong>{formatNumber(selectedVrPosition.holdingQty, 0)}주</strong>
                 </div>
                 <div>
-                  <span>현재 평단</span>
+                  <span>현재 평균 매수가</span>
                   <strong>{formatMoney(selectedVrPosition.avgPrice)}</strong>
                 </div>
                 <div>
